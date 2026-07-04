@@ -2,10 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DPD AI Resume — ATS Resume Builder India</title>
+    <script>
+    // Silence Tailwind CDN production warning (cosmetic only, not an error)
+    const _cw = console.warn.bind(console);
+    console.warn = (...a) => { if(a[0] && String(a[0]).includes('cdn.tailwindcss.com')) return; _cw(...a); };
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>tailwind.config={theme:{extend:{}}}</script>
+    <script>if(window.tailwind){tailwind.config={theme:{extend:{}}}}</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
         <style>
