@@ -199,8 +199,8 @@
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
             <div class="text-center space-y-1.5"><div class="w-11 h-11 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-lg">👑</div><h3 class="text-lg font-black text-slate-100 tracking-tight">Unlock Premium PDF Export File</h3><p class="text-xs text-slate-400 px-4">Select a system verification access pass to instantly render and download your professional layout document.</p></div>
             <div class="space-y-3">
-                <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://pages.razorpay.com/pl_T4ePkFXS642xAk/view" class="border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Weekly Engine Access Pass</span><span class="block text-[11px] text-slate-400">Complete premium template compilation for 7 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500 font-medium">per week</span></div></div>
-                <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://pages.razorpay.com/pl_T4eeTV4c8OkGAk/view" class="border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited Access</span><span class="block text-[11px] text-slate-400">Unrestricted download generation arrays for 30 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500 font-medium">per month</span></div></div>
+                <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/PVQDbn8?callback_url=https://dpdai-resume.vercel.app/?dpd_paid=1&plan=19" class="border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Weekly Engine Access Pass</span><span class="block text-[11px] text-slate-400">Complete premium template compilation for 7 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500 font-medium">per week</span></div></div>
+                <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/Zv1p9MGp?callback_url=https://dpdai-resume.vercel.app/?dpd_paid=1&plan=59" class="border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited Access</span><span class="block text-[11px] text-slate-400">Unrestricted download generation arrays for 30 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500 font-medium">per month</span></div></div>
             </div>
             <div class="grid grid-cols-2 gap-3 pt-1">
                 <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-2.5 px-4 rounded-lg transition-colors">Cancel Access</button>
@@ -1019,53 +1019,117 @@ function executePremiumSecureCheckout() {
     }
 
     localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
+    // Save form state so it restores after payment redirect
+    try { localStorage.setItem('dpd_form_backup', JSON.stringify(engineState)); } catch(e) {}
     window.location.href = paymentUrl;
 }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 window.onload = async function() {
-    // FRESH START — clear any old cached developer data
-    const VER = 'dpd_v3';
-    if (localStorage.getItem('dpd_app_ver') !== VER) {
-        // New version or first visit — wipe old data to prevent dev data leaking to users
-        const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan'];
-        Object.keys(localStorage).forEach(k => {
-            if (!keepKeys.includes(k)) localStorage.removeItem(k);
-        });
-        localStorage.setItem('dpd_app_ver', VER);
+
+    // ── STEP 1: Check payment return FIRST before anything else ──
+    const params = new URLSearchParams(window.location.search);
+    const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
+    const paidFlag  = params.get('dpd_paid');
+    const planParam = parseInt(params.get('plan') || '0', 10);
+    const returningFromPayment = !!(paymentId || paidFlag === '1');
+
+    if (returningFromPayment) {
+        const plan = planParam || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
+        const days = plan === 59 ? 30 : 7;
+        const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
+        localStorage.setItem('dpd_pass_expiry', String(expiry));
+        localStorage.setItem('dpd_pass_plan', String(plan));
+        localStorage.setItem('dpd_app_ver', 'dpd_v3'); // prevent version wipe
+        window.history.replaceState({}, document.title, window.location.pathname);
     }
-    engineState.experience = [{company:"",role:"",dates:"",duties:""}];
-    engineState.education  = [{school:"",degree:"",year:""}];
+
+    // ── STEP 2: Version wipe (skip if returning from payment) ──
+    if (!returningFromPayment) {
+        const VER = 'dpd_v3';
+        if (localStorage.getItem('dpd_app_ver') !== VER) {
+            const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
+            Object.keys(localStorage).forEach(k => {
+                if (!keepKeys.includes(k)) localStorage.removeItem(k);
+            });
+            localStorage.setItem('dpd_app_ver', VER);
+        }
+    }
+
+    // ── STEP 3: Restore form data (from backup if returning from payment) ──
+    let formRestored = false;
+    if (returningFromPayment) {
+        try {
+            const backup = localStorage.getItem('dpd_form_backup');
+            if (backup) {
+                const saved = JSON.parse(backup);
+                if (saved && typeof saved === 'object') {
+                    if (saved.personal)       Object.assign(engineState.personal, saved.personal);
+                    if (saved.summary)        engineState.summary = saved.summary;
+                    if (Array.isArray(saved.experience))    engineState.experience = saved.experience;
+                    if (Array.isArray(saved.education))     engineState.education  = saved.education;
+                    if (Array.isArray(saved.certifications))engineState.certifications = saved.certifications;
+                    if (Array.isArray(saved.skills))        engineState.skills = saved.skills;
+                    if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
+                    if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
+
+                    // Fill all form fields
+                    const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+                    s('formName',       engineState.personal.name);
+                    s('formTitle',      engineState.personal.title);
+                    s('formEmail',      engineState.personal.email);
+                    s('formMobile',     engineState.personal.mobile);
+                    s('formLinkedIn',   engineState.personal.linkedin);
+                    s('formGitHub',     engineState.personal.github);
+                    s('formFatherName', engineState.personal.fatherName);
+                    s('formAddress',    engineState.personal.address);
+                    s('formDOB',        engineState.personal.dob);
+                    s('formSalary',     engineState.personal.salary);
+                    s('formSummary',    engineState.summary);
+                    s('formSkillsList', engineState.skills.join(', '));
+                    if(document.getElementById('formGender') && engineState.personal.gender)
+                        document.getElementById('formGender').value = engineState.personal.gender;
+                    if(document.getElementById('formMarital') && engineState.personal.marital)
+                        document.getElementById('formMarital').value = engineState.personal.marital;
+
+                    formRestored = true;
+                    localStorage.removeItem('dpd_form_backup'); // clean up
+                }
+            }
+        } catch(e) { console.warn('Form restore error:', e); }
+    }
+
+    // ── STEP 4: Init empty form if nothing restored ──
+    if (!formRestored || engineState.experience.length === 0) {
+        engineState.experience = [{company:"",role:"",dates:"",duties:""}];
+    }
+    if (!formRestored || engineState.education.length === 0) {
+        engineState.education = [{school:"",degree:"",year:""}];
+    }
 
     renderExperienceFormInputs();
     renderEducationFormInputs();
     renderCertificationFormInputs();
     runMasterManualSyncAndGenerate();
 
-    // Check if returning from Razorpay payment
-    const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
-    const paidFlag  = params.get('dpd_paid');
-    const planParam = parseInt(params.get('plan') || '19', 10);
-
-    if (paymentId || paidFlag === '1') {
-        const plan = planParam || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
-        const days = plan === 59 ? 30 : 7;
-        const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
-        localStorage.setItem('dpd_pass_expiry', String(expiry));
-        localStorage.setItem('dpd_pass_plan', String(plan));
-        window.history.replaceState({}, document.title, window.location.pathname);
-
-        const banner = document.getElementById('successBanner');
-        if (banner) {
-            banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days.';
-            banner.classList.remove('hidden');
-            setTimeout(() => banner.classList.add('hidden'), 6000);
-        }
+    // ── STEP 5: Hide cover page if premium ──
+    if (returningFromPayment || checkActiveSubscriptionPass()) {
         const coverPage = document.getElementById('dpdCoverPage');
         if (coverPage) coverPage.classList.add('dpd-hide');
-        setTimeout(() => window.print(), 900);
+    }
+
+    // ── STEP 6: Show success banner + auto print if payment just completed ──
+    if (returningFromPayment) {
+        const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10);
+        const days = plan === 59 ? 30 : 7;
+        const banner = document.getElementById('successBanner');
+        if (banner) {
+            banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!';
+            banner.classList.remove('hidden');
+            setTimeout(() => banner.classList.add('hidden'), 8000);
+        }
+        setTimeout(() => window.print(), 1200);
     }
 
     renderSubscriptionStatusIndicator();
