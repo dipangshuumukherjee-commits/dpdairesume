@@ -24,6 +24,7 @@
             body { background-color:#ffffff!important;color:#000000!important;padding:0!important;margin:0!important; }
             .no-print { display:none!important; }
             .print-full-width { width:100%!important;max-width:100%!important;min-width:100%!important;box-shadow:none!important;padding:0!important;margin:0!important; }
+            .resume-print-canvas { min-height:auto!important;box-shadow:none!important; }
             @page { size: A4 portrait; margin: 10mm 12mm 10mm 12mm; }
         }
         #parsingOverlay { display:none; }
@@ -189,7 +190,7 @@
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 flex flex-col justify-between mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
                     <div class="text-[9px] text-slate-400 border-t border-slate-200 pt-2 flex justify-between mt-10 font-mono no-print"><span>Generated via Professional System Portal Workspace</span><span>Document Matrix Status: Page 1 of 1</span></div>
-                    <a href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
+                    <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
             </div>
         </div>
@@ -284,6 +285,9 @@ function _getAccessLabel() {
 }
 
 function renderSubscriptionStatusIndicator() {
+    // Hide watermark for premium users
+    const wm = document.getElementById('dpdWatermark');
+    if (wm) wm.style.display = checkActiveSubscriptionPass() ? 'none' : '';
     const badge = document.getElementById('subscriptionStatusBadge');
     if (!badge) return;
     if (checkActiveSubscriptionPass()) {
@@ -1033,11 +1037,13 @@ function selectSubscriptionPlan(v) {
     if (v === 19) {
         card19.className = "border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between";
         card59.className = "border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between";
-        proceedBtn.innerText = "Proceed to Pay (₹19)";
+        if(proceedBtn) proceedBtn.innerHTML = "Pay \u20B919 on Razorpay \u2192";
+        const sp = document.getElementById('targetSelectedPrice'); if(sp) sp.innerText='19';
     } else {
         card19.className = "border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between";
         card59.className = "border-2 border-emerald-500 bg-emerald-950/30 p-4 rounded-xl cursor-pointer hover:border-emerald-400 transition-all flex items-center justify-between";
-        proceedBtn.innerText = "Proceed to Pay (₹59)";
+        if(proceedBtn) proceedBtn.innerHTML = "Pay \u20B959 on Razorpay \u2192";
+        const sp = document.getElementById('targetSelectedPrice'); if(sp) sp.innerText='59';
     }
 }
 
@@ -1048,10 +1054,9 @@ function executePremiumSecureCheckout() {
     if (!paymentUrl) { alert("Payment link missing."); return; }
 
     localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
-    // Open Razorpay in new tab — user pays, then comes back and enters Payment ID
-    window.open(paymentUrl, '_blank');
-    // Show screen 2 (enter payment ID)
-    showPayScreen2();
+    try { localStorage.setItem('dpd_form_backup', JSON.stringify(engineState)); } catch(e) {}
+    // Redirect same tab — Razorpay Payment Page will redirect back automatically
+    window.location.href = paymentUrl;
 }
 
 function showPayScreen1() {
