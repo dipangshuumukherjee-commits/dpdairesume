@@ -207,11 +207,11 @@
                     <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume as PDF</p>
                 </div>
                 <div class="space-y-3 mb-5">
-                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" class="border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between">
+                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full PDF downloads for 7 days</span></div>
                         <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
-                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" class="border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between">
+                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited</span><span class="block text-xs text-slate-400">Unlimited downloads for 30 days</span></div>
                         <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500">per month</span></div>
                     </div>
@@ -1026,24 +1026,21 @@ async function verifyRazorpayReturn() {
 
 function selectSubscriptionPlan(v) {
     engineState.selectedSubscriptionValue = v;
-    if (document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText = v;
     localStorage.setItem('last_selected_plan', v.toString());
-    
+
     const card19 = document.getElementById('planCard-19');
     const card59 = document.getElementById('planCard-59');
     const proceedBtn = document.getElementById('modalProceedPayBtn');
-    if (!card19 || !card59 || !proceedBtn) return;
 
+    // Use inline styles — reliable regardless of Tailwind CDN
     if (v === 19) {
-        card19.className = "border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between";
-        card59.className = "border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between";
-        if(proceedBtn) proceedBtn.innerHTML = "Pay \u20B919 on Razorpay \u2192";
-        const sp = document.getElementById('targetSelectedPrice'); if(sp) sp.innerText='19';
+        if(card19) { card19.style.border='2px solid #3b82f6'; card19.style.background='rgba(23,37,84,0.4)'; }
+        if(card59) { card59.style.border='2px solid #334155'; card59.style.background='rgba(15,23,42,0.4)'; }
+        if(proceedBtn) proceedBtn.innerHTML = 'Pay ₹19 on Razorpay →';
     } else {
-        card19.className = "border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between";
-        card59.className = "border-2 border-emerald-500 bg-emerald-950/30 p-4 rounded-xl cursor-pointer hover:border-emerald-400 transition-all flex items-center justify-between";
-        if(proceedBtn) proceedBtn.innerHTML = "Pay \u20B959 on Razorpay \u2192";
-        const sp = document.getElementById('targetSelectedPrice'); if(sp) sp.innerText='59';
+        if(card19) { card19.style.border='2px solid #334155'; card19.style.background='rgba(15,23,42,0.4)'; }
+        if(card59) { card59.style.border='2px solid #10b981'; card59.style.background='rgba(6,78,59,0.3)'; }
+        if(proceedBtn) proceedBtn.innerHTML = 'Pay ₹59 on Razorpay →';
     }
 }
 
