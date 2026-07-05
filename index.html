@@ -195,17 +195,50 @@
         </div>
     </div>
 
-    <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
-        <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl space-y-6 animate-in fade-in zoom-in-95 duration-150">
-            <div class="text-center space-y-1.5"><div class="w-11 h-11 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-lg">👑</div><h3 class="text-lg font-black text-slate-100 tracking-tight">Unlock Premium PDF Export File</h3><p class="text-xs text-slate-400 px-4">Select a system verification access pass to instantly render and download your professional layout document.</p></div>
-            <div class="space-y-3">
-                <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/PVQDbn8?callback_url=https://dpdai-resume.vercel.app/?dpd_paid=1&plan=19" class="border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Weekly Engine Access Pass</span><span class="block text-[11px] text-slate-400">Complete premium template compilation for 7 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500 font-medium">per week</span></div></div>
-                <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/Zv1p9MGp?callback_url=https://dpdai-resume.vercel.app/?dpd_paid=1&plan=59" class="border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between"><div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited Access</span><span class="block text-[11px] text-slate-400">Unrestricted download generation arrays for 30 days</span></div><div class="text-right pl-2"><span class="block text-base font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500 font-medium">per month</span></div></div>
+    <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
+
+            <!-- SCREEN 1: Choose Plan -->
+            <div id="payScreen1">
+                <div class="text-center mb-5">
+                    <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
+                    <h3 class="text-lg font-black text-slate-100">Unlock Premium PDF Export</h3>
+                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume as PDF</p>
+                </div>
+                <div class="space-y-3 mb-5">
+                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" class="border-2 border-blue-500 bg-blue-950/30 p-4 rounded-xl cursor-pointer hover:border-blue-400 transition-all flex items-center justify-between">
+                        <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full PDF downloads for 7 days</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
+                    </div>
+                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" class="border border-slate-700 bg-slate-900/40 p-4 rounded-xl cursor-pointer hover:border-slate-500 transition-all flex items-center justify-between">
+                        <div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited</span><span class="block text-xs text-slate-400">Unlimited downloads for 30 days</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500">per month</span></div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">Cancel</button>
+                    <button onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">19</span> on Razorpay →</button>
+                </div>
             </div>
-            <div class="grid grid-cols-2 gap-3 pt-1">
-                <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-2.5 px-4 rounded-lg transition-colors">Cancel Access</button>
-                <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-2.5 px-4 rounded-lg shadow tracking-wide">Proceed to Pay (₹<span id="targetSelectedPrice">19</span>)</button>
+
+            <!-- SCREEN 2: Enter Payment ID after paying -->
+            <div id="payScreen2" class="hidden">
+                <div class="text-center mb-5">
+                    <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">✅</div>
+                    <h3 class="text-lg font-black text-slate-100">Payment Done?</h3>
+                    <p class="text-xs text-slate-400 mt-1 px-2">Copy your <strong class="text-slate-200">Payment ID</strong> from the Razorpay success page and paste it below to activate your access.</p>
+                </div>
+                <div class="bg-slate-900 rounded-xl p-3 mb-4 text-xs text-slate-400 border border-slate-700">
+                    💡 Your Payment ID looks like: <span class="text-blue-400 font-mono">pay_ABC123XYZ</span> or <span class="text-blue-400 font-mono">T9VLuj7yV4Ymo2</span> — shown on the Razorpay success page.
+                </div>
+                <input id="paymentIdInput" type="text" placeholder="Paste Payment ID here..." class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 mb-3 outline-none">
+                <div id="verifyError" class="hidden text-xs text-red-400 mb-3 bg-red-950/30 border border-red-800 rounded-lg px-3 py-2"></div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="showPayScreen1()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">← Go Back</button>
+                    <button onclick="verifyPaymentAndActivate()" id="verifyBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Activate Access ✓</button>
+                </div>
             </div>
+
         </div>
     </div>
 
@@ -1009,19 +1042,84 @@ function selectSubscriptionPlan(v) {
 }
 
 function executePremiumSecureCheckout() {
-    closeSubscriptionGateway();
     const targetCard = document.getElementById(`planCard-${engineState.selectedSubscriptionValue}`);
     if (!targetCard) return;
     const paymentUrl = targetCard.getAttribute('data-url');
-    if (!paymentUrl) {
-        alert("Error: Active Razorpay link configuration missing.");
+    if (!paymentUrl) { alert("Payment link missing."); return; }
+
+    localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
+    // Open Razorpay in new tab — user pays, then comes back and enters Payment ID
+    window.open(paymentUrl, '_blank');
+    // Show screen 2 (enter payment ID)
+    showPayScreen2();
+}
+
+function showPayScreen1() {
+    document.getElementById('payScreen1').classList.remove('hidden');
+    document.getElementById('payScreen2').classList.add('hidden');
+    document.getElementById('verifyError').classList.add('hidden');
+    if(document.getElementById('paymentIdInput')) document.getElementById('paymentIdInput').value = '';
+}
+
+function showPayScreen2() {
+    document.getElementById('payScreen1').classList.add('hidden');
+    document.getElementById('payScreen2').classList.remove('hidden');
+}
+
+async function verifyPaymentAndActivate() {
+    const rawId = (document.getElementById('paymentIdInput').value || '').trim();
+    if (!rawId) {
+        showVerifyError('Please paste your Payment ID first.');
         return;
     }
 
-    localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
-    // Save form state so it restores after payment redirect
-    try { localStorage.setItem('dpd_form_backup', JSON.stringify(engineState)); } catch(e) {}
-    window.location.href = paymentUrl;
+    const btn = document.getElementById('verifyBtn');
+    btn.innerText = 'Verifying...';
+    btn.disabled = true;
+
+    try {
+        const plan = parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
+        const res = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ paymentId: rawId, plan })
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            // Grant access
+            const days = plan === 59 ? 30 : 7;
+            const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
+            localStorage.setItem('dpd_pass_expiry', String(expiry));
+            localStorage.setItem('dpd_pass_plan', String(plan));
+            closeSubscriptionGateway();
+            renderSubscriptionStatusIndicator();
+            // Hide cover page
+            const coverPage = document.getElementById('dpdCoverPage');
+            if (coverPage) coverPage.classList.add('dpd-hide');
+            // Show success banner
+            const banner = document.getElementById('successBanner');
+            if (banner) {
+                banner.innerText = '🎉 Premium access activated for ' + days + ' days! Downloading your resume...';
+                banner.classList.remove('hidden');
+                setTimeout(() => banner.classList.add('hidden'), 7000);
+            }
+            setTimeout(() => window.print(), 800);
+        } else {
+            showVerifyError(data.error || 'Payment ID not found. Please check and try again.');
+            btn.innerText = 'Activate Access ✓';
+            btn.disabled = false;
+        }
+    } catch(e) {
+        showVerifyError('Verification failed. Please try again.');
+        btn.innerText = 'Activate Access ✓';
+        btn.disabled = false;
+    }
+}
+
+function showVerifyError(msg) {
+    const el = document.getElementById('verifyError');
+    if(el) { el.innerText = msg; el.classList.remove('hidden'); }
 }
 
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
