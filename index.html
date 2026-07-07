@@ -19,14 +19,19 @@
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        .resume-print-canvas { width: 100%; min-height: 297mm; background: #ffffff; color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: all 0.2s linear; }
+        /* Locked to true A4 width (210mm) on screen too — so the editor preview is
+           pixel-for-pixel identical to the printed page. This is what actually fixes
+           the "margins/text look different when printed" issue: it was never a print
+           margin bug, it was the on-screen box being a different width than A4 paper,
+           so the same padding/font sizes looked different once squeezed onto A4. */
+        .resume-print-canvas { width: 210mm; max-width: 100%; min-height: 297mm; background: #ffffff; color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: all 0.2s linear; }
         @media print {
             * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
             html,body { background:#ffffff!important;color:#1e293b!important;padding:0!important;margin:0!important; }
             .no-print { display:none!important; }
             #dpdPrintRoot { padding:0!important;margin:0!important;overflow:visible!important;border-radius:0!important; }
-            .print-full-width { width:100%!important;max-width:100%!important;box-shadow:none!important;margin:0!important;padding:0!important; }
-            .resume-print-canvas { min-height:auto!important;box-shadow:none!important;display:block!important;border-radius:0!important; }
+            .print-full-width { width:210mm!important;max-width:210mm!important;box-shadow:none!important;margin:0!important;padding:0!important; }
+            .resume-print-canvas { width:210mm!important;min-height:auto!important;box-shadow:none!important;display:block!important;border-radius:0!important; }
             #dpdWatermark { display:none!important; }
             @page { size: A4 portrait; margin: 0; }
         }
