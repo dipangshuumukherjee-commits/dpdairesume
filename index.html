@@ -14,25 +14,20 @@
     <script>if(window.tailwind){tailwind.config={theme:{extend:{}}}}</script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-        <style>
+    <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 6px; }
         .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
-        /* Locked to true A4 width (210mm) on screen too — so the editor preview is
-           pixel-for-pixel identical to the printed page. This is what actually fixes
-           the "margins/text look different when printed" issue: it was never a print
-           margin bug, it was the on-screen box being a different width than A4 paper,
-           so the same padding/font sizes looked different once squeezed onto A4. */
         .resume-print-canvas { width: 210mm; max-width: 100%; min-height: 297mm; background: #ffffff; color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: all 0.2s linear; }
         @media print {
-            * { -webkit-print-color-adjust:exact!important; print-color-adjust:exact!important; }
-            html,body { background:#ffffff!important;color:#1e293b!important;padding:0!important;margin:0!important; }
-            .no-print { display:none!important; }
-            #dpdPrintRoot { padding:0!important;margin:0!important;overflow:visible!important;border-radius:0!important; }
-            .print-full-width { width:210mm!important;max-width:210mm!important;box-shadow:none!important;margin:0!important; }
-            .resume-print-canvas { width:210mm!important;min-height:auto!important;box-shadow:none!important;display:block!important;border-radius:0!important; }
-            #dpdWatermark { display:none!important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            html, body { background: #ffffff !important; color: #1e293b !important; padding: 0 !important; margin: 0 !important; width: 210mm !important; min-height: 297mm !important; overflow: visible !important; }
+            .no-print { display: none !important; }
+            body > div, div[style*="padding-top"], .max-w-\[1700px\], .xl\:col-span-7, #dpdPrintRoot { display: block !important; position: static !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: none !important; box-shadow: none !important; overflow: visible !important; }
+            .space-y-4 > *, .space-y-4 > * + *, .gap-4 { margin-top: 0 !important; margin-bottom: 0 !important; gap: 0 !important; }
+            .resume-print-canvas, #printTargetSandbox, .print-full-width { width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 2.5rem !important; box-shadow: none !important; display: block !important; border-radius: 0 !important; background: #ffffff !important; overflow: visible !important; position: relative !important; box-sizing: border-box !important; }
+            #dpdWatermark { display: none !important; }
             @page { size: A4 portrait; margin: 0; }
         }
         #parsingOverlay { display:none; }
@@ -47,7 +42,7 @@
     <div id="dpdCoverPage" class="no-print">
         <div class="text-3xl md:text-5xl dpd-brand-mark text-slate-100 tracking-tight">DPD <span class="text-blue-500">AI</span> RESUME</div>
         <p class="text-slate-400 text-xs md:text-sm max-w-sm text-center px-6">AI-powered, ATS-optimized resumes built in minutes.</p>
-        <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-sm tracking-wide transition-transform transform active:scale-95">Create ATS Approve Resume</button>
+        <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-sm tracking-wide transition-transform transform active:scale-95">Create ATS Approved Resume</button>
     </div>
 
     <div class="no-print" style="position:fixed; top:14px; left:16px; z-index:40; display:flex; align-items:center; gap:12px;">
@@ -65,7 +60,6 @@
         🎉 Payment successful! Premium access activated.
     </div>
 
-    <!-- ONE-TIME PRE-PRINT TIP: Chrome/Edge add their own header/footer margin unless the user disables it in the print dialog. No CSS can override this browser dialog setting, so we surface a clear instruction right before print opens. -->
     <div id="printTipBanner" class="hidden fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-blue-950 border border-blue-600 text-blue-100 px-5 py-4 rounded-xl text-xs font-semibold shadow-2xl no-print max-w-sm text-center">
         📌 For a perfect print/PDF layout: in the print window, click <strong>"More settings"</strong>, set <strong>Margins → None</strong>, and <strong>uncheck "Headers and footers"</strong>. This is a one-time browser setting.
     </div>
@@ -77,7 +71,7 @@
             <div class="grid grid-cols-5 bg-slate-900 text-center text-xs font-bold border-b border-slate-700 tracking-wide">
                 <button id="tabBtn-1" onclick="switchSection(1)" class="py-3 text-blue-400 border-b-2 border-blue-500 transition-all">Personal</button>
                 <button id="tabBtn-2" onclick="switchSection(2)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Summary</button>
-                <button id="tabBtn-3" onclick="switchSection(3)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Experience</button>
+                <button id="tabBtn-3" onclick="switchSection(3)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Exp & Projects</button>
                 <button id="tabBtn-4" onclick="switchSection(4)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Education</button>
                 <button id="tabBtn-5" onclick="switchSection(5)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Skills / AI</button>
             </div>
@@ -91,7 +85,7 @@
                         <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Auto-fills form inputs instantly via connected Gemini AI processing.</p>
                     </div>
                     <div class="flex items-center justify-between pt-2">
-                        <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal Identity Profile</h3>
+                        <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
                         <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
                     </div>
                     <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700 space-y-2">
@@ -103,17 +97,14 @@
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label><input type="text" id="formName" oninput="syncFormStateToEngine()" placeholder="John Doe" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Target Designation</label><input type="text" id="formTitle" oninput="syncFormStateToEngine()" placeholder="Data Analyst" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Target Designation</label><input type="text" id="formTitle" oninput="syncFormStateToEngine()" placeholder="Data Analyst / Engineer" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label><input type="email" id="formEmail" oninput="syncFormStateToEngine()" placeholder="email@domain.com" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number</label><input type="text" id="formMobile" oninput="syncFormStateToEngine()" placeholder="+91 98765 43210" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">LinkedIn Profile</label><input type="url" id="formLinkedIn" oninput="syncFormStateToEngine()" placeholder="linkedin.com/in/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">GitHub Portfolio</label><input type="url" id="formGitHub" oninput="syncFormStateToEngine()" placeholder="github.com/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Father's Name</label><input type="text" id="formFatherName" oninput="syncFormStateToEngine()" placeholder="Father's Name" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">GitHub / Tech Repo</label><input type="url" id="formGitHub" oninput="syncFormStateToEngine()" placeholder="github.com/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Portfolio / Live URL</label><input type="url" id="formPortfolio" oninput="syncFormStateToEngine()" placeholder="yourwebsite.com / dashboard link" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Location Address</label><input type="text" id="formAddress" oninput="syncFormStateToEngine()" placeholder="City, State, India" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Gender Structure</label><select id="formGender" onchange="syncFormStateToEngine()" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"><option value="">Select Gender</option><option value="Male">Male</option><option value="Female">Female</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Date of Birth</label><input type="text" id="formDOB" oninput="syncFormStateToEngine()" placeholder="DD/MM/YYYY" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Marital Status</label><select id="formMarital" onchange="syncFormStateToEngine()" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"><option value="">Select Status</option><option value="Single">Single</option><option value="Married">Married</option></select></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Expected Remuneration Target</label><input type="text" id="formSalary" oninput="syncFormStateToEngine()" placeholder="Negotiable" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-400 mb-1">Languages Known (Comma Separated)</label><input type="text" id="formLanguages" oninput="syncFormStateToEngine()" placeholder="English, Hindi, Bengali (Professional Working Proficiency)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                     </div>
                 </div>
 
@@ -128,12 +119,25 @@
                     <textarea id="formSummary" oninput="syncFormStateToEngine()" rows="8" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-slate-300 font-sans focus:outline-none focus:border-blue-500" placeholder="Review generated string maps configurations here..."></textarea>
                 </div>
 
-                <div id="sectionPanel-3" class="space-y-4 hidden">
-                    <div class="flex items-center justify-between border-b border-slate-700 pb-2">
-                        <h3 class="text-base font-bold text-slate-200">💼 Professional Experience Timeline</h3>
-                        <button type="button" onclick="addNewExperienceNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Experience</button>
+                <div id="sectionPanel-3" class="space-y-6 hidden">
+                    <div class="space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-2">
+                            <h3 class="text-base font-bold text-slate-200">💼 Professional Experience Timeline</h3>
+                            <button type="button" onclick="addNewExperienceNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Experience</button>
+                        </div>
+                        <div id="experienceDynamicFormWrapper" class="space-y-4"></div>
                     </div>
-                    <div id="experienceDynamicFormWrapper" class="space-y-4"></div>
+
+                    <div class="space-y-4 pt-4 border-t border-slate-700">
+                        <div class="flex items-center justify-between border-b border-slate-700 pb-2">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-200">💻 Key Technical Projects & Build Repositories</h3>
+                                <p class="text-[10px] text-slate-400">Essential for ATS keyword matching in technical & analytical roles.</p>
+                            </div>
+                            <button type="button" onclick="addNewProjectNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Project</button>
+                        </div>
+                        <div id="projectsDynamicFormWrapper" class="space-y-4"></div>
+                    </div>
                 </div>
 
                 <div id="sectionPanel-4" class="space-y-4 hidden">
@@ -146,7 +150,7 @@
 
                 <div id="sectionPanel-5" class="hidden space-y-4">
                     <h3 class="text-base font-bold text-slate-200">🛠️ Technical Core Skills Set</h3>
-                    <div><label class="block text-xs font-semibold text-slate-400 mb-1">Core Professional Competencies (Comma Separated)</label><input type="text" id="formSkillsList" oninput="syncFormStateToEngine()" placeholder="e.g. Power BI, SQL, Advanced Excel, Oracle ERP" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                    <div><label class="block text-xs font-semibold text-slate-400 mb-1">Core Professional Competencies (Comma Separated)</label><input type="text" id="formSkillsList" oninput="syncFormStateToEngine()" placeholder="e.g. Power BI, SQL, Advanced Excel, Oracle ERP, Machine Learning" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                     <div class="pt-4 border-t border-slate-700 space-y-3">
                         <div class="flex items-center justify-between"><h4 class="text-sm font-bold text-slate-300">📜 Professional Certifications (Optional)</h4><button type="button" onclick="addNewCertificationNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Certification</button></div>
                         <div id="certificationsDynamicFormWrapper" class="space-y-3"></div>
@@ -179,7 +183,7 @@
                     <div id="chk-ident" class="flex items-center gap-1 text-red-400">❌ Name Staged</div>
                     <div id="chk-summary" class="flex items-center gap-1 text-red-400">❌ Summary Depth</div>
                     <div id="chk-social" class="flex items-center gap-1 text-red-400">❌ Links Connected</div>
-                    <div id="chk-skills" class="flex items-center gap-1 text-red-400">❌ Skills Array</div>
+                    <div id="chk-skills" class="flex items-center gap-1 text-red-400">❌ Skills & Projects</div>
                 </div>
             </div>
 
@@ -202,7 +206,6 @@
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
-
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
             </div>
@@ -211,8 +214,6 @@
 
     <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
-
-            <!-- SCREEN 1: Choose Plan -->
             <div id="payScreen1">
                 <div class="text-center mb-5">
                     <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
@@ -235,7 +236,6 @@
                 </div>
             </div>
 
-            <!-- SCREEN 2: Enter Payment ID after paying -->
             <div id="payScreen2" class="hidden">
                 <div class="text-center mb-5">
                     <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">✅</div>
@@ -252,36 +252,26 @@
                     <button onclick="verifyPaymentAndActivate()" id="verifyBtn" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Activate Access ✓</button>
                 </div>
             </div>
-
         </div>
     </div>
 
 <script>
-// ── SYSTEM PLATFORM CREDENTIAL KEYS WINDOWS ──────────────────────────────────
-// Payment via Razorpay Payment Links — no key needed client-side
-
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
 let engineState = {
     activeSectionTab: 1, activeLayoutTemplateID: 1,
     globalCachedProfileImageStream: "", selectedSubscriptionValue: 19,
-    personal: { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", fatherName: "", address: "", gender: "", dob: "", marital: "", salary: "" },
-    summary: "", experience: [], education: [], certifications: [], skills: []
+    personal: { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" },
+    summary: "", experience: [], projects: [], education: [], certifications: [], skills: []
 };
 
-function syncFormStateToEngine() {
-    runMasterManualSyncAndGenerate();
-}
+function syncFormStateToEngine() { runMasterManualSyncAndGenerate(); }
 
 function checkActiveSubscriptionPass() {
     const passExpiry = localStorage.getItem('dpd_pass_expiry');
     if (passExpiry) {
-        const currentTime = Date.now();
-        if (currentTime < parseInt(passExpiry, 10)) {
-            return true;
-        }
+        if (Date.now() < parseInt(passExpiry, 10)) return true;
         localStorage.removeItem('dpd_pass_expiry');
-        ;
     }
     return false;
 }
@@ -291,26 +281,21 @@ function _getAccessLabel() {
     if (!passExpiry) return 'Free mode';
     const expiry = parseInt(passExpiry, 10);
     if (isNaN(expiry) || Date.now() >= expiry) return 'Free mode';
-
-    const diffMs = expiry - Date.now();
-    const days = Math.floor(diffMs / (24 * 60 * 60 * 1000));
+    const days = Math.floor((expiry - Date.now()) / (24 * 60 * 60 * 1000));
     return days > 0 ? `Premium ${days}d left` : 'Premium active';
 }
 
 function renderSubscriptionStatusIndicator() {
-    // Hide watermark always — premium users paid, free users get clean resume too
     const wm = document.getElementById('dpdWatermark');
     if (wm) wm.style.display = 'none';
     const badge = document.getElementById('subscriptionStatusBadge');
     if (!badge) return;
     if (checkActiveSubscriptionPass()) {
         badge.innerText = _getAccessLabel();
-        badge.style.background = '#065f46';
-        badge.style.color = '#d1fae5';
+        badge.style.background = '#065f46'; badge.style.color = '#d1fae5';
     } else {
         badge.innerText = 'Free mode';
-        badge.style.background = '#1e293b';
-        badge.style.color = '#cbd5e1';
+        badge.style.background = '#1e293b'; badge.style.color = '#cbd5e1';
     }
 }
 
@@ -325,25 +310,24 @@ function triggerNextSectionNavigationStep() { switchSection(engineState.activeSe
 
 function clearAllFormInputStateData() {
     if(!confirm("Are you sure you want to scrub all fields back to a blank template?")) return;
-    engineState.personal = { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", fatherName: "", address: "", gender: "", dob: "", marital: "", salary: "" };
-    engineState.summary = ""; engineState.experience = []; engineState.education = []; engineState.certifications = []; engineState.skills = [];
+    engineState.personal = { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" };
+    engineState.summary = ""; engineState.experience = []; engineState.projects = []; engineState.education = []; engineState.certifications = []; engineState.skills = [];
     engineState.globalCachedProfileImageStream = "";
     
     document.getElementById('formName').value = ""; document.getElementById('formTitle').value = "";
     document.getElementById('formEmail').value = ""; document.getElementById('formMobile').value = "";
     document.getElementById('formLinkedIn').value = ""; document.getElementById('formGitHub').value = "";
-    document.getElementById('formFatherName').value = ""; document.getElementById('formAddress').value = "";
-    document.getElementById('formDOB').value = ""; document.getElementById('formSalary').value = "";
-    document.getElementById('formSummary').value = ""; document.getElementById('formSkillsList').value = "";
-    document.getElementById('rawContentData').value = ""; document.getElementById('imageAssetUploader').value = "";
+    document.getElementById('formPortfolio').value = ""; document.getElementById('formAddress').value = "";
+    document.getElementById('formLanguages').value = ""; document.getElementById('formSummary').value = "";
+    document.getElementById('formSkillsList').value = ""; document.getElementById('rawContentData').value = "";
+    document.getElementById('imageAssetUploader').value = "";
     
-    renderExperienceFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
+    renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     executeMasterCompilationRenderPipeline();
 }
 
 function executeClientFileExtraction(event) {
-    const fileInput = event.target;
-    const file = fileInput.files[0];
+    const file = event.target.files[0];
     const fb = document.getElementById('extractorStatusFeedback');
     if (!file) return;
     fb.innerText = "Extracting binary stream layers..."; fb.className = "text-[10px] text-yellow-400 italic font-semibold";
@@ -363,10 +347,8 @@ function executeClientFileExtraction(event) {
                         if (!lineMap[y]) lineMap[y] = [];
                         lineMap[y].push({ x: item.transform[4], str: item.str });
                     });
-                    const ys = Object.keys(lineMap).map(Number).sort((a,b) => b - a);
-                    ys.forEach(y => {
-                        const lineItems = lineMap[y].sort((a,b) => a.x - b.x);
-                        const lineStr = lineItems.map(i => i.str).join(' ').trim();
+                    Object.keys(lineMap).map(Number).sort((a,b) => b - a).forEach(y => {
+                        const lineStr = lineMap[y].sort((a,b) => a.x - b.x).map(i => i.str).join(' ').trim();
                         if (lineStr) text += lineStr + "\n";
                     });
                     text += "\n";
@@ -374,11 +356,8 @@ function executeClientFileExtraction(event) {
                 document.getElementById('rawContentData').value = text.trim();
                 fb.innerText = "✅ PDF extracted: " + file.name; fb.className = "text-[10px] text-emerald-400 font-bold";
                 smartParseAndFill(text.trim());
-            } catch(err) {
-                fb.innerText = "❌ Error reading PDF."; fb.className = "text-[10px] text-red-400 font-medium";
-            } finally {
-                fileInput.value = "";
-            }
+            } catch(err) { fb.innerText = "❌ Error reading PDF."; fb.className = "text-[10px] text-red-400 font-medium"; }
+            finally { event.target.value = ""; }
         };
         reader.readAsArrayBuffer(file);
     } else if (file.name.toLowerCase().endsWith('.docx')) {
@@ -389,8 +368,8 @@ function executeClientFileExtraction(event) {
                     fb.innerText = "✅ Word doc extracted: " + file.name; fb.className = "text-[10px] text-emerald-400 font-bold";
                     smartParseAndFill(res.value.trim());
                 } else { fb.innerText = "⚠️ No text found."; fb.className = "text-[10px] text-red-400 font-medium"; }
-            }).catch(err => { fb.innerText = "❌ Error reading Word doc."; fb.className = "text-[10px] text-red-400 font-medium"; })
-            .finally(() => { fileInput.value = ""; });
+            }).catch(() => { fb.innerText = "❌ Error reading Word doc."; fb.className = "text-[10px] text-red-400 font-medium"; })
+            .finally(() => { event.target.value = ""; });
         };
         reader.readAsArrayBuffer(file);
     } else {
@@ -398,7 +377,7 @@ function executeClientFileExtraction(event) {
             document.getElementById('rawContentData').value = e.target.result;
             fb.innerText = "✅ Text loaded: " + file.name; fb.className = "text-[10px] text-emerald-400 font-bold";
             smartParseAndFill(e.target.result);
-            fileInput.value = "";
+            event.target.value = "";
         };
         reader.readAsText(file);
     }
@@ -413,33 +392,21 @@ function runDirectPayloadSyncExtraction() {
 function extractGeminiText(response) {
     if (!response) return "";
     if (typeof response === 'string') return response;
-    return response?.candidates?.[0]?.content?.parts?.[0]?.text || response?.text || response?.candidates?.[0]?.content?.text || "";
+    return response?.candidates?.[0]?.content?.parts?.[0]?.text || response?.text || "";
 }
 
-function stripCodeFences(value) {
-    return value
-        .replace(/```(?:json)?\s*/gi, '')
-        .replace(/\s*```$/gi, '')
-        .trim();
-}
+function stripCodeFences(value) { return value.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim(); }
 
 async function smartParseAndFill(raw) {
-    const overlay = document.getElementById('parsingOverlay');
-    const status  = document.getElementById('parsingStatus');
-    const fb      = document.getElementById('extractorStatusFeedback');
+    const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus'), fb = document.getElementById('extractorStatusFeedback');
     if (overlay) overlay.classList.add('active');
-    if (status)  status.innerText = "Running deep structural semantic alignment maps...";
+    if (status) status.innerText = "Running deep structural semantic alignment maps...";
 
     try {
         const response = await fetch('/api/gemini', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"fatherName\": \"\", \"address\": \"\", \"gender\": \"\", \"dob\": \"\", \"marital\": \"\", \"salary\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw
-                    }]
-                }]
+                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
             })
         });
 
@@ -448,23 +415,16 @@ async function smartParseAndFill(raw) {
 
         let jsonText = stripCodeFences(extractGeminiText(data));
         let parsedResult = null;
-        try {
-            parsedResult = JSON.parse(jsonText);
-        } catch (jsonErr) {
-            console.warn('Gemini text parse failed, trying fallback parse:', jsonErr);
-        }
+        try { parsedResult = JSON.parse(jsonText); } catch (e) {}
 
         if (parsedResult && typeof parsedResult === 'object') {
             fillStateFromParsed(parsedResult);
             if (fb) { fb.innerText = "✅ AI parsed & filled via Gemini."; fb.className = "text-[10px] text-emerald-400 font-bold"; }
             if (overlay) overlay.classList.remove('active');
-            switchSection(1);
-            return;
+            switchSection(1); return;
         }
-
         throw new Error('Parsed Gemini result was not valid JSON');
     } catch (err) {
-        console.error("Gemini parse failed:", err);
         if (status) status.innerText = "AI unavailable — switching to built-in parser...";
         if (fb) { fb.innerText = "⚠️ Gemini AI failed — using local parser instead."; fb.className = "text-[10px] text-amber-400 font-bold"; }
     }
@@ -472,13 +432,9 @@ async function smartParseAndFill(raw) {
     if (status) status.innerText = "Reading structural data blocks (local parser)...";
     setTimeout(function() {
         try {
-            const result = parseResume(raw);
-            fillStateFromParsed(result);
+            fillStateFromParsed(parseResume(raw));
             if (fb) { fb.innerText = "✅ Local resume parse completed."; fb.className = "text-[10px] text-emerald-400 font-bold"; }
-        } catch(e) {
-            console.error("Local Parse error:", e);
-            if (fb) { fb.innerText = "❌ Local parse failed."; fb.className = "text-[10px] text-red-400 font-medium"; }
-        }
+        } catch(e) { if (fb) { fb.innerText = "❌ Local parse failed."; fb.className = "text-[10px] text-red-400 font-medium"; } }
         if (overlay) overlay.classList.remove('active');
         switchSection(1);
     }, 80);
@@ -486,91 +442,62 @@ async function smartParseAndFill(raw) {
 
 function reflowToLines(input) {
     let t = input;
-    const HEADING_WORDS = [
-        'PROFESSIONAL\\s+SUMMARY','CAREER\\s+OBJECTIVE','SUMMARY','OBJECTIVE','PROFILE',
-        'WORK\\s+EXPERIENCE','PROFESSIONAL\\s+EXPERIENCE','EMPLOYMENT\\s+HISTORY','EXPERIENCE',
-        'EDUCATION','ACADEMIC\\s+ACCOMPLISHMENTS','KEY\\s+SKILLS','CORE\\s+COMPETENC\\w*','SKILLS',
-        'CERTIFICATIONS?','FATHER','DOB','GENDER','MARITAL','EXPECTED'
-    ];
-    const headingRe = new RegExp('\\b(' + HEADING_WORDS.join('|') + ')\\b', 'gi');
-    t = t.replace(headingRe, '\n$1\n');
+    const HEADING_WORDS = ['PROFESSIONAL\\s+SUMMARY','CAREER\\s+OBJECTIVE','SUMMARY','OBJECTIVE','WORK\\s+EXPERIENCE','EXPERIENCE','PROJECTS?','KEY\\s+PROJECTS','TECHNICAL\\s+PROJECTS','EDUCATION','KEY\\s+SKILLS','SKILLS','CERTIFICATIONS?','LANGUAGES?'];
+    t = t.replace(new RegExp('\\b(' + HEADING_WORDS.join('|') + ')\\b', 'gi'), '\n$1\n');
     t = t.replace(/\s+(?=[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g, '\n');
     t = t.replace(/\s+(?=\+?\d[\d\-\s]{6,14}\d(?!\d))/g, '\n');
-    t = t.replace(/\s+([SDCW]\/O\b)/gi, '\n$1');
-    t = t.replace(/\s*([•\-*►▪▸→✓✔])\s*/g, '\n$1 ');
-    return t.replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+    return t.replace(/\s*([•\-*►▪▸→✓✔])\s*/g, '\n$1 ').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
 }
 
 function parseResume(raw) {
     let text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n');
-    const realLineCount = text.split('\n').filter(l => l.trim().length > 0).length;
-    if (realLineCount < 10 || (text.length / Math.max(realLineCount, 1)) > 250) text = reflowToLines(text);
-    
-    const allLines = text.split('\n');
+    if (text.split('\n').filter(l => l.trim().length > 0).length < 10) text = reflowToLines(text);
     const upperText = text.toUpperCase();
     
     const markers = [
         { id: "SUMMARY", idx: upperText.search(/SUMMARY|OBJECTIVE|PROFESSIONAL SUMMARY/i) },
-        { id: "EXPERIENCE", idx: upperText.search(/WORK EXPERIENCE|EXPERIENCE|EMPLOYMENT HISTORY|HISTORY/i) },
+        { id: "EXPERIENCE", idx: upperText.search(/WORK EXPERIENCE|EXPERIENCE|EMPLOYMENT HISTORY/i) },
+        { id: "PROJECTS", idx: upperText.search(/PROJECTS?|KEY PROJECTS|TECHNICAL PROJECTS/i) },
         { id: "SKILLS", idx: upperText.search(/KEY SKILLS|SKILLS|CORE COMPETENCIES/i) },
         { id: "EDUCATION", idx: upperText.search(/EDUCATION|ACADEMIC ACCOMPLISHMENTS/i) },
-        { id: "CERTIFICATIONS", idx: upperText.search(/CERTIFICATION|CERTIFICATIONS|PROFESSIONAL CREDENTIALS/i) }
+        { id: "CERTIFICATIONS", idx: upperText.search(/CERTIFICATION|CERTIFICATIONS/i) }
     ].filter(m => m.idx !== -1).sort((a, b) => a.idx - b.idx);
 
     const sectionsData = {};
     markers.forEach((marker, index) => {
-        let start = marker.idx;
-        let nextMarker = markers[index + 1];
-        let end = nextMarker ? nextMarker.idx : text.length;
-        sectionsData[marker.id] = text.substring(start, end).trim(); 
+        let end = markers[index + 1] ? markers[index + 1].idx : text.length;
+        sectionsData[marker.id] = text.substring(marker.idx, end).trim(); 
     });
 
     let name = "", title = "";
+    const allLines = text.split('\n');
     for (let i = 0; i < Math.min(allLines.length, 12); i++) {
         let l = allLines[i].trim();
-        if (l.length > 3 && l.length < 45 && !/@/.test(l) && !/^\+?\d/.test(l) && !/RESUME|CURRICULUM|CONTACT/i.test(l)) {
-            if (!name) { name = l; }
-            else if (!title && l.length < 60 && !/FATHER|DOB|ADDRESS|LOCATION|PHONE/i.test(l)) { title = l; break; }
+        if (l.length > 3 && l.length < 45 && !/@/.test(l) && !/^\+?\d/.test(l) && !/RESUME|CURRICULUM/i.test(l)) {
+            if (!name) name = l; else if (!title && l.length < 60) { title = l; break; }
         }
     }
 
-    const emailMatch   = text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/);
-    const phoneMatch   = text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}\b/);
-    const linkedinMatch= text.match(/linkedin\.com\/in\/[a-zA-Z0-9_\-]+/i);
-    const githubMatch  = text.match(/github\.com\/[a-zA-Z0-9_\-]+/i);
-
-    const email    = emailMatch  ? emailMatch[0].trim()  : "";
-    const mobile   = phoneMatch  ? phoneMatch[0].trim() : "";
-    const linkedin = linkedinMatch ? linkedinMatch[0].trim() : "";
-    const github   = githubMatch   ? githubMatch[0].trim()  : "";
+    const email = (text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) || [""])[0].trim();
+    const mobile = (text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}\b/) || [""])[0].trim();
+    const linkedin = (text.match(/linkedin\.com\/in\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
+    const github = (text.match(/github\.com\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
+    const portfolio = (text.match(/(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\/(?:portfolio|dashboard|[a-zA-Z0-9_\-]+)/i) || [""])[0].trim();
 
     function extractLabel(patterns) {
         for (const pat of patterns) {
-            const re = new RegExp(pat + '\\s*[:\-—]\\s*([^\\n]{1,120})', 'i');
-            const m = text.match(re);
-            if (m) return m[1].replace(/\s+/g, ' ').trim().split("  ")[0];
+            const m = text.match(new RegExp(pat + '\\s*[:\-—]\\s*([^\\n]{1,120})', 'i'));
+            if (m) return m[1].replace(/\s+/g, ' ').trim();
         }
         return "";
     }
     
-    let fatherName = extractLabel(['father[\'s]*\\s*name','father','guardian']);
-    if (!fatherName) {
-        const soMatch = text.match(/(?:S\/O|D\/O|W\/O|SON OF)\s*[:\-—]?\s*([A-Za-z\s.]{3,40})/i);
-        if (soMatch) fatherName = soMatch[1].trim();
-    }
-    
-    const dob        = extractLabel(['d\\.?o\\.?b\\.?','date\\s+of\\s+birth','birth\\s+date']);
-    const genderRaw  = extractLabel(['gender','sex']);
-    const gender     = /female/i.test(genderRaw) ? "Female" : /male/i.test(genderRaw) ? "Male" : "";
-    const maritalRaw = extractLabel(['marital\\s+status','marital']);
-    const marital    = /married/i.test(maritalRaw) ? "Married" : /single/i.test(maritalRaw) ? "Single" : "";
-    const salary     = extractLabel(['expected\\s+salary','salary\\s+expected']);
-    let address      = extractLabel(['address','location']);
-
+    const languages = extractLabel(['languages?\\s*known','languages?','linguistic']);
+    let address = extractLabel(['address','location','city']);
     if (!address) {
-        for (let i = 0; i < allLines.length; i++) {
-            let lt = allLines[i].trim();
-            if (lt.length > 8 && lt.length < 120 && !/@/.test(lt) && (/india/i.test(lt) || /\b\d{6}\b/.test(lt) || /bengal|delhi|mumbai|colony|nagar/i.test(lt))) { address = lt; break; }
+        for (let l of allLines) {
+            let lt = l.trim();
+            if (lt.length > 8 && lt.length < 120 && !/@/.test(lt) && (/india|bengal|delhi|mumbai|bangalore|pune|hyderabad/i.test(lt) || /\b\d{6}\b/.test(lt))) { address = lt; break; }
         }
     }
 
@@ -579,34 +506,39 @@ function parseResume(raw) {
     const skills = [];
     if (sectionsData["SKILLS"]) {
         sectionsData["SKILLS"].split('\n').slice(1).forEach(row => {
-            row.replace(/^[•\-*]\s*/, '').split(/[,|•|;]/).forEach(t => {
-                let s = t.trim(); if(s.length > 1 && s.length < 35) skills.push(s);
-            });
+            row.replace(/^[•\-*]\s*/, '').split(/[,|•|;]/).forEach(t => { if(t.trim().length > 1 && t.trim().length < 35) skills.push(t.trim()); });
         });
     }
 
     const experience = [];
     if (sectionsData["EXPERIENCE"]) {
-        let textRows = sectionsData["EXPERIENCE"].split('\n').slice(1).map(r => r.trim()).filter(r => r.length > 0);
         let currentExp = null;
-        textRows.forEach(row => {
-            let containsTimeline = /Present|\d{4}/i.test(row) && (row.includes('—') || row.includes('-'));
-            if (containsTimeline && !row.startsWith('•') && !row.startsWith('-')) {
+        sectionsData["EXPERIENCE"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => {
+            if (/Present|\d{4}/i.test(row) && (row.includes('—') || row.includes('-')) && !row.startsWith('•')) {
                 if (currentExp) experience.push(currentExp);
                 let slices = row.split(/[—–|-]/);
                 let comp = slices[0] ? slices[0].trim().split(/[,|•]/) : ["Company"];
                 currentExp = { company: comp[0].trim(), role: comp[1] ? comp[1].trim() : "Specialist", dates: slices.slice(1).join('—').trim(), duties: "" };
-            } else if (currentExp) {
-                currentExp.duties += (currentExp.duties ? " " : "") + row.replace(/^[•\-*]\s*/, '').trim();
-            }
+            } else if (currentExp) currentExp.duties += (currentExp.duties ? " " : "") + row.replace(/^[•\-*]\s*/, '').trim();
         });
         if (currentExp) experience.push(currentExp);
     }
 
+    const projects = [];
+    if (sectionsData["PROJECTS"]) {
+        let currentProj = null;
+        sectionsData["PROJECTS"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => {
+            if (!row.startsWith('•') && !row.startsWith('-') && row.length < 80) {
+                if (currentProj) projects.push(currentProj);
+                currentProj = { title: row, tools: "Analytical Tools", link: "", description: "" };
+            } else if (currentProj) currentProj.description += (currentProj.description ? " " : "") + row.replace(/^[•\-*]\s*/, '').trim();
+        });
+        if (currentProj) projects.push(currentProj);
+    }
+
     const education = [];
     if (sectionsData["EDUCATION"]) {
-        let textRows = sectionsData["EDUCATION"].split('\n').slice(1).map(r => r.trim()).filter(r => r.length > 0);
-        textRows.forEach(row => { 
+        sectionsData["EDUCATION"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => { 
             if (/\d{4}/.test(row) || /degree|bachelor|master|university|college|school/i.test(row)) {
                 let yr = row.match(/\d{4}/)?.[0] || "Year";
                 let pieces = row.replace(/\d{4}/, '').split(/[—–|,]/);
@@ -624,135 +556,96 @@ function parseResume(raw) {
     }
 
     if (experience.length === 0) experience.push({ company:"", role:"", dates:"", duties:"" });
+    if (projects.length === 0) projects.push({ title:"", tools:"", link:"", description:"" });
     if (education.length === 0) education.push({ school:"", degree:"", year:"" });
 
-    return { name, title, email, mobile, linkedin, github, fatherName, dob, gender, marital, salary, address, summary, skills, experience, education, certifications };
+    return { name, title, email, mobile, linkedin, github, portfolio, address, languages, summary, skills, experience, projects, education, certifications };
 }
 
 function fillStateFromParsed(p) {
-    const sourceData = p.personal || p || {};
+    const s = p.personal || p || {};
     engineState.personal = {
-        name: sourceData.name || sourceData.fullName || sourceData.name || "",
-        title: sourceData.title || sourceData.designation || "",
-        email: sourceData.email || "",
-        mobile: sourceData.mobile || sourceData.phone || sourceData.contact || "",
-        linkedin: sourceData.linkedin || sourceData.linkedIn || "",
-        github: sourceData.github || "",
-        fatherName: sourceData.fatherName || sourceData.father || "",
-        address: sourceData.address || sourceData.location || "",
-        gender: sourceData.gender || "",
-        dob: sourceData.dob || sourceData.dateOfBirth || "",
-        marital: sourceData.marital || sourceData.maritalStatus || "",
-        salary: sourceData.salary || sourceData.expectedSalary || ""
+        name: s.name || s.fullName || "", title: s.title || s.designation || "",
+        email: s.email || "", mobile: s.mobile || s.phone || "",
+        linkedin: s.linkedin || s.linkedIn || "", github: s.github || "",
+        portfolio: s.portfolio || s.website || "", address: s.address || s.location || "",
+        languages: s.languages || s.languagesKnown || ""
     };
-    engineState.summary        = p.summary || p.summaryText || "";
-    engineState.skills         = Array.isArray(p.skills) ? p.skills : String(p.skills || "").split(',').map(v => v.trim()).filter(Boolean);
-    engineState.experience     = Array.isArray(p.experience) ? p.experience : [];
-    engineState.education      = Array.isArray(p.education) ? p.education : [];
+    engineState.summary = p.summary || "";
+    engineState.skills = Array.isArray(p.skills) ? p.skills : String(p.skills || "").split(',').map(v => v.trim()).filter(Boolean);
+    engineState.experience = Array.isArray(p.experience) ? p.experience : [];
+    engineState.projects = Array.isArray(p.projects) ? p.projects : [];
+    engineState.education = Array.isArray(p.education) ? p.education : [];
     engineState.certifications = Array.isArray(p.certifications) ? p.certifications : [];
 
-    if (document.getElementById('formName')) document.getElementById('formName').value = engineState.personal.name;
-    if (document.getElementById('formTitle')) document.getElementById('formTitle').value = engineState.personal.title;
-    if (document.getElementById('formEmail')) document.getElementById('formEmail').value = engineState.personal.email;
-    if (document.getElementById('formMobile')) document.getElementById('formMobile').value = engineState.personal.mobile;
-    if (document.getElementById('formLinkedIn')) document.getElementById('formLinkedIn').value = engineState.personal.linkedin;
-    if (document.getElementById('formGitHub')) document.getElementById('formGitHub').value = engineState.personal.github;
-    if (document.getElementById('formFatherName')) document.getElementById('formFatherName').value = engineState.personal.fatherName;
-    if (document.getElementById('formAddress')) document.getElementById('formAddress').value = engineState.personal.address;
-    if (document.getElementById('formGender')) document.getElementById('formGender').value = engineState.personal.gender || '';
-    if (document.getElementById('formDOB')) document.getElementById('formDOB').value = engineState.personal.dob;
-    if (document.getElementById('formMarital')) document.getElementById('formMarital').value = engineState.personal.marital || '';
-    if (document.getElementById('formSalary')) document.getElementById('formSalary').value = engineState.personal.salary;
-    if (document.getElementById('formSummary')) document.getElementById('formSummary').value = engineState.summary;
-    if (document.getElementById('formSkillsList')) document.getElementById('formSkillsList').value = engineState.skills.join(', ');
+    const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
+    setVal('formName', engineState.personal.name); setVal('formTitle', engineState.personal.title);
+    setVal('formEmail', engineState.personal.email); setVal('formMobile', engineState.personal.mobile);
+    setVal('formLinkedIn', engineState.personal.linkedin); setVal('formGitHub', engineState.personal.github);
+    setVal('formPortfolio', engineState.personal.portfolio); setVal('formAddress', engineState.personal.address);
+    setVal('formLanguages', engineState.personal.languages); setVal('formSummary', engineState.summary);
+    setVal('formSkillsList', engineState.skills.join(', '));
 
-    renderExperienceFormInputs();
-    renderEducationFormInputs();
-    renderCertificationFormInputs();
+    renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     executeMasterCompilationRenderPipeline();
 }
 
 function runMasterManualSyncAndGenerate() {
-    if(document.getElementById('formName')) engineState.personal.name       = document.getElementById('formName').value.trim();
-    if(document.getElementById('formTitle')) engineState.personal.title      = document.getElementById('formTitle').value.trim();
-    if(document.getElementById('formEmail')) engineState.personal.email      = document.getElementById('formEmail').value.trim();
-    if(document.getElementById('formMobile')) engineState.personal.mobile     = document.getElementById('formMobile').value.trim();
-    if(document.getElementById('formLinkedIn')) engineState.personal.linkedin   = document.getElementById('formLinkedIn').value.trim();
-    if(document.getElementById('formGitHub')) engineState.personal.github     = document.getElementById('formGitHub').value.trim();
-    if(document.getElementById('formFatherName')) engineState.personal.fatherName = document.getElementById('formFatherName').value.trim();
-    if(document.getElementById('formAddress')) engineState.personal.address    = document.getElementById('formAddress').value.trim();
-    if(document.getElementById('formGender')) engineState.personal.gender     = document.getElementById('formGender').value;
-    if(document.getElementById('formDOB')) engineState.personal.dob        = document.getElementById('formDOB').value.trim();
-    if(document.getElementById('formMarital')) engineState.personal.marital    = document.getElementById('formMarital').value;
-    if(document.getElementById('formSalary')) engineState.personal.salary     = document.getElementById('formSalary').value.trim();
-    if(document.getElementById('formSummary')) engineState.summary             = document.getElementById('formSummary').value.trim();
+    const getVal = id => document.getElementById(id) ? document.getElementById(id).value.trim() : "";
+    engineState.personal.name = getVal('formName'); engineState.personal.title = getVal('formTitle');
+    engineState.personal.email = getVal('formEmail'); engineState.personal.mobile = getVal('formMobile');
+    engineState.personal.linkedin = getVal('formLinkedIn'); engineState.personal.github = getVal('formGitHub');
+    engineState.personal.portfolio = getVal('formPortfolio'); engineState.personal.address = getVal('formAddress');
+    engineState.personal.languages = getVal('formLanguages'); engineState.summary = getVal('formSummary');
     
-    if(document.getElementById('formSkillsList')) {
-        let skillsInputRaw = document.getElementById('formSkillsList').value;
-        engineState.skills = skillsInputRaw.split(',').map(v => v.trim()).filter(v => v);
-    }
+    if(document.getElementById('formSkillsList')) engineState.skills = document.getElementById('formSkillsList').value.split(',').map(v => v.trim()).filter(Boolean);
 
     engineState.experience = [];
     document.querySelectorAll('#experienceDynamicFormWrapper > div').forEach(card => {
         const inp = card.querySelectorAll('input, textarea');
-        if (inp.length >= 4) {
-            engineState.experience.push({ company: inp[0].value.trim(), role: inp[1].value.trim(), dates: inp[2].value.trim(), duties: inp[3].value.trim() });
-        }
+        if (inp.length >= 4) engineState.experience.push({ company: inp[0].value.trim(), role: inp[1].value.trim(), dates: inp[2].value.trim(), duties: inp[3].value.trim() });
+    });
+
+    engineState.projects = [];
+    document.querySelectorAll('#projectsDynamicFormWrapper > div').forEach(card => {
+        const inp = card.querySelectorAll('input, textarea');
+        if (inp.length >= 4) engineState.projects.push({ title: inp[0].value.trim(), tools: inp[1].value.trim(), link: inp[2].value.trim(), description: inp[3].value.trim() });
     });
 
     engineState.education = [];
     document.querySelectorAll('#educationDynamicFormWrapper > div').forEach(card => {
         const inp = card.querySelectorAll('input');
-        if (inp.length >= 3) {
-            engineState.education.push({ school: inp[0].value.trim(), degree: inp[1].value.trim(), year: inp[2].value.trim() });
-        }
+        if (inp.length >= 3) engineState.education.push({ school: inp[0].value.trim(), degree: inp[1].value.trim(), year: inp[2].value.trim() });
     });
 
     engineState.certifications = [];
     document.querySelectorAll('#certificationsDynamicFormWrapper > div').forEach(card => {
         const inp = card.querySelectorAll('input');
-        if (inp.length >= 2) {
-            engineState.certifications.push({ name: inp[0].value.trim(), issuer: inp[1].value.trim() });
-        }
+        if (inp.length >= 2) engineState.certifications.push({ name: inp[0].value.trim(), issuer: inp[1].value.trim() });
     });
 
     executeMasterCompilationRenderPipeline();
 }
 
 async function executeDynamicAiSummaryGeneration() {
-    const t = (document.getElementById('formTitle') ? document.getElementById('formTitle').value : "") || "Professional";
-    const tone = document.getElementById('formSummaryToneSelect') ? document.getElementById('formSummaryToneSelect').value : "Executive";
-    const sk = (document.getElementById('formSkillsList') ? document.getElementById('formSkillsList').value : "");
-
-    const overlay = document.getElementById('parsingOverlay');
-    const status  = document.getElementById('parsingStatus');
+    const t = document.getElementById('formTitle')?.value || "Professional", tone = document.getElementById('formSummaryToneSelect')?.value || "Executive", sk = document.getElementById('formSkillsList')?.value || "";
+    const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus');
     if(overlay) overlay.classList.add('active');
     if(status) status.innerText = "Composing objective profile sequence...";
 
     try {
         const response = await fetch('/api/gemini', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{ parts: [{ text: `Write a short 3-4 sentence professional resume executive summary profile paragraph for a ${t} with core skills in: ${sk}. The tone should match a strictly ${tone} tone. Return raw plaintext only without labels or markdown blocks.` }] }]
-            })
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: `Write a short 3-4 sentence professional resume executive summary profile paragraph for a ${t} with core skills in: ${sk}. The tone should match a strictly ${tone} tone. Return raw plaintext only without labels or markdown blocks.` }] }] })
         });
         const data = await response.json();
-        if (data?.candidates?.[0]?.content?.parts?.[0]?.text) {
-            if(document.getElementById('formSummary')) document.getElementById('formSummary').value = data.candidates[0].content.parts[0].text.trim();
-        } else {
-            let textVal = `Performance-oriented ${t} equipped with critical cross-functional capabilities. Adept at handling operational workflows and driving execution loops cleanly across enterprise data environments using: ${sk || 'industry tools'}.`;
-            if(document.getElementById('formSummary')) document.getElementById('formSummary').value = textVal;
-        }
-        runMasterManualSyncAndGenerate();
-    } catch(err) {
-        console.error(err);
-        let textVal = `Performance-oriented ${t} equipped with critical cross-functional capabilities. Adept at handling operational workflows and driving execution loops cleanly across enterprise data environments using: ${sk || 'industry tools'}.`;
+        const textVal = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || `Performance-oriented ${t} equipped with critical cross-functional capabilities. Adept at handling operational workflows and driving execution loops cleanly across enterprise data environments using: ${sk || 'industry tools'}.`;
         if(document.getElementById('formSummary')) document.getElementById('formSummary').value = textVal;
         runMasterManualSyncAndGenerate();
-    } finally {
-        if(overlay) overlay.classList.remove('active');
-    }
+    } catch(err) {
+        if(document.getElementById('formSummary')) document.getElementById('formSummary').value = `Performance-oriented ${t} equipped with critical cross-functional capabilities. Adept at handling operational workflows and driving execution loops cleanly across enterprise data environments using: ${sk || 'industry tools'}.`;
+        runMasterManualSyncAndGenerate();
+    } finally { if(overlay) overlay.classList.remove('active'); }
 }
 
 function syncExpField(i,f,v) { if(!engineState.experience[i]) engineState.experience[i]={company:"",role:"",dates:"",duties:""}; engineState.experience[i][f]=v; runMasterManualSyncAndGenerate(); }
@@ -772,6 +665,24 @@ function renderExperienceFormInputs() {
 }
 function addNewExperienceNodeItem() { engineState.experience.push({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
 function deleteExperienceNodeItem(i) { engineState.experience.splice(i,1); renderExperienceFormInputs(); runMasterManualSyncAndGenerate(); }
+
+function syncProjField(i,f,v) { if(!engineState.projects[i]) engineState.projects[i]={title:"",tools:"",link:"",description:""}; engineState.projects[i][f]=v; runMasterManualSyncAndGenerate(); }
+function renderProjectFormInputs() {
+    const wrapper = document.getElementById('projectsDynamicFormWrapper');
+    if(!wrapper) return;
+    wrapper.innerHTML = engineState.projects.map((proj,idx) => `
+    <div class="bg-slate-900/40 p-4 rounded-xl border border-slate-700 relative space-y-3">
+        <button type="button" onclick="deleteProjectNodeItem(${idx})" class="absolute top-2 right-2 text-slate-500 hover:text-red-400 font-bold text-xs">✕ Delete</button>
+        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Project Title</label><input type="text" value="${esc(proj.title)}" oninput="syncProjField(${idx},'title',this.value)" placeholder="e.g. Sales Pipeline Analysis Dashboard" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
+        <div class="grid grid-cols-2 gap-3">
+            <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Tools / Tech Stack</label><input type="text" value="${esc(proj.tools)}" oninput="syncProjField(${idx},'tools',this.value)" placeholder="e.g. SQL, Power BI, Advanced Excel" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
+            <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Live URL / Repo Link</label><input type="text" value="${esc(proj.link)}" oninput="syncProjField(${idx},'link',this.value)" placeholder="github.com/username/project" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
+        </div>
+        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Key Outcomes & Implementation Details</label><textarea rows="3" oninput="syncProjField(${idx},'description',this.value)" placeholder="Built interactive dashboards analyzing 50k+ records to optimize supply chain inventory flow by 15%." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(proj.description)}</textarea></div>
+    </div>`).join('');
+}
+function addNewProjectNodeItem() { engineState.projects.push({title:"",tools:"",link:"",description:""}); renderProjectFormInputs(); }
+function deleteProjectNodeItem(i) { engineState.projects.splice(i,1); renderProjectFormInputs(); runMasterManualSyncAndGenerate(); }
 
 function syncEduField(i,f,v) { if(!engineState.education[i]) engineState.education[i]={school:"",degree:"",year:""}; engineState.education[i][f]=v; runMasterManualSyncAndGenerate(); }
 function renderEducationFormInputs() {
@@ -812,23 +723,23 @@ function calculateAndRenderAtsScoringMetrics() {
         if (pass) { score += (el.dataset.pts|0); el.className="flex items-center gap-1 text-emerald-400"; el.innerText="✅ "+passText; }
         else { el.className="flex items-center gap-1 text-red-400"; el.innerText="❌ "+failText; }
     };
-    if(document.getElementById('chk-ident')) document.getElementById('chk-ident').dataset.pts   = "20";
+    if(document.getElementById('chk-ident')) document.getElementById('chk-ident').dataset.pts = "20";
     if(document.getElementById('chk-summary')) document.getElementById('chk-summary').dataset.pts = "25";
-    if(document.getElementById('chk-social')) document.getElementById('chk-social').dataset.pts  = "15";
-    if(document.getElementById('chk-skills')) document.getElementById('chk-skills').dataset.pts  = "15";
+    if(document.getElementById('chk-social')) document.getElementById('chk-social').dataset.pts = "15";
+    if(document.getElementById('chk-skills')) document.getElementById('chk-skills').dataset.pts = "15";
     
-    let activeName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
-    let activeSummary = document.getElementById('formSummary') ? document.getElementById('formSummary').value.trim() : "";
-    let activeLinkedIn = document.getElementById('formLinkedIn') ? document.getElementById('formLinkedIn').value.trim() : "";
-    let activeGitHub = document.getElementById('formGitHub') ? document.getElementById('formGitHub').value.trim() : "";
+    let activeName = document.getElementById('formName')?.value.trim() || "";
+    let activeSummary = document.getElementById('formSummary')?.value.trim() || "";
+    let activeLinkedIn = document.getElementById('formLinkedIn')?.value.trim() || "";
+    let activeGitHub = document.getElementById('formGitHub')?.value.trim() || "";
+    let activePortfolio = document.getElementById('formPortfolio')?.value.trim() || "";
 
-    set('chk-ident',   activeName.length > 2, "Identity Staged", "Name Blank");
+    set('chk-ident', activeName.length > 2, "Identity Staged", "Name Blank");
     set('chk-summary', activeSummary.length > 25, "Summary Ready", "Summary Empty");
-    set('chk-social',  activeLinkedIn.length > 5 || activeGitHub.length > 5, "Links Connected", "Missing Links");
-    set('chk-skills',  (engineState.skills || []).length >= 1, "Skills Array Map", "Skills Empty");
+    set('chk-social', activeLinkedIn.length > 5 || activeGitHub.length > 5 || activePortfolio.length > 5, "Links Connected", "Missing Links");
+    set('chk-skills', (engineState.skills || []).length >= 1 || (engineState.projects || []).length >= 1, "Skills & Projects Ready", "Skills Empty");
     
-    const hasExp = (engineState.experience || []).some(e => (e.company || "").trim().length > 1);
-    if (hasExp) score += 25;
+    if ((engineState.experience || []).some(e => (e.company || "").trim().length > 1) || (engineState.projects || []).some(p => (p.title || "").trim().length > 1)) score += 25;
     score = Math.min(score, 100);
     
     if(document.getElementById('atsMeterTrackGauge')) document.getElementById('atsMeterTrackGauge').style.width = score + '%';
@@ -853,45 +764,40 @@ function executeMasterCompilationRenderPipeline() {
     let imgHTML = `<div class="w-24 h-28 bg-slate-100 border border-slate-200 rounded flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm"><span class="text-[9px] font-bold text-slate-400 uppercase">No Photo</span></div>`;
     if (engineState.globalCachedProfileImageStream) imgHTML = `<div class="w-24 h-28 border rounded flex-shrink-0 overflow-hidden shadow-sm" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
 
-    const canvasName    = (document.getElementById('formName') ? document.getElementById('formName').value.trim() : "") || "YOUR NAME";
-    const canvasTitle   = (document.getElementById('formTitle') ? document.getElementById('formTitle').value.trim() : "") || "Target Designation";
-    const canvasEmail   = (document.getElementById('formEmail') ? document.getElementById('formEmail').value.trim() : "") || "email@domain.com";
-    const canvasMobile  = (document.getElementById('formMobile') ? document.getElementById('formMobile').value.trim() : "") || "Contact No";
-    const canvasAddress = (document.getElementById('formAddress') ? document.getElementById('formAddress').value.trim() : "") || "Location Coordinates";
-    const canvasFather  = (document.getElementById('formFatherName') ? document.getElementById('formFatherName').value.trim() : "") || "";
-    const canvasDOB     = (document.getElementById('formDOB') ? document.getElementById('formDOB').value.trim() : "") || "";
-    const canvasSalary  = (document.getElementById('formSalary') ? document.getElementById('formSalary').value.trim() : "") || "";
-    const canvasGender  = (document.getElementById('formGender') ? document.getElementById('formGender').value : "") || "";
-    const canvasMarital = (document.getElementById('formMarital') ? document.getElementById('formMarital').value : "") || "";
-
-    let personalDetailsHTML = "";
-    if (canvasFather)  personalDetailsHTML += `<div><b>Father's Name:</b> ${canvasFather}</div>`;
-    if (canvasDOB)     personalDetailsHTML += `<div><b>DOB:</b> ${canvasDOB}</div>`;
-    if (canvasGender)  personalDetailsHTML += `<div><b>Gender:</b> ${canvasGender}</div>`;
-    if (canvasMarital) personalDetailsHTML += `<div><b>Status:</b> ${canvasMarital}</div>`;
-    if (canvasSalary)  personalDetailsHTML += `<div><b>Expected Salary:</b> ${canvasSalary}</div>`;
+    const cName = document.getElementById('formName')?.value.trim() || "YOUR NAME";
+    const cTitle = document.getElementById('formTitle')?.value.trim() || "Target Designation";
+    const cEmail = document.getElementById('formEmail')?.value.trim() || "email@domain.com";
+    const cMobile = document.getElementById('formMobile')?.value.trim() || "Contact No";
+    const cAddress = document.getElementById('formAddress')?.value.trim() || "Location Address";
+    const cLanguages = document.getElementById('formLanguages')?.value.trim() || "";
 
     let socialHTML = "";
-    const lIn = document.getElementById('formLinkedIn') ? document.getElementById('formLinkedIn').value.trim() : "";
-    const gHb = document.getElementById('formGitHub') ? document.getElementById('formGitHub').value.trim() : "";
+    const lIn = document.getElementById('formLinkedIn')?.value.trim() || "";
+    const gHb = document.getElementById('formGitHub')?.value.trim() || "";
+    const pFolio = document.getElementById('formPortfolio')?.value.trim() || "";
     if (lIn) socialHTML += `<div><b>LinkedIn:</b> ${lIn}</div>`;
     if (gHb) socialHTML += `<div><b>GitHub:</b> ${gHb}</div>`;
+    if (pFolio) socialHTML += `<div><b>Portfolio:</b> ${pFolio}</div>`;
 
     let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-600 leading-relaxed text-justify font-normal">${engineState.summary}</p>` : "";
 
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role Designation'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1 border-l border-slate-200 mt-0.5">${e.duties||''}</p></div>`;
+        expItemsHTML += `<div class="space-y-0.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1 border-l border-slate-200 mt-0.5">${e.duties||''}</p></div>`;
+    });
+
+    let projItemsHTML = "";
+    engineState.projects.forEach(p => {
+        if (!p.title && !p.description) return;
+        projItemsHTML += `<div class="space-y-0.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1 border-l border-slate-200 mt-0.5">${p.description||''}</p></div>`;
     });
 
     let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-700 font-medium pl-1">${engineState.skills.map(s=>`<span>• ${s}</span>`).join('')}</div>` : "";
-
     let certItemsHTML = "";
-    engineState.certifications.forEach(c => { if(!c.name) return; certItemsHTML += `<div class="text-[11px] text-slate-700">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
-
+    engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
     let eduItemsHTML = "";
-    engineState.education.forEach(e => { if(!e.school&&!e.degree) return; eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
+    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
 
     if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
         canvas.innerHTML = `
@@ -899,32 +805,19 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="col-span-4 border-r pr-4 space-y-4" style="border-color: ${hex}30;">
                     <div class="flex flex-col items-center text-center space-y-3">
                         ${imgHTML}
-                        <div>
-                            <h1 class="text-lg font-black uppercase tracking-tight" style="color:${hex};">${canvasName}</h1>
-                            <p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">${canvasTitle}</p>
-                        </div>
+                        <div><h1 class="text-lg font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">${cTitle}</p></div>
                     </div>
                     <div class="space-y-1.5 text-[10px] text-slate-600 font-medium">
                         <h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[11px]" style="color:${hex};">Contact Info</h4>
-                        <div>${canvasEmail}</div>
-                        <div>${canvasMobile}</div>
-                        <div>${canvasAddress}</div>
-                        ${socialHTML}
+                        <div>${cEmail}</div><div>${cMobile}</div><div>${cAddress}</div>${socialHTML}
                     </div>
-                    ${personalDetailsHTML ? `
-                    <div class="space-y-1.5 text-[10px] text-slate-600 font-medium">
-                        <h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[11px]" style="color:${hex};">Personal Details</h4>
-                        ${personalDetailsHTML}
-                    </div>` : ''}
-                    ${skillsItemsHTML ? `
-                    <div class="space-y-1.5">
-                        <h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[10px]" style="color:${hex};">Core Skills</h4>
-                        <div class="flex flex-col gap-0.5 text-[10px] text-slate-700">${engineState.skills.map(s=>`<span>• ${s}</span>`).join('')}</div>
-                    </div>` : ''}
+                    ${cLanguages ? `<div class="space-y-1 text-[10px] text-slate-600 font-medium"><h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[11px]" style="color:${hex};">Languages Known</h4><div>${cLanguages}</div></div>` : ''}
+                    ${skillsItemsHTML ? `<div class="space-y-1.5"><h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[10px]" style="color:${hex};">Core Skills</h4><div class="flex flex-col gap-0.5 text-[10px] text-slate-700">${engineState.skills.map(s=>`<span>• ${s}</span>`).join('')}</div></div>` : ''}
                 </div>
                 <div class="col-span-8 space-y-4">
                     ${summaryHTML ? `<div class="space-y-1">${sh('Professional Summary')}${summaryHTML}</div>` : ''}
                     ${expItemsHTML ? `<div class="space-y-1.5">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ''}
+                    ${projItemsHTML ? `<div class="space-y-1.5">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ''}
                     ${certItemsHTML ? `<div class="space-y-1">${sh('Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ''}
                     ${eduItemsHTML ? `<div class="space-y-1">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ''}
                 </div>
@@ -934,45 +827,40 @@ function executeMasterCompilationRenderPipeline() {
             <div class="space-y-4 text-slate-800">
                 <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm" style="background-color: ${hex};">
                     <div class="space-y-1 min-w-0">
-                        <h1 class="text-2xl font-black uppercase tracking-tight">${canvasName}</h1>
-                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${canvasTitle}</p>
-                        <div class="mt-2 text-[10px] opacity-80 flex flex-wrap gap-x-3 gap-y-0.5 font-medium">
-                            <span>${canvasEmail}</span><span>•</span><span>${canvasMobile}</span><span>•</span><span>${canvasAddress}</span>
-                        </div>
-                        <div class="text-[10px] opacity-80 flex flex-wrap gap-x-3 font-medium mt-0.5">
-                            ${lIn ? `<span><b>LinkedIn:</b> ${lIn}</span>` : ''}
-                            ${gHb ? `<span><b>GitHub:</b> ${gHb}</span>` : ''}
-                        </div>
+                        <h1 class="text-2xl font-black uppercase tracking-tight">${cName}</h1>
+                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
+                        <div class="mt-2 text-[10px] opacity-80 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
+                        <div class="text-[10px] opacity-80 flex flex-wrap gap-x-3 font-medium mt-0.5">${lIn ? `<span><b>LinkedIn:</b> ${lIn}</span>` : ''}${pFolio ? `<span><b>Portfolio:</b> ${pFolio}</span>` : ''}</div>
                     </div>
                     ${imgHTML}
                 </div>
-                ${personalDetailsHTML ? `<div class="pt-1.5 grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] text-slate-500 font-medium border-b pb-2">${personalDetailsHTML}</div>` : ''}
+                ${cLanguages ? `<div class="pt-1 text-[10px] text-slate-500 font-medium border-b pb-2"><b>Languages:</b> ${cLanguages}</div>` : ''}
                 ${summaryHTML ? `<div class="space-y-1">${sh('Professional Summary')}${summaryHTML}</div>` : ''}
                 ${expItemsHTML ? `<div class="space-y-2">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ''}
+                ${projItemsHTML ? `<div class="space-y-2">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ''}
                 ${skillsItemsHTML ? `<div class="space-y-2">${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ''}
                 ${certItemsHTML ? `<div class="space-y-2">${sh('Professional Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ''}
                 ${eduItemsHTML ? `<div class="space-y-2">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ''}
             </div>`;
     } else {
-        let metaGrid = personalDetailsHTML ? `<div class="mt-2 pt-1.5 border-t border-dashed border-slate-200 grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10px] text-slate-500 font-medium">${personalDetailsHTML}</div>` : "";
         let inlineSocial = "";
         if (lIn) inlineSocial += `<span class="text-slate-300">•</span><span><b>LinkedIn:</b> ${lIn}</span>`;
         if (gHb) inlineSocial += `<span class="text-slate-300">•</span><span><b>GitHub:</b> ${gHb}</span>`;
+        if (pFolio) inlineSocial += `<span class="text-slate-300">•</span><span><b>Portfolio:</b> ${pFolio}</span>`;
 
         canvas.innerHTML = `
             <div class="flex items-start gap-5 border-b-2 pb-3.5" style="border-color:${hex};">
                 ${imgHTML}
                 <div class="flex-1 min-w-0">
-                    <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${canvasName}</h1>
-                    <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${canvasTitle}</p>
-                    <div class="mt-2 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-slate-600 font-medium items-center">
-                        <span>${canvasEmail}</span><span class="text-slate-300">•</span><span>${canvasMobile}</span><span class="text-slate-300">•</span><span>${canvasAddress}</span>${inlineSocial}
-                    </div>
-                    ${metaGrid}
+                    <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
+                    <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                    <div class="mt-2 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-slate-600 font-medium items-center"><span>${cEmail}</span><span class="text-slate-300">•</span><span>${cMobile}</span><span class="text-slate-300">•</span><span>${cAddress}</span>${inlineSocial}</div>
+                    ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
                 </div>
             </div>
             ${summaryHTML ? `<div class="mt-4">${sh('Professional Summary')}${summaryHTML}</div>` : ""}
             ${expItemsHTML ? `<div class="space-y-2 mt-4">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ""}
+            ${projItemsHTML ? `<div class="space-y-2 mt-4">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ""}
             ${skillsItemsHTML ? `<div class="space-y-2 mt-4">${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
             ${certItemsHTML ? `<div class="space-y-2 mt-4">${sh('Professional Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ""}
             ${eduItemsHTML ? `<div class="space-y-2 mt-4">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ""}
@@ -981,24 +869,17 @@ function executeMasterCompilationRenderPipeline() {
 }
 
 function applyVisualTemplateFormat(id) {
-    if(document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`)) {
-        document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`).className = "py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center";
-    }
+    if(document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`)) document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`).className = "py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center";
     engineState.activeLayoutTemplateID = id;
-    const sb = document.getElementById('printTargetSandbox');
-    if(!sb) return;
+    const sb = document.getElementById('printTargetSandbox'); if(!sb) return;
     const cfg = {1:{cls:"bg-red-700 text-white border border-red-500",bg:"#ffffff",font:"system-ui,sans-serif"},2:{cls:"bg-blue-950 text-white border border-blue-900",bg:"#f8fafc",font:"Georgia,serif"},3:{cls:"bg-neutral-900 text-white border border-neutral-700",bg:"#ffffff",font:"monospace"},4:{cls:"bg-emerald-900 text-white border border-emerald-700",bg:"#fafafa",font:"ui-sans-serif,sans-serif"},5:{cls:"bg-zinc-700 text-white border border-zinc-500 shadow-sm transition-all text-center",bg:"#f4f4f5",font:"Garamond,serif"},6:{cls:"bg-purple-900 text-white border border-purple-700 shadow-sm transition-all text-center",bg:"#ffffff",font:"system-ui,sans-serif"}};
-    const c = cfg[id];
-    if(document.getElementById(`tplBtn-${id}`)) {
-        document.getElementById(`tplBtn-${id}`).className = `py-2 px-1 rounded ${c.cls} shadow-sm transition-all text-center`;
-    }
-    sb.style.backgroundColor = c.bg; sb.style.fontFamily = c.font;
+    if(document.getElementById(`tplBtn-${id}`)) document.getElementById(`tplBtn-${id}`).className = `py-2 px-1 rounded ${cfg[id].cls} shadow-sm transition-all text-center`;
+    sb.style.backgroundColor = cfg[id].bg; sb.style.fontFamily = cfg[id].font;
     executeMasterCompilationRenderPipeline();
 }
 
 function processImageUpload(event) {
-    const file = event.target.files[0];
-    if (!file) return;
+    const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = e => { engineState.globalCachedProfileImageStream = e.target.result; executeMasterCompilationRenderPipeline(); };
     reader.readAsDataURL(file);
@@ -1006,54 +887,22 @@ function processImageUpload(event) {
 function removePhotoImage() { engineState.globalCachedProfileImageStream=""; if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; executeMasterCompilationRenderPipeline(); }
 
 function displaySubscriptionGateway() {
-    if (checkActiveSubscriptionPass()) {
-        alert('✅ Subscription active. You can download or print your resume now.');
-        dpdSmartPrint();
-        return;
-    }
-    const modal = document.getElementById('subscriptionModalGate');
-    if (modal) modal.classList.remove('hidden');
+    if (checkActiveSubscriptionPass()) { alert('✅ Subscription active. You can download or print your resume now.'); dpdSmartPrint(); return; }
+    document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
 
-function closeSubscriptionGateway() { if (document.getElementById('subscriptionModalGate')) document.getElementById('subscriptionModalGate').classList.add('hidden'); }
-
-function getSubscriptionToken() { return null; }
-
-function saveSubscriptionToken(token, expiresAt, plan) {
-    // Not used in Vercel version
-}
-
-async function verifyServerSubscriptionToken() {
-    // Simple localStorage-based check for Vercel static hosting
-    return checkActiveSubscriptionPass();
-}
-
-function getQueryParameters() {
-    return Object.fromEntries(new URLSearchParams(window.location.search));
-}
-
-async function verifyRazorpayReturn() {
-    // Handled inside window.onload via URL params
-    return false;
-}
-
+function closeSubscriptionGateway() { document.getElementById('subscriptionModalGate')?.classList.add('hidden'); }
 function selectSubscriptionPlan(v) {
-    engineState.selectedSubscriptionValue = v;
-    localStorage.setItem('last_selected_plan', v.toString());
-
-    const card19 = document.getElementById('planCard-19');
-    const card59 = document.getElementById('planCard-59');
-    const proceedBtn = document.getElementById('modalProceedPayBtn');
-
-    // Use inline styles — reliable regardless of Tailwind CDN
+    engineState.selectedSubscriptionValue = v; localStorage.setItem('last_selected_plan', v.toString());
+    const c19 = document.getElementById('planCard-19'), c59 = document.getElementById('planCard-59');
     if (v === 19) {
-        if(card19) { card19.style.border='2px solid #3b82f6'; card19.style.background='rgba(23,37,84,0.4)'; }
-        if(card59) { card59.style.border='2px solid #334155'; card59.style.background='rgba(15,23,42,0.4)'; }
-        const sp1=document.getElementById('targetSelectedPrice');if(sp1)sp1.innerText='19';
+        if(c19) { c19.style.border='2px solid #3b82f6'; c19.style.background='rgba(23,37,84,0.4)'; }
+        if(c59) { c59.style.border='2px solid #334155'; c59.style.background='rgba(15,23,42,0.4)'; }
+        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='19';
     } else {
-        if(card19) { card19.style.border='2px solid #334155'; card19.style.background='rgba(15,23,42,0.4)'; }
-        if(card59) { card59.style.border='2px solid #10b981'; card59.style.background='rgba(6,78,59,0.3)'; }
-        const sp2=document.getElementById('targetSelectedPrice');if(sp2)sp2.innerText='59';
+        if(c19) { c19.style.border='2px solid #334155'; c19.style.background='rgba(15,23,42,0.4)'; }
+        if(c59) { c59.style.border='2px solid #10b981'; c59.style.background='rgba(6,78,59,0.3)'; }
+        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='59';
     }
 }
 
@@ -1062,138 +911,69 @@ function executePremiumSecureCheckout() {
     if (!targetCard) return;
     const paymentUrl = targetCard.getAttribute('data-url');
     if (!paymentUrl) { alert("Payment link missing."); return; }
-
     localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
     try { localStorage.setItem('dpd_form_backup', JSON.stringify(engineState)); } catch(e) {}
-    // Redirect same tab — Razorpay Payment Page will redirect back automatically
     window.location.href = paymentUrl;
 }
 
-function showPayScreen1() {
-    document.getElementById('payScreen1').classList.remove('hidden');
-    document.getElementById('payScreen2').classList.add('hidden');
-    document.getElementById('verifyError').classList.add('hidden');
-    if(document.getElementById('paymentIdInput')) document.getElementById('paymentIdInput').value = '';
-}
-
-function showPayScreen2() {
-    document.getElementById('payScreen1').classList.add('hidden');
-    document.getElementById('payScreen2').classList.remove('hidden');
-}
+function showPayScreen1() { document.getElementById('payScreen1').classList.remove('hidden'); document.getElementById('payScreen2').classList.add('hidden'); document.getElementById('verifyError').classList.add('hidden'); if(document.getElementById('paymentIdInput')) document.getElementById('paymentIdInput').value = ''; }
+function showPayScreen2() { document.getElementById('payScreen1').classList.add('hidden'); document.getElementById('payScreen2').classList.remove('hidden'); }
 
 async function verifyPaymentAndActivate() {
     const rawId = (document.getElementById('paymentIdInput').value || '').trim();
-    if (!rawId) {
-        showVerifyError('Please paste your Payment ID first.');
-        return;
-    }
-
-    const btn = document.getElementById('verifyBtn');
-    btn.innerText = 'Verifying...';
-    btn.disabled = true;
-
+    if (!rawId) { showVerifyError('Please paste your Payment ID first.'); return; }
+    const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
     try {
         const plan = parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
-        const res = await fetch('/api/verify-payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ paymentId: rawId, plan })
-        });
+        const res = await fetch('/api/verify-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId: rawId, plan }) });
         const data = await res.json();
-
         if (data.success) {
-            // Grant access
             const days = plan === 59 ? 30 : 7;
-            const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
-            localStorage.setItem('dpd_pass_expiry', String(expiry));
+            localStorage.setItem('dpd_pass_expiry', String(Date.now() + days * 24 * 60 * 60 * 1000));
             localStorage.setItem('dpd_pass_plan', String(plan));
-            closeSubscriptionGateway();
-            renderSubscriptionStatusIndicator();
-            // Hide cover page
-            const coverPage = document.getElementById('dpdCoverPage');
-            if (coverPage) coverPage.classList.add('dpd-hide');
-            // Show success banner
+            closeSubscriptionGateway(); renderSubscriptionStatusIndicator();
+            document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
             const banner = document.getElementById('successBanner');
-            if (banner) {
-                banner.innerText = '🎉 Premium access activated for ' + days + ' days! Downloading your resume...';
-                banner.classList.remove('hidden');
-                setTimeout(() => banner.classList.add('hidden'), 7000);
-            }
+            if (banner) { banner.innerText = '🎉 Premium access activated for ' + days + ' days! Downloading your resume...'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 7000); }
             setTimeout(() => dpdSmartPrint(), 800);
-        } else {
-            showVerifyError(data.error || 'Payment ID not found. Please check and try again.');
-            btn.innerText = 'Activate Access ✓';
-            btn.disabled = false;
-        }
-    } catch(e) {
-        showVerifyError('Verification failed. Please try again.');
-        btn.innerText = 'Activate Access ✓';
-        btn.disabled = false;
-    }
+        } else { showVerifyError(data.error || 'Payment ID not found. Please check and try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
+    } catch(e) { showVerifyError('Verification failed. Please try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
 }
 
-function showVerifyError(msg) {
-    const el = document.getElementById('verifyError');
-    if(el) { el.innerText = msg; el.classList.remove('hidden'); }
-}
-
+function showVerifyError(msg) { const el = document.getElementById('verifyError'); if(el) { el.innerText = msg; el.classList.remove('hidden'); } }
 function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
-// One-time-per-visit reminder: browsers reserve extra top/bottom space for their own
-// print header/footer (page title, URL, date, page number) unless the user disables it
-// in the print dialog's "More settings" panel. No CSS can override this — @page margin
-// only controls the page margin, not the header/footer reservation. So instead of
-// fighting it with more padding guesses, we surface the one real fix to the user.
 let dpdPrintTipShownThisSession = false;
 function showPrintTipThenPrint(afterDelayMs, printFn) {
     const tip = document.getElementById('printTipBanner');
     if (tip && !dpdPrintTipShownThisSession) {
-        dpdPrintTipShownThisSession = true;
-        tip.classList.remove('hidden');
+        dpdPrintTipShownThisSession = true; tip.classList.remove('hidden');
         setTimeout(() => tip.classList.add('hidden'), 6000);
     }
     setTimeout(printFn, afterDelayMs);
 }
-
-// Smart print — shows the one-time browser-settings tip, then opens the print dialog.
-// (Padding/margin on the resume canvas itself is already correctly zeroed for print
-// via the @media print rules in <style>; no extra JS padding injection is needed or used.)
-function dpdSmartPrint() {
-    showPrintTipThenPrint(400, () => window.print());
-}
+function dpdSmartPrint() { showPrintTipThenPrint(400, () => window.print()); }
 
 window.onload = async function() {
-
-    // ── STEP 1: Check payment return FIRST before anything else ──
     const params = new URLSearchParams(window.location.search);
     const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
     const paidFlag  = params.get('dpd_paid');
-    const planParam = parseInt(params.get('plan') || '0', 10);
     const returningFromPayment = !!(paymentId || paidFlag === '1');
 
     if (returningFromPayment) {
-        const plan = planParam || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
-        const days = plan === 59 ? 30 : 7;
-        const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
-        localStorage.setItem('dpd_pass_expiry', String(expiry));
+        const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
+        localStorage.setItem('dpd_pass_expiry', String(Date.now() + (plan === 59 ? 30 : 7) * 24 * 60 * 60 * 1000));
         localStorage.setItem('dpd_pass_plan', String(plan));
-        localStorage.setItem('dpd_app_ver', 'dpd_v3'); // prevent version wipe
+        localStorage.setItem('dpd_app_ver', 'dpd_v4_ats');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    // ── STEP 2: Version wipe (skip if returning from payment) ──
-    if (!returningFromPayment) {
-        const VER = 'dpd_v3';
-        if (localStorage.getItem('dpd_app_ver') !== VER) {
-            const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
-            Object.keys(localStorage).forEach(k => {
-                if (!keepKeys.includes(k)) localStorage.removeItem(k);
-            });
-            localStorage.setItem('dpd_app_ver', VER);
-        }
+    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v4_ats') {
+        const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
+        Object.keys(localStorage).forEach(k => { if (!keepKeys.includes(k)) localStorage.removeItem(k); });
+        localStorage.setItem('dpd_app_ver', 'dpd_v4_ats');
     }
 
-    // ── STEP 3: Restore form data (from backup if returning from payment) ──
     let formRestored = false;
     if (returningFromPayment) {
         try {
@@ -1201,73 +981,43 @@ window.onload = async function() {
             if (backup) {
                 const saved = JSON.parse(backup);
                 if (saved && typeof saved === 'object') {
-                    if (saved.personal)       Object.assign(engineState.personal, saved.personal);
-                    if (saved.summary)        engineState.summary = saved.summary;
-                    if (Array.isArray(saved.experience))    engineState.experience = saved.experience;
-                    if (Array.isArray(saved.education))     engineState.education  = saved.education;
-                    if (Array.isArray(saved.certifications))engineState.certifications = saved.certifications;
-                    if (Array.isArray(saved.skills))        engineState.skills = saved.skills;
+                    if (saved.personal) Object.assign(engineState.personal, saved.personal);
+                    if (saved.summary) engineState.summary = saved.summary;
+                    if (Array.isArray(saved.experience)) engineState.experience = saved.experience;
+                    if (Array.isArray(saved.projects)) engineState.projects = saved.projects;
+                    if (Array.isArray(saved.education)) engineState.education = saved.education;
+                    if (Array.isArray(saved.certifications)) engineState.certifications = saved.certifications;
+                    if (Array.isArray(saved.skills)) engineState.skills = saved.skills;
                     if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
                     if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
 
-                    // Fill all form fields
                     const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
-                    s('formName',       engineState.personal.name);
-                    s('formTitle',      engineState.personal.title);
-                    s('formEmail',      engineState.personal.email);
-                    s('formMobile',     engineState.personal.mobile);
-                    s('formLinkedIn',   engineState.personal.linkedin);
-                    s('formGitHub',     engineState.personal.github);
-                    s('formFatherName', engineState.personal.fatherName);
-                    s('formAddress',    engineState.personal.address);
-                    s('formDOB',        engineState.personal.dob);
-                    s('formSalary',     engineState.personal.salary);
-                    s('formSummary',    engineState.summary);
+                    s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
+                    s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
+                    s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
+                    s('formPortfolio', engineState.personal.portfolio); s('formAddress', engineState.personal.address);
+                    s('formLanguages', engineState.personal.languages); s('formSummary', engineState.summary);
                     s('formSkillsList', engineState.skills.join(', '));
-                    if(document.getElementById('formGender') && engineState.personal.gender)
-                        document.getElementById('formGender').value = engineState.personal.gender;
-                    if(document.getElementById('formMarital') && engineState.personal.marital)
-                        document.getElementById('formMarital').value = engineState.personal.marital;
-
-                    formRestored = true;
-                    localStorage.removeItem('dpd_form_backup'); // clean up
+                    formRestored = true; localStorage.removeItem('dpd_form_backup');
                 }
             }
-        } catch(e) { console.warn('Form restore error:', e); }
+        } catch(e) {}
     }
 
-    // ── STEP 4: Init empty form if nothing restored ──
-    if (!formRestored || engineState.experience.length === 0) {
-        engineState.experience = [{company:"",role:"",dates:"",duties:""}];
-    }
-    if (!formRestored || engineState.education.length === 0) {
-        engineState.education = [{school:"",degree:"",year:""}];
-    }
+    if (!formRestored || engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
+    if (!formRestored || engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
+    if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
 
-    renderExperienceFormInputs();
-    renderEducationFormInputs();
-    renderCertificationFormInputs();
+    renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     runMasterManualSyncAndGenerate();
 
-    // ── STEP 5: Hide cover page if premium ──
-    if (returningFromPayment || checkActiveSubscriptionPass()) {
-        const coverPage = document.getElementById('dpdCoverPage');
-        if (coverPage) coverPage.classList.add('dpd-hide');
-    }
-
-    // ── STEP 6: Show success banner + auto print if payment just completed ──
+    if (returningFromPayment || checkActiveSubscriptionPass()) document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
     if (returningFromPayment) {
-        const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10);
-        const days = plan === 59 ? 30 : 7;
+        const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10), days = plan === 59 ? 30 : 7;
         const banner = document.getElementById('successBanner');
-        if (banner) {
-            banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!';
-            banner.classList.remove('hidden');
-            setTimeout(() => banner.classList.add('hidden'), 8000);
-        }
+        if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 8000); }
         showPrintTipThenPrint(1200, () => window.print());
     }
-
     renderSubscriptionStatusIndicator();
 };
 </script>
