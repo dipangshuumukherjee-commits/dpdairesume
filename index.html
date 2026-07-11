@@ -89,7 +89,7 @@
                         <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
                     </div>
                     <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700 space-y-2">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Avatar Photo Upload</label>
+                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Avatar Photo Upload (Optional)</label>
                         <div class="flex items-center gap-3">
                             <input type="file" id="imageAssetUploader" accept="image/*" onchange="processImageUpload(event)" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer">
                             <button onclick="removePhotoImage()" class="text-[11px] bg-red-900/40 text-red-300 border border-red-700/40 px-2 py-1 rounded hover:bg-red-800/60">Remove</button>
@@ -188,7 +188,7 @@
             </div>
 
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 space-y-2 no-print shadow-sm">
-                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select Design Template Sheet Theme Format:</span>
+                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select 100% ATS-Approved Layout Theme Format:</span>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs font-semibold">
                     <button onclick="applyVisualTemplateFormat(1)" id="tplBtn-1" class="py-2 px-1 rounded bg-red-700 text-white border border-red-500 shadow-sm transition-all text-center">1. Crimson</button>
                     <button onclick="applyVisualTemplateFormat(2)" id="tplBtn-2" class="py-2 px-1 rounded bg-blue-950 text-white border border-blue-900 shadow-sm transition-all text-center">2. Navy</button>
@@ -759,10 +759,12 @@ function executeMasterCompilationRenderPipeline() {
     
     const themes = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"};
     const hex = themes[engineState.activeLayoutTemplateID]||"#b91c1c";
-    const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase pb-0.5 border-b mb-1.5" style="color:${hex};border-color:#cbd5e1;">${t}</h3>`;
 
-    let imgHTML = `<div class="w-24 h-28 bg-slate-100 border border-slate-200 rounded flex-shrink-0 flex items-center justify-center overflow-hidden shadow-sm"><span class="text-[9px] font-bold text-slate-400 uppercase">No Photo</span></div>`;
-    if (engineState.globalCachedProfileImageStream) imgHTML = `<div class="w-24 h-28 border rounded flex-shrink-0 overflow-hidden shadow-sm" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
+    // Notice: If no photo is uploaded, imgHTML is completely empty! Zero placeholder boxes!
+    let imgHTML = "";
+    if (engineState.globalCachedProfileImageStream) {
+        imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
+    }
 
     const cName = document.getElementById('formName')?.value.trim() || "YOUR NAME";
     const cTitle = document.getElementById('formTitle')?.value.trim() || "Target Designation";
@@ -775,96 +777,129 @@ function executeMasterCompilationRenderPipeline() {
     const lIn = document.getElementById('formLinkedIn')?.value.trim() || "";
     const gHb = document.getElementById('formGitHub')?.value.trim() || "";
     const pFolio = document.getElementById('formPortfolio')?.value.trim() || "";
-    if (lIn) socialHTML += `<div><b>LinkedIn:</b> ${lIn}</div>`;
-    if (gHb) socialHTML += `<div><b>GitHub:</b> ${gHb}</div>`;
-    if (pFolio) socialHTML += `<div><b>Portfolio:</b> ${pFolio}</div>`;
+    if (lIn) socialHTML += `<span>• <b>LinkedIn:</b> ${lIn}</span>`;
+    if (gHb) socialHTML += `<span>• <b>GitHub:</b> ${gHb}</span>`;
+    if (pFolio) socialHTML += `<span>• <b>Portfolio:</b> ${pFolio}</span>`;
 
-    let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-600 leading-relaxed text-justify font-normal">${engineState.summary}</p>` : "";
+    let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${engineState.summary}</p>` : "";
 
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1 border-l border-slate-200 mt-0.5">${e.duties||''}</p></div>`;
+        expItemsHTML += `<div class="space-y-0.5 mt-2.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1.5 border-l-2 border-slate-200 mt-1">${e.duties||''}</p></div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        projItemsHTML += `<div class="space-y-0.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1 border-l border-slate-200 mt-0.5">${p.description||''}</p></div>`;
+        projItemsHTML += `<div class="space-y-0.5 mt-2.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1.5 border-l-2 border-slate-200 mt-1">${p.description||''}</p></div>`;
     });
 
-    let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1 text-[11px] text-slate-700 font-medium pl-1">${engineState.skills.map(s=>`<span>• ${s}</span>`).join('')}</div>` : "";
+    let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${s}</span>`).join('')}</div>` : "";
     let certItemsHTML = "";
-    engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
+    engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
     let eduItemsHTML = "";
-    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
+    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
 
-    if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
+    // ── ALL 6 TEMPLATES ARE NOW STRICT SINGLE-COLUMN & 100% ATS APPROVED ──
+
+    // 1. CRIMSON (Classic Executive) & 3. MINIMAL (Technical Monospace)
+    if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
+        const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
+        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase ${borderStyle} mt-5" style="color:${hex};border-color:${engineState.activeLayoutTemplateID === 3 ? '#94a3b8' : hex};">${t}</h3>`;
+
         canvas.innerHTML = `
-            <div class="grid grid-cols-12 gap-6 h-full text-slate-800">
-                <div class="col-span-4 border-r pr-4 space-y-4" style="border-color: ${hex}30;">
-                    <div class="flex flex-col items-center text-center space-y-3">
-                        ${imgHTML}
-                        <div><h1 class="text-lg font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1><p class="text-[11px] font-bold text-slate-500 uppercase tracking-wide">${cTitle}</p></div>
-                    </div>
-                    <div class="space-y-1.5 text-[10px] text-slate-600 font-medium">
-                        <h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[11px]" style="color:${hex};">Contact Info</h4>
-                        <div>${cEmail}</div><div>${cMobile}</div><div>${cAddress}</div>${socialHTML}
-                    </div>
-                    ${cLanguages ? `<div class="space-y-1 text-[10px] text-slate-600 font-medium"><h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[11px]" style="color:${hex};">Languages Known</h4><div>${cLanguages}</div></div>` : ''}
-                    ${skillsItemsHTML ? `<div class="space-y-1.5"><h4 class="font-bold border-b pb-0.5 uppercase tracking-wider text-[10px]" style="color:${hex};">Core Skills</h4><div class="flex flex-col gap-0.5 text-[10px] text-slate-700">${engineState.skills.map(s=>`<span>• ${s}</span>`).join('')}</div></div>` : ''}
-                </div>
-                <div class="col-span-8 space-y-4">
-                    ${summaryHTML ? `<div class="space-y-1">${sh('Professional Summary')}${summaryHTML}</div>` : ''}
-                    ${expItemsHTML ? `<div class="space-y-1.5">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ''}
-                    ${projItemsHTML ? `<div class="space-y-1.5">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ''}
-                    ${certItemsHTML ? `<div class="space-y-1">${sh('Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ''}
-                    ${eduItemsHTML ? `<div class="space-y-1">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ''}
-                </div>
-            </div>`;
-    } else if (engineState.activeLayoutTemplateID === 6) {
-        canvas.innerHTML = `
-            <div class="space-y-4 text-slate-800">
-                <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm" style="background-color: ${hex};">
-                    <div class="space-y-1 min-w-0">
-                        <h1 class="text-2xl font-black uppercase tracking-tight">${cName}</h1>
-                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
-                        <div class="mt-2 text-[10px] opacity-80 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
-                        <div class="text-[10px] opacity-80 flex flex-wrap gap-x-3 font-medium mt-0.5">${lIn ? `<span><b>LinkedIn:</b> ${lIn}</span>` : ''}${pFolio ? `<span><b>Portfolio:</b> ${pFolio}</span>` : ''}</div>
+            <div class="space-y-1 text-slate-800">
+                <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                        <div class="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-slate-600 font-medium items-center">
+                            <span><b>Email:</b> ${cEmail}</span><span>• <b>Phone:</b> ${cMobile}</span><span>• <b>Address:</b> ${cAddress}</span>${socialHTML}
+                        </div>
+                        ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
                     </div>
                     ${imgHTML}
                 </div>
-                ${cLanguages ? `<div class="pt-1 text-[10px] text-slate-500 font-medium border-b pb-2"><b>Languages:</b> ${cLanguages}</div>` : ''}
-                ${summaryHTML ? `<div class="space-y-1">${sh('Professional Summary')}${summaryHTML}</div>` : ''}
-                ${expItemsHTML ? `<div class="space-y-2">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ''}
-                ${projItemsHTML ? `<div class="space-y-2">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ''}
-                ${skillsItemsHTML ? `<div class="space-y-2">${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ''}
-                ${certItemsHTML ? `<div class="space-y-2">${sh('Professional Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ''}
-                ${eduItemsHTML ? `<div class="space-y-2">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ''}
+                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
+                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
+                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
+                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
+                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
+                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
             </div>`;
-    } else {
-        let inlineSocial = "";
-        if (lIn) inlineSocial += `<span class="text-slate-300">•</span><span><b>LinkedIn:</b> ${lIn}</span>`;
-        if (gHb) inlineSocial += `<span class="text-slate-300">•</span><span><b>GitHub:</b> ${gHb}</span>`;
-        if (pFolio) inlineSocial += `<span class="text-slate-300">•</span><span><b>Portfolio:</b> ${pFolio}</span>`;
+    } 
+    // 2. NAVY (Modern Corporate) & 4. TECH (Silicon Valley)
+    else if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
+        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-5 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${t}</h3>`;
 
         canvas.innerHTML = `
-            <div class="flex items-start gap-5 border-b-2 pb-3.5" style="border-color:${hex};">
-                ${imgHTML}
-                <div class="flex-1 min-w-0">
-                    <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                    <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
-                    <div class="mt-2 flex flex-wrap gap-x-2 gap-y-0.5 text-[10px] text-slate-600 font-medium items-center"><span>${cEmail}</span><span class="text-slate-300">•</span><span>${cMobile}</span><span class="text-slate-300">•</span><span>${cAddress}</span>${inlineSocial}</div>
-                    ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
+            <div class="space-y-1 text-slate-800">
+                <div class="flex items-start justify-between pb-3 border-b" style="border-color:${hex}40;">
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-3xl font-black tracking-tight" style="color:${hex};">${cName}</h1>
+                        <p class="text-xs font-extrabold text-slate-600 uppercase tracking-widest mt-0.5">${cTitle}</p>
+                        <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
+                            <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
+                        </div>
+                        ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
+                    </div>
+                    ${imgHTML}
                 </div>
-            </div>
-            ${summaryHTML ? `<div class="mt-4">${sh('Professional Summary')}${summaryHTML}</div>` : ""}
-            ${expItemsHTML ? `<div class="space-y-2 mt-4">${sh('Work Experience')}<div class="space-y-3">${expItemsHTML}</div></div>` : ""}
-            ${projItemsHTML ? `<div class="space-y-2 mt-4">${sh('Key Technical Projects')}<div class="space-y-3">${projItemsHTML}</div></div>` : ""}
-            ${skillsItemsHTML ? `<div class="space-y-2 mt-4">${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
-            ${certItemsHTML ? `<div class="space-y-2 mt-4">${sh('Professional Certifications')}<div class="space-y-1 pl-1">${certItemsHTML}</div></div>` : ""}
-            ${eduItemsHTML ? `<div class="space-y-2 mt-4">${sh('Education')}<div class="space-y-1.5">${eduItemsHTML}</div></div>` : ""}
-        `;
+                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
+                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
+                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
+                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
+                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
+                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+            </div>`;
+    } 
+    // 5. RETRO (Editorial / Academic Serif)
+    else if (engineState.activeLayoutTemplateID === 5) {
+        const sh = t => `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-5 text-center" style="color:${hex};border-color:#cbd5e1;">${t}</h3>`;
+
+        canvas.innerHTML = `
+            <div class="space-y-1 text-slate-800">
+                <div class="flex flex-col items-center text-center pb-4">
+                    ${imgHTML ? `<div class="mb-3">${imgHTML}</div>` : ''}
+                    <h1 class="text-3xl font-black uppercase tracking-wider" style="color:${hex};">${cName}</h1>
+                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase tracking-widest">${cTitle}</p>
+                    <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
+                        <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
+                    </div>
+                    ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages:</b> ${cLanguages}</div>` : ''}
+                </div>
+                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
+                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
+                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
+                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
+                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
+                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+            </div>`;
+    } 
+    // 6. ROYAL (Bold Leadership Banner)
+    else if (engineState.activeLayoutTemplateID === 6) {
+        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1.5 rounded mb-2 mt-5 text-white" style="background-color:${hex};">${t}</h3>`;
+
+        canvas.innerHTML = `
+            <div class="space-y-1 text-slate-800">
+                <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm mb-4" style="background-color: ${hex};">
+                    <div class="space-y-1 min-w-0 flex-1">
+                        <h1 class="text-2xl font-black uppercase tracking-tight">${cName}</h1>
+                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
+                        <div class="mt-2 text-[10px] opacity-90 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
+                        <div class="text-[10px] opacity-90 flex flex-wrap gap-x-3 font-medium mt-0.5">${socialHTML}</div>
+                        ${cLanguages ? `<div class="mt-1 text-[10px] opacity-80 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
+                    </div>
+                    ${imgHTML}
+                </div>
+                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
+                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
+                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
+                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
+                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
+                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+            </div>`;
     }
 }
 
@@ -964,14 +999,14 @@ window.onload = async function() {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
         localStorage.setItem('dpd_pass_expiry', String(Date.now() + (plan === 59 ? 30 : 7) * 24 * 60 * 60 * 1000));
         localStorage.setItem('dpd_pass_plan', String(plan));
-        localStorage.setItem('dpd_app_ver', 'dpd_v4_ats');
+        localStorage.setItem('dpd_app_ver', 'dpd_v5_ats_pure');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v4_ats') {
+    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v5_ats_pure') {
         const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
         Object.keys(localStorage).forEach(k => { if (!keepKeys.includes(k)) localStorage.removeItem(k); });
-        localStorage.setItem('dpd_app_ver', 'dpd_v4_ats');
+        localStorage.setItem('dpd_app_ver', 'dpd_v5_ats_pure');
     }
 
     let formRestored = false;
