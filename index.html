@@ -519,7 +519,7 @@ function parseResume(raw) {
                 let slices = row.split(/[—–|-]/);
                 let comp = slices[0] ? slices[0].trim().split(/[,|•]/) : ["Company"];
                 currentExp = { company: comp[0].trim(), role: comp[1] ? comp[1].trim() : "Specialist", dates: slices.slice(1).join('—').trim(), duties: "" };
-            } else if (currentExp) currentExp.duties += (currentExp.duties ? " " : "") + row.replace(/^[•\-*]\s*/, '').trim();
+            } else if (currentExp) currentExp.duties += (currentExp.duties ? "\n" : "") + row.replace(/^[•\-*]\s*/, '').trim();
         });
         if (currentExp) experience.push(currentExp);
     }
@@ -531,7 +531,7 @@ function parseResume(raw) {
             if (!row.startsWith('•') && !row.startsWith('-') && row.length < 80) {
                 if (currentProj) projects.push(currentProj);
                 currentProj = { title: row, tools: "Analytical Tools", link: "", description: "" };
-            } else if (currentProj) currentProj.description += (currentProj.description ? " " : "") + row.replace(/^[•\-*]\s*/, '').trim();
+            } else if (currentProj) currentProj.description += (currentProj.description ? "\n" : "") + row.replace(/^[•\-*]\s*/, '').trim();
         });
         if (currentProj) projects.push(currentProj);
     }
@@ -660,7 +660,7 @@ function renderExperienceFormInputs() {
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Role / Title</label><input type="text" value="${esc(exp.role)}" oninput="syncExpField(${idx},'role',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Dates</label><input type="text" value="${esc(exp.dates)}" oninput="syncExpField(${idx},'dates',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
         </div>
-        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Duties / Achievements</label><textarea rows="3" oninput="syncExpField(${idx},'duties',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(exp.duties)}</textarea></div>
+        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Duties / Achievements (Use new lines to create bullet points)</label><textarea rows="3" oninput="syncExpField(${idx},'duties',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(exp.duties)}</textarea></div>
     </div>`).join('');
 }
 function addNewExperienceNodeItem() { engineState.experience.push({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
@@ -678,7 +678,7 @@ function renderProjectFormInputs() {
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Tools / Tech Stack</label><input type="text" value="${esc(proj.tools)}" oninput="syncProjField(${idx},'tools',this.value)" placeholder="e.g. SQL, Power BI, Advanced Excel" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Live URL / Repo Link</label><input type="text" value="${esc(proj.link)}" oninput="syncProjField(${idx},'link',this.value)" placeholder="github.com/username/project" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
         </div>
-        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Key Outcomes & Implementation Details</label><textarea rows="3" oninput="syncProjField(${idx},'description',this.value)" placeholder="Built interactive dashboards analyzing 50k+ records to optimize supply chain inventory flow by 15%." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(proj.description)}</textarea></div>
+        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Key Outcomes & Details (Use new lines to create bullet points)</label><textarea rows="3" oninput="syncProjField(${idx},'description',this.value)" placeholder="Built interactive dashboards analyzing 50k+ records to optimize supply chain inventory flow by 15%." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(proj.description)}</textarea></div>
     </div>`).join('');
 }
 function addNewProjectNodeItem() { engineState.projects.push({title:"",tools:"",link:"",description:""}); renderProjectFormInputs(); }
@@ -752,6 +752,14 @@ function calculateAndRenderAtsScoringMetrics() {
     }
 }
 
+// ── NEW ATS SEMANTIC BULLET GENERATOR ──
+function formatATSBullets(text) {
+    if (!text) return "";
+    const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
+    if (lines.length === 1) return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5">${lines[0]}</p>`;
+    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+}
+
 function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
     const canvas = document.getElementById('canvasDocumentRenderTree');
@@ -760,7 +768,6 @@ function executeMasterCompilationRenderPipeline() {
     const themes = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"};
     const hex = themes[engineState.activeLayoutTemplateID]||"#b91c1c";
 
-    // Notice: If no photo is uploaded, imgHTML is completely empty! Zero placeholder boxes!
     let imgHTML = "";
     if (engineState.globalCachedProfileImageStream) {
         imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
@@ -786,13 +793,15 @@ function executeMasterCompilationRenderPipeline() {
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5 mt-2.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1.5 border-l-2 border-slate-200 mt-1">${e.duties||''}</p></div>`;
+        // Uses Semantic ATS Bullets
+        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div>${formatATSBullets(e.duties)}</div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        projItemsHTML += `<div class="space-y-0.5 mt-2.5"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div><p class="text-[11px] text-slate-600 leading-relaxed text-justify pl-1.5 border-l-2 border-slate-200 mt-1">${p.description||''}</p></div>`;
+        // Uses Semantic ATS Bullets
+        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
     });
 
     let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${s}</span>`).join('')}</div>` : "";
@@ -987,7 +996,20 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
     }
     setTimeout(printFn, afterDelayMs);
 }
-function dpdSmartPrint() { showPrintTipThenPrint(400, () => window.print()); }
+
+// ── NEW ATS METADATA INJECTION ──
+function dpdSmartPrint() { 
+    const originalTitle = document.title;
+    const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
+    // Change document title right before print so the downloaded PDF saves with the user's name
+    if (userName) document.title = userName + " - Resume";
+    else document.title = "ATS Approved Resume";
+    
+    showPrintTipThenPrint(400, () => {
+        window.print();
+        setTimeout(() => document.title = originalTitle, 1000);
+    }); 
+}
 
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
@@ -999,14 +1021,14 @@ window.onload = async function() {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
         localStorage.setItem('dpd_pass_expiry', String(Date.now() + (plan === 59 ? 30 : 7) * 24 * 60 * 60 * 1000));
         localStorage.setItem('dpd_pass_plan', String(plan));
-        localStorage.setItem('dpd_app_ver', 'dpd_v5_ats_pure');
+        localStorage.setItem('dpd_app_ver', 'dpd_v6_ats_pure');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v5_ats_pure') {
+    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v6_ats_pure') {
         const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
         Object.keys(localStorage).forEach(k => { if (!keepKeys.includes(k)) localStorage.removeItem(k); });
-        localStorage.setItem('dpd_app_ver', 'dpd_v5_ats_pure');
+        localStorage.setItem('dpd_app_ver', 'dpd_v6_ats_pure');
     }
 
     let formRestored = false;
