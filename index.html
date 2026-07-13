@@ -10,12 +10,17 @@
     <meta name="description" content="Stop failing automated scans. Build 100% ATS-approved resumes tailored for Data Analysts, SQL developers, and tech professionals in minutes.">
     <meta name="keywords" content="AI resume builder for data analysts, 100% ATS-approved resume builder, resume builder for tech professionals, data analytics career transition resume, resume builder India">
     
-    <!-- Open Graph / LinkedIn Preview Tags -->
-    <meta property="og:title" content="DPD AI Resume — 100% ATS-Approved Builder for Data Analysts" />
+    <!-- Open Graph / Facebook / LinkedIn Preview Tags -->
+    <meta property="og:title" content="DPD AI Resume — 100% ATS-Approved Builder" />
     <meta property="og:description" content="Free AI-powered tool to build ATS-optimized resumes for Data Analysts and Tech Professionals." />
     <meta property="og:url" content="https://dpdai-resume.vercel.app" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DPD AI Resume Builder" />
+    
+    <!-- Clickable Preview Image Tags Linked to Your Uploaded Banner -->
+    <meta property="og:image" content="https://dpdai-resume.vercel.app/banner.jpg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
 
     <script>
     // Silence Tailwind CDN production warning (cosmetic only, not an error)
@@ -53,7 +58,6 @@
 
     <div id="dpdCoverPage" class="no-print">
         <div class="text-3xl md:text-5xl dpd-brand-mark text-slate-100 tracking-tight">DPD <span class="text-blue-500">AI</span> RESUME</div>
-        <!-- SEO Primary Heading Embedded Cleanly inside Cover Page -->
         <h1 class="text-slate-300 text-sm md:text-base max-w-lg text-center px-6 font-semibold">The 100% ATS-Approved AI Resume Builder for Data Analysts & Tech Professionals</h1>
         <p class="text-slate-400 text-xs md:text-sm max-w-sm text-center px-6">AI-powered semantic mapping built to bypass corporate tracking filters in minutes.</p>
         <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-sm tracking-wide transition-transform transform active:scale-95">Create ATS Approved Resume</button>
@@ -782,7 +786,6 @@ function calculateAndRenderAtsScoringMetrics() {
     }
 }
 
-// ── NEW ATS SEMANTIC BULLET GENERATOR ──
 function formatATSBullets(text) {
     if (!text) return "";
     const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
@@ -823,14 +826,12 @@ function executeMasterCompilationRenderPipeline() {
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        // Uses Semantic ATS Bullets
         expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div>${formatATSBullets(e.duties)}</div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        // Uses Semantic ATS Bullets
         projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
     });
 
@@ -840,9 +841,6 @@ function executeMasterCompilationRenderPipeline() {
     let eduItemsHTML = "";
     engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
 
-    // ── ALL 6 TEMPLATES ARE NOW STRICT SINGLE-COLUMN & 100% ATS APPROVED ──
-
-    // 1. CRIMSON (Classic Executive) & 3. MINIMAL (Technical Monospace)
     if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
         const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
         const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase ${borderStyle} mt-5" style="color:${hex};border-color:${engineState.activeLayoutTemplateID === 3 ? '#94a3b8' : hex};">${t}</h3>`;
@@ -868,7 +866,6 @@ function executeMasterCompilationRenderPipeline() {
                 ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
             </div>`;
     } 
-    // 2. NAVY (Modern Corporate) & 4. TECH (Silicon Valley)
     else if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
         const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-5 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${t}</h3>`;
 
@@ -893,7 +890,6 @@ function executeMasterCompilationRenderPipeline() {
                 ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
             </div>`;
     } 
-    // 5. RETRO (Editorial / Academic Serif)
     else if (engineState.activeLayoutTemplateID === 5) {
         const sh = t => `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-5 text-center" style="color:${hex};border-color:#cbd5e1;">${t}</h3>`;
 
@@ -916,7 +912,6 @@ function executeMasterCompilationRenderPipeline() {
                 ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
             </div>`;
     } 
-    // 6. ROYAL (Bold Leadership Banner)
     else if (engineState.activeLayoutTemplateID === 6) {
         const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1.5 rounded mb-2 mt-5 text-white" style="background-color:${hex};">${t}</h3>`;
 
@@ -1008,7 +1003,7 @@ async function verifyPaymentAndActivate() {
             closeSubscriptionGateway(); renderSubscriptionStatusIndicator();
             document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
             const banner = document.getElementById('successBanner');
-            if (banner) { banner.innerText = '🎉 Premium access activated for ' + days + ' days! Downloading your resume...'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 7000); }
+            if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days! Downloading your resume...'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 7000); }
             setTimeout(() => dpdSmartPrint(), 800);
         } else { showVerifyError(data.error || 'Payment ID not found. Please check and try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
     } catch(e) { showVerifyError('Verification failed. Please try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
@@ -1027,11 +1022,9 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
     setTimeout(printFn, afterDelayMs);
 }
 
-// ── NEW ATS METADATA INJECTION ──
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
-    // Change document title right before print so the downloaded PDF saves with the user's name
     if (userName) document.title = userName + " - Resume";
     else document.title = "ATS Approved Resume";
     
