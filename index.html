@@ -58,6 +58,7 @@
 
     <div id="dpdCoverPage" class="no-print">
         <div class="text-3xl md:text-5xl dpd-brand-mark text-slate-100 tracking-tight">DPD <span class="text-blue-500">AI</span> RESUME</div>
+        <!-- SEO Primary Heading Embedded Cleanly inside Cover Page -->
         <h1 class="text-slate-300 text-sm md:text-base max-w-lg text-center px-6 font-semibold">The 100% ATS-Approved AI Resume Builder for Data Analysts & Tech Professionals</h1>
         <p class="text-slate-400 text-xs md:text-sm max-w-sm text-center px-6">AI-powered semantic mapping built to bypass corporate tracking filters in minutes.</p>
         <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-sm tracking-wide transition-transform transform active:scale-95">Create ATS Approved Resume</button>
@@ -243,6 +244,25 @@
                 </div>
             </div>
 
+            <!-- About & Contact Section (Hidden during Print/PDF export) -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-6 no-print text-slate-300 shadow-lg mb-8">
+                <div>
+                    <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2 mb-3">About DPD AI Resume</h2>
+                    <p class="text-xs text-slate-400 leading-relaxed text-justify">
+                        <strong>DPD AI Resume</strong> was built by Dipangshu Mukherjee, a data professional with 14 years of operational experience, including 8 years managing complex supply chain data at Tata Projects Ltd. Transitioning into Data Analytics, he realized that traditional resumes often fail Applicant Tracking Systems (ATS) due to poor formatting. This tool was engineered to solve that exact problem—using AI and strict structural layouts to help data analysts, SQL developers, and tech professionals bypass automated filters and land interviews.
+                    </p>
+                </div>
+                <div>
+                    <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2 mb-3">Contact & Support</h2>
+                    <div class="text-xs text-slate-400 space-y-2">
+                        <p>📍 <strong>Location:</strong> Cooch Behar, West Bengal, India</p>
+                        <p>📧 <strong>Email:</strong> <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a></p>
+                        <p>🔗 <strong>Network:</strong> <a href="https://linkedin.com/" target="_blank" class="text-blue-400 hover:underline">Connect with me on LinkedIn</a></p>
+                        <p class="mt-3 italic opacity-80">For technical support, feedback, or feature requests, feel free to reach out directly!</p>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -376,21 +396,34 @@ function executeClientFileExtraction(event) {
                     const page = await pdf.getPage(p);
                     const content = await page.getTextContent();
                     const lineMap = {};
+                    
                     content.items.forEach(item => {
-                        const y = Math.round(item.transform[5]);
-                        if (!lineMap[y]) lineMap[y] = [];
-                        lineMap[y].push({ x: item.transform[4], str: item.str });
+                        let rawY = item.transform[5];
+                        let matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
+                        let finalY = matchedY ? matchedY : Math.round(rawY);
+                        
+                        if (!lineMap[finalY]) lineMap[finalY] = [];
+                        lineMap[finalY].push({ x: item.transform[4], str: item.str });
                     });
+
                     Object.keys(lineMap).map(Number).sort((a,b) => b - a).forEach(y => {
-                        const lineStr = lineMap[y].sort((a,b) => a.x - b.x).map(i => i.str).join(' ').trim();
+                        const lineStr = lineMap[y]
+                            .sort((a,b) => a.x - b.x)
+                            .map(i => i.str)
+                            .join(' ')
+                            .replace(/\s{2,}/g, ' ')
+                            .trim();
                         if (lineStr) text += lineStr + "\n";
                     });
                     text += "\n";
                 }
+                
                 document.getElementById('rawContentData').value = text.trim();
                 fb.innerText = "✅ PDF extracted: " + file.name; fb.className = "text-[10px] text-emerald-400 font-bold";
                 smartParseAndFill(text.trim());
-            } catch(err) { fb.innerText = "❌ Error reading PDF."; fb.className = "text-[10px] text-red-400 font-medium"; }
+            } catch(err) { 
+                fb.innerText = "❌ Error reading PDF."; fb.className = "text-[10px] text-red-400 font-medium"; 
+            }
             finally { event.target.value = ""; }
         };
         reader.readAsArrayBuffer(file);
