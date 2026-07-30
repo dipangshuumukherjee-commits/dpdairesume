@@ -206,6 +206,14 @@
                 </div>
             </div>
 
+            <!-- START: Deep AI ATS Matcher -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print shadow-lg mt-3">
+                <label class="block text-xs font-bold text-blue-400 uppercase tracking-wide">Target Job Description (AI Matcher)</label>
+                <textarea id="jobDescriptionTarget" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500" placeholder="Paste the target job description here to generate a real AI ATS score and extract missing skills..."></textarea>
+                <button type="button" onclick="executeAIAtsAnalysis()" id="btnAIAtsAnalyze" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-2">🤖 Run Deep AI ATS Analysis</button>
+            </div>
+            <!-- END: Deep AI ATS Matcher -->
+
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 space-y-2 no-print shadow-sm">
                 <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select 100% ATS-Approved Layout Theme Format:</span>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs font-semibold">
@@ -1066,6 +1074,73 @@ function dpdSmartPrint() {
         setTimeout(() => document.title = originalTitle, 1000);
     }); 
 }
+
+// ==========================================
+// NEW AI ATS ANALYSIS FUNCTION ADDED HERE
+// ==========================================
+async function executeAIAtsAnalysis() {
+    const jd = document.getElementById('jobDescriptionTarget').value.trim();
+    if (!jd) { alert("Please paste a Job Description first."); return; }
+
+    const btn = document.getElementById('btnAIAtsAnalyze');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ AI Brain is cross-referencing keywords...";
+    btn.disabled = true;
+
+    // We extract the exact formatted text from the live preview canvas
+    const canvas = document.getElementById('canvasDocumentRenderTree');
+    const resumeText = canvas.innerText || canvas.textContent;
+
+    try {
+        const response = await fetch('/api/gemini', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `Act as a strict Applicant Tracking System. Compare the following Resume against the Job Description. Calculate an ATS match score (0-100). Identify up to 5 critical missing keywords/skills. Return ONLY valid JSON in this exact format: {"score": 85, "missing": ["skill1", "skill2"]}\n\nResume:\n${resumeText}\n\nJob Description:\n${jd}`
+                    }]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
+        const cleanJson = textResponse.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
+        const parsed = JSON.parse(cleanJson);
+
+        const score = parsed.score || 0;
+        const missing = (parsed.missing || []).join(', ');
+
+        // Dynamically override the existing static UI meters
+        document.getElementById('atsMeterTrackGauge').style.width = score + '%';
+        document.getElementById('atsPercentageLabel').innerText = score + '%';
+
+        const badge = document.getElementById('atsMetricBadge');
+        const fb = document.getElementById('atsFeedbackString');
+
+        if (score < 60) { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40"; badge.innerText="Low Match"; 
+        } else if (score < 80) { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40"; badge.innerText="Fair Match"; 
+        } else { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40"; badge.innerText="Strong Match"; 
+        }
+
+        if (missing) {
+            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${missing}</span>`;
+        } else {
+            fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
+        }
+
+    } catch (error) {
+        console.error("AI Match Error:", error);
+        alert("AI Analysis failed. Ensure backend API is responding with JSON.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+// ==========================================
 
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
