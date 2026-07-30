@@ -724,6 +724,7 @@ async function executeDynamicAiSummaryGeneration() {
 }
 
 function syncExpField(i,f,v) { if(!engineState.experience[i]) engineState.experience[i]={company:"",role:"",dates:"",duties:""}; engineState.experience[i][f]=v; runMasterManualSyncAndGenerate(); }
+
 function renderExperienceFormInputs() {
     const wrapper = document.getElementById('experienceDynamicFormWrapper');
     if(!wrapper) return;
@@ -735,9 +736,16 @@ function renderExperienceFormInputs() {
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Role / Title</label><input type="text" value="${esc(exp.role)}" oninput="syncExpField(${idx},'role',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Dates</label><input type="text" value="${esc(exp.dates)}" oninput="syncExpField(${idx},'dates',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
         </div>
-        <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Duties / Achievements (Use new lines to create bullet points)</label><textarea rows="3" oninput="syncExpField(${idx},'duties',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(exp.duties)}</textarea></div>
+        <div>
+            <div class="flex items-center justify-between mb-1">
+                <label class="block text-[11px] font-semibold text-slate-400">Duties / Achievements</label>
+                <button type="button" onclick="executeDynamicAiExperienceGeneration(${idx})" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-[10px] py-1 px-2 rounded shadow transition-all">⚡ AI Optimize</button>
+            </div>
+            <textarea rows="4" oninput="syncExpField(${idx},'duties',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(exp.duties)}</textarea>
+        </div>
     </div>`).join('');
 }
+
 function addNewExperienceNodeItem() { engineState.experience.push({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
 function deleteExperienceNodeItem(i) { engineState.experience.splice(i,1); renderExperienceFormInputs(); runMasterManualSyncAndGenerate(); }
 
@@ -1105,7 +1113,7 @@ async function executeAIAtsAnalysis() {
 
         const data = await response.json();
         const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
-        const cleanJson = textResponse.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
+        const cleanJson = textResponse.replace(/```(?:json)?\s*/gi, '').replace(/\s*cleanup*/gi, '').replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
         const parsed = JSON.parse(cleanJson);
 
         const score = parsed.score || 0;
@@ -1138,6 +1146,61 @@ async function executeAIAtsAnalysis() {
     } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
+    }
+}
+// ==========================================
+
+// ==========================================
+// NEW AI EXPERIENCE OPTIMIZER FUNCTION
+// ==========================================
+async function executeDynamicAiExperienceGeneration(idx) {
+    const exp = engineState.experience[idx];
+    const targetTitle = document.getElementById('formTitle')?.value || "Professional";
+    const targetSkills = document.getElementById('formSkillsList')?.value || "";
+    const currentDuties = exp.duties || "General operational duties.";
+    
+    // Trigger existing loading screen
+    const overlay = document.getElementById('parsingOverlay');
+    const status = document.getElementById('parsingStatus');
+    
+    if (overlay) overlay.classList.add('active');
+    if (status) status.innerText = "AI is rewriting experience to bypass ATS filters...";
+
+    try {
+        const prompt = `Act as an expert technical resume writer. Rewrite the following work experience into 3 to 4 impactful, data-driven, and ATS-optimized bullet points. 
+        The user worked as a ${exp.role} at ${exp.company}. 
+        Their target job title is: ${targetTitle}. 
+        Core skills to integrate naturally if applicable: ${targetSkills}.
+        
+        Original description to improve:
+        ${currentDuties}
+        
+        Return ONLY the raw bullet points. Start each line with a • symbol. Do not include introductory text, labels, or markdown formatting blocks.`;
+
+        const response = await fetch('/api/gemini', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        
+        const data = await response.json();
+        let textVal = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        
+        if (textVal) {
+            // Clean up any potential markdown formatting the AI might return
+            textVal = textVal.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
+            
+            // Save the optimized text back to state and trigger UI updates
+            engineState.experience[idx].duties = textVal;
+            renderExperienceFormInputs();
+            runMasterManualSyncAndGenerate();
+        }
+    } catch(err) {
+        console.error("AI Experience Gen Error:", err);
+        alert("AI optimization failed. Please check your connection or API.");
+    } finally { 
+        // Hide loading screen
+        if (overlay) overlay.classList.remove('active'); 
     }
 }
 // ==========================================
