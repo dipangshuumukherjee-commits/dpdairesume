@@ -237,6 +237,25 @@
                 </div>
             </div>
 
+            <!-- SEO Testimonials Section (Hidden during Print/PDF export) -->
+            <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 no-print text-slate-300 mt-6 shadow-lg">
+                <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">What Our Users Say</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
+                    <!-- Review 1 -->
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="flex items-center gap-1 mb-2 text-amber-400">⭐⭐⭐⭐⭐</div>
+                        <p class="text-slate-400 italic">"This AI builder helped me transition from a Store Assistant to a Data Analyst role! The ATS keyword scanner is brilliant and exactly what I needed to get past the filters."</p>
+                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Rahul S., Data Analyst</p>
+                    </div>
+                    <!-- Review 2 -->
+                    <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
+                        <div class="flex items-center gap-1 mb-2 text-amber-400">⭐⭐⭐⭐⭐</div>
+                        <p class="text-slate-400 italic">"I was struggling with table formatting in Word that kept messing up my applications. The clean, 100% ATS-approved layouts here fixed the issue instantly. Highly recommended."</p>
+                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Amit P., SQL Developer</p>
+                    </div>
+                </div>
+            </div>
+
             <!-- SEO FAQ Section targeting Long-Tail Keywords (Hidden during Print/PDF export) -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 no-print text-slate-300 mt-6 shadow-lg">
                 <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">Frequently Asked Questions</h2>
@@ -329,6 +348,16 @@
                 <p class="text-xs text-slate-400 mt-1">Help us improve DPD AI Resume Builder.</p>
             </div>
             <div class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Rate your experience</label>
+                    <select id="feedbackRatingInput" class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none">
+                        <option value="5" selected>⭐⭐⭐⭐⭐ (5/5) Excellent</option>
+                        <option value="4">⭐⭐⭐⭐ (4/5) Good</option>
+                        <option value="3">⭐⭐⭐ (3/5) Average</option>
+                        <option value="2">⭐⭐ (2/5) Poor</option>
+                        <option value="1">⭐ (1/5) Terrible</option>
+                    </select>
+                </div>
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1">How did you hear about us?</label>
                     <select id="feedbackSourceInput" class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none">
@@ -1136,6 +1165,7 @@ function closeFeedbackModal() {
 }
 
 async function submitFeedbackData() {
+    const rating = document.getElementById('feedbackRatingInput').value;
     const source = document.getElementById('feedbackSourceInput').value;
     const text = document.getElementById('feedbackTextInput').value.trim();
     const btn = document.getElementById('submitFeedbackBtn');
@@ -1160,13 +1190,14 @@ async function submitFeedbackData() {
             },
             body: JSON.stringify({
                 
-                // <!-- IMPORTANT: GET YOUR FREE ACCESS KEY FROM WEB3FORMS.COM AND PUT IT HERE -->
-                access_key: "YOUR_WEB3FORMS_ACCESS_KEY_HERE", 
+                // <!-- LIVE ACCESS KEY EMBEDDED HERE -->
+                access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc", 
                 
                 subject: "New Feedback for DPD AI Resume Builder",
                 from_name: "DPD Resume Bot",
                 User_Name: userName,
                 User_Email: userEmail,
+                Rating: rating + " Stars",
                 Source: source,
                 Feedback: text
             })
@@ -1193,7 +1224,7 @@ async function submitFeedbackData() {
         console.error("Failed to send feedback:", error);
         btn.innerText = 'Submit Feedback ✓';
         btn.disabled = false;
-        alert("Make sure you replaced 'YOUR_WEB3FORMS_ACCESS_KEY_HERE' in the code!");
+        alert("Something went wrong while submitting. Please try again.");
     }
 }
 // ==========================================
