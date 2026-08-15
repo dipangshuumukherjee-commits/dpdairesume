@@ -903,10 +903,16 @@ function calculateAndRenderAtsScoringMetrics() {
 function formatATSBullets(text) {
     if (!text) return "";
     const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-    if (lines.length === 1) return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5">${lines[0]}</p>`;
-    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+    
+    if (lines.length === 1) {
+        return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5" style="margin-top: 6px; margin-bottom: 6px;">${lines[0]}</p>`;
+    }
+    
+    // Forces MS Word to render physical bullets on separate lines, while keeping the website preview looking perfect
+    return `<div class="mt-1.5 text-[11px] text-slate-600 text-justify" style="margin-top: 6px;">
+        ${lines.map(l => `<p style="margin: 3px 0 3px 15px; display: block;">• ${l}</p>`).join('')}
+    </div>`;
 }
-
 function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
     const canvas = document.getElementById('canvasDocumentRenderTree');
