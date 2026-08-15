@@ -900,20 +900,12 @@ function calculateAndRenderAtsScoringMetrics() {
     }
 }
 
-// ==========================================
-// FIX: MS Word Compatible Bullet Points
-// ==========================================
 function formatATSBullets(text) {
     if (!text) return "";
     const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-    
-    if (lines.length === 1) {
-        return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5" style="margin-top: 4pt; margin-bottom: 4pt;">${lines[0]}</p>`;
-    }
-    
-    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify" style="margin-top: 4pt; margin-bottom: 4pt; padding-left: 20pt;">${lines.map(l => `<li style="margin-bottom: 3pt;">${l}</li>`).join('')}</ul>`;
+    if (lines.length === 1) return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5">${lines[0]}</p>`;
+    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
 }
-// ==========================================
 
 function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
@@ -945,30 +937,27 @@ function executeMasterCompilationRenderPipeline() {
 
     let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${engineState.summary}</p>` : "";
 
-    // ==========================================
-    // FIX: MS Word Compatible Floats
-    // ==========================================
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal" style="float: right;">${e.dates||''}</span><div style="clear:both;"></div></div>${formatATSBullets(e.duties)}</div>`;
+        // Restored EXACT formatting for PDF so flexbox works perfectly
+        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal whitespace-nowrap">${e.dates||''}</span></div><div class="word-clear" style="display:none; clear:both;"></div>${formatATSBullets(e.duties)}</div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]" style="float: right;">${p.link}</span>` : ''}<div style="clear:both;"></div></div>${formatATSBullets(p.description)}</div>`;
+        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px] whitespace-nowrap">${p.link}</span>` : ''}</div><div class="word-clear" style="display:none; clear:both;"></div>${formatATSBullets(p.description)}</div>`;
     });
-    
-    let eduItemsHTML = "";
-    engineState.education.forEach(e => { 
-        if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500" style="float: right;">${e.year||''}</span><div style="clear:both;"></div></div>`; 
-    });
-    // ==========================================
 
     let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${s}</span>`).join('')}</div>` : "";
     let certItemsHTML = "";
     engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
+    
+    let eduItemsHTML = "";
+    engineState.education.forEach(e => { 
+        if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500 whitespace-nowrap">${e.year||''}</span></div><div class="word-clear" style="display:none; clear:both;"></div>`; 
+    });
 
     if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
         const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
@@ -1153,7 +1142,7 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 }
 
 // ==========================================
-// FIX: MS Word Compatible Formatting Logic
+// FIX: PDF Formatting Restored & Word Engine Upgraded
 // ==========================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
@@ -1165,29 +1154,49 @@ function dpdSmartPrint() {
         
         const printElement = document.getElementById('canvasDocumentRenderTree');
         
+        // This heavily structured CSS targets Microsoft Word exclusively to mimic the Tailwind layout
         let sourceHTML = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head>
             <meta charset='utf-8'>
             <title>Resume</title>
             <style>
-                /* Forces MS Word to ignore Tailwind containers and use full page width */
                 @page { margin: 1in; size: 8.5in 11in; }
-                body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #000; width: 100%; max-width: 100%; padding: 0; margin: 0; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #000; width: 100%; padding: 0; margin: 0; }
+                
+                /* Mapping Tailwind classes to native CSS so Word reads them correctly */
+                .font-bold { font-weight: bold !important; }
+                .font-extrabold { font-weight: 800 !important; }
+                .font-black { font-weight: 900 !important; }
+                .font-semibold { font-weight: 600 !important; }
+                .text-slate-900 { color: #0f172a !important; }
+                .text-slate-700 { color: #334155 !important; }
+                .text-slate-600 { color: #475569 !important; }
+                .text-slate-500 { color: #64748b !important; }
+                .text-blue-600 { color: #2563eb !important; }
+                .italic { font-style: italic !important; }
+                .uppercase { text-transform: uppercase !important; }
+                
+                /* Headings & Text */
                 h1 { font-size: 20pt; font-weight: bold; margin-bottom: 2pt; color: #000; text-transform: uppercase; text-align: left; }
                 h3 { font-size: 12pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 2pt; margin-top: 15pt; margin-bottom: 5pt; text-transform: uppercase; color: #000; }
-                
-                ul { margin-top: 5pt; padding-left: 20pt; margin-bottom: 10pt; list-style-type: disc !important; display: block; }
-                li { margin-bottom: 4pt; text-align: justify; font-size: 10.5pt; color: #111; display: list-item; }
                 p { margin: 4pt 0; text-align: justify; font-size: 10.5pt; color: #111; display: block; }
                 b, strong { font-weight: bold; color: #000; }
                 
-                /* Aggressive resets against Tailwind flexbox rendering */
-                div, .w-full, .max-w-full, .resume-print-canvas { display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
-                .flex { display: block !important; width: 100% !important; }
-                .justify-between { display: block !important; width: 100% !important; }
-                .grid { display: block !important; width: 100% !important; }
-                span { display: inline !important; }
+                /* Lists */
+                ul { margin-top: 5pt; padding-left: 20pt; margin-bottom: 10pt; list-style-type: disc !important; display: block; }
+                li { margin-bottom: 4pt; text-align: justify; font-size: 10.5pt; color: #111; display: list-item; }
+                
+                /* MS Word Layout Hack: Forces flexbox to act like floated blocks */
+                .flex { display: block; width: 100%; }
+                .justify-between { display: block; width: 100%; }
+                .justify-between > span:first-child { float: left; }
+                .justify-between > span:last-child { float: right; }
+                .word-clear { display: block !important; clear: both !important; }
+                
+                /* Contact Info Spacing */
+                .gap-x-2 > span, .gap-x-3 > span { margin-right: 12pt; display: inline-block; }
+                .gap-y-1 { margin-top: 4pt; margin-bottom: 4pt; display: block; }
             </style>
         </head>
         <body>
@@ -1209,7 +1218,10 @@ function dpdSmartPrint() {
         
         setTimeout(() => {
             const fm = document.getElementById('feedbackModalGate');
-            if (fm) fm.classList.remove('hidden');
+            if (fm) {
+                fm.classList.remove('hidden');
+                fm.style.display = ''; // Ensure display is unset so Tailwind class works
+            }
         }, 800);
         
     } else {
@@ -1217,7 +1229,10 @@ function dpdSmartPrint() {
             document.title = originalTitle;
             setTimeout(() => {
                 const fm = document.getElementById('feedbackModalGate');
-                if (fm) fm.classList.remove('hidden');
+                if (fm) {
+                    fm.classList.remove('hidden');
+                    fm.style.display = ''; // Ensure display is unset so Tailwind class works
+                }
             }, 800);
             window.onafterprint = null; 
         };
@@ -1236,10 +1251,9 @@ function closeFeedbackModal() {
     const fm = document.getElementById('feedbackModalGate');
     if(fm) {
         fm.classList.add('hidden');
-        fm.style.display = ''; // Removes any forced display rules so it actually vanishes
+        fm.style.display = ''; // Clears inline styles so the 'hidden' class hides the window
     }
     
-    // Resets the button so it is fresh next time
     setTimeout(() => {
         const btn = document.getElementById('submitFeedbackBtn');
         if(btn) {
@@ -1483,7 +1497,6 @@ window.onload = async function() {
         const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10), days = plan === 59 ? 30 : 7;
         const banner = document.getElementById('successBanner');
         if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 8000); }
-        // Ensure format was saved during checkout
         setTimeout(() => dpdSmartPrint(), 800);
     }
     renderSubscriptionStatusIndicator();
