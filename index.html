@@ -226,8 +226,10 @@
                 </div>
             </div>
 
-            <div class="flex justify-end no-print">
-                <button onclick="displaySubscriptionGateway()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">💾 Export / Download Verified Document</button>
+            <!-- EXPORT BUTTONS UPDATE (DOCX & PDF) -->
+            <div class="flex justify-end gap-3 no-print">
+                <button onclick="displaySubscriptionGateway('word')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">📝 Download as Word (.doc)</button>
+                <button onclick="displaySubscriptionGateway('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">💾 Download as PDF</button>
             </div>
 
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
@@ -299,12 +301,12 @@
             <div id="payScreen1">
                 <div class="text-center mb-5">
                     <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
-                    <h3 class="text-lg font-black text-slate-100">Unlock Premium PDF Export</h3>
-                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume as PDF</p>
+                    <h3 class="text-lg font-black text-slate-100">Unlock Premium Export</h3>
+                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume</p>
                 </div>
                 <div class="space-y-3 mb-5">
                     <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
-                        <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full PDF downloads for 7 days</span></div>
+                        <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
                         <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
                     <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
@@ -385,6 +387,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 let engineState = {
     activeSectionTab: 1, activeLayoutTemplateID: 1,
     globalCachedProfileImageStream: "", selectedSubscriptionValue: 19,
+    pendingExportFormat: 'pdf', // ADDED SUPPORT FOR EXPORT TYPE
     personal: { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" },
     summary: "", experience: [], projects: [], education: [], certifications: [], skills: []
 };
@@ -1066,7 +1069,9 @@ function processImageUpload(event) {
 }
 function removePhotoImage() { engineState.globalCachedProfileImageStream=""; if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; executeMasterCompilationRenderPipeline(); }
 
-function displaySubscriptionGateway() {
+// UPDATED TO ACCEPT FORMAT PARAMETER
+function displaySubscriptionGateway(format = 'pdf') {
+    engineState.pendingExportFormat = format;
     if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
     document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
@@ -1134,28 +1139,80 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 }
 
 // ==========================================
-// CORRECTED PRINT FUNCTION (Highly Reliable Fallback)
+// CORRECTED PRINT & EXPORT FUNCTION
 // ==========================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
-    if (userName) document.title = userName + " - Resume";
-    else document.title = "ATS Approved Resume";
+    document.title = userName ? (userName + " - Resume") : "ATS Approved Resume";
+    const filename = userName ? (userName.replace(/\s+/g, '_') + "_Resume") : "ATS_Approved_Resume";
     
-    showPrintTipThenPrint(400, () => {
-        // This is a blocking command in browsers. The code stops here until the user saves or cancels.
-        window.print();
+    if (engineState.pendingExportFormat === 'word') {
         
-        // This code executes immediately after the print dialog disappears
+        // --- WORD DOCUMENT (.DOC) EXPORT LOGIC ---
+        const printElement = document.getElementById('canvasDocumentRenderTree');
+        
+        // Wrapping the HTML to ensure Word handles it cleanly as an ATS-friendly linear layout
+        let sourceHTML = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head>
+            <meta charset='utf-8'>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #000; }
+                h1 { font-size: 24pt; font-weight: bold; margin-bottom: 5pt; color: #000; text-transform: uppercase; }
+                h3 { font-size: 12pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 2pt; margin-top: 15pt; margin-bottom: 5pt; text-transform: uppercase; color: #000; }
+                ul { margin-top: 0; padding-left: 20pt; margin-bottom: 10pt; }
+                li { margin-bottom: 3pt; text-align: justify; }
+                p { margin: 2pt 0; text-align: justify; }
+                b, strong { font-weight: bold; color: #000; }
+            </style>
+        </head>
+        <body>
+            ${printElement.innerHTML}
+        </body>
+        </html>`;
+        
+        // Generate the blob and trigger download
+        const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename + '.doc';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        document.title = originalTitle; // Restore original tab title
+        
+        // Trigger the feedback window immediately after download completes
         setTimeout(() => {
-            document.title = originalTitle;
-            
-            // REMOVED: localStorage check is gone so it will ALWAYS pop up for you!
             const fm = document.getElementById('feedbackModalGate');
-            if(fm) fm.classList.remove('hidden');
-            
-        }, 1000);
-    }); 
+            if (fm) {
+                fm.classList.remove('hidden');
+                fm.style.display = 'flex';
+            }
+        }, 800);
+        
+    } else {
+
+        // --- STANDARD PDF / PRINT LOGIC ---
+        window.onafterprint = function() {
+            document.title = originalTitle;
+            setTimeout(() => {
+                const fm = document.getElementById('feedbackModalGate');
+                if (fm) {
+                    fm.classList.remove('hidden');
+                    fm.style.display = 'flex';
+                }
+            }, 800);
+            window.onafterprint = null; // Clean up listener
+        };
+
+        showPrintTipThenPrint(400, () => {
+            window.print();
+        }); 
+    }
 }
 // ==========================================
 
@@ -1165,7 +1222,6 @@ function dpdSmartPrint() {
 function closeFeedbackModal() {
     const fm = document.getElementById('feedbackModalGate');
     if(fm) fm.classList.add('hidden');
-    // LOCALSTORAGE SAVE IS REMOVED HERE TOO FOR TESTING
 }
 
 async function submitFeedbackData() {
@@ -1408,7 +1464,8 @@ window.onload = async function() {
         const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10), days = plan === 59 ? 30 : 7;
         const banner = document.getElementById('successBanner');
         if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 8000); }
-        showPrintTipThenPrint(1200, () => window.print());
+        // Ensure format was saved during checkout
+        setTimeout(() => dpdSmartPrint(), 800);
     }
     renderSubscriptionStatusIndicator();
 };
