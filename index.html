@@ -387,7 +387,7 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 let engineState = {
     activeSectionTab: 1, activeLayoutTemplateID: 1,
     globalCachedProfileImageStream: "", selectedSubscriptionValue: 19,
-    pendingExportFormat: 'pdf', // ADDED SUPPORT FOR EXPORT TYPE
+    pendingExportFormat: 'pdf', 
     personal: { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" },
     summary: "", experience: [], projects: [], education: [], certifications: [], skills: []
 };
@@ -900,19 +900,21 @@ function calculateAndRenderAtsScoringMetrics() {
     }
 }
 
+// ==========================================
+// FIX: MS Word Compatible Bullet Points
+// ==========================================
 function formatATSBullets(text) {
     if (!text) return "";
     const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
     
     if (lines.length === 1) {
-        return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5" style="margin-top: 6px; margin-bottom: 6px;">${lines[0]}</p>`;
+        return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5" style="margin-top: 4pt; margin-bottom: 4pt;">${lines[0]}</p>`;
     }
     
-    // Forces MS Word to render physical bullets on separate lines, while keeping the website preview looking perfect
-    return `<div class="mt-1.5 text-[11px] text-slate-600 text-justify" style="margin-top: 6px;">
-        ${lines.map(l => `<p style="margin: 3px 0 3px 15px; display: block;">• ${l}</p>`).join('')}
-    </div>`;
+    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify" style="margin-top: 4pt; margin-bottom: 4pt; padding-left: 20pt;">${lines.map(l => `<li style="margin-bottom: 3pt;">${l}</li>`).join('')}</ul>`;
 }
+// ==========================================
+
 function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
     const canvas = document.getElementById('canvasDocumentRenderTree');
@@ -943,23 +945,30 @@ function executeMasterCompilationRenderPipeline() {
 
     let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${engineState.summary}</p>` : "";
 
+    // ==========================================
+    // FIX: MS Word Compatible Floats
+    // ==========================================
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div>${formatATSBullets(e.duties)}</div>`;
+        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal" style="float: right;">${e.dates||''}</span><div style="clear:both;"></div></div>${formatATSBullets(e.duties)}</div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
+        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]" style="float: right;">${p.link}</span>` : ''}<div style="clear:both;"></div></div>${formatATSBullets(p.description)}</div>`;
     });
+    
+    let eduItemsHTML = "";
+    engineState.education.forEach(e => { 
+        if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500" style="float: right;">${e.year||''}</span><div style="clear:both;"></div></div>`; 
+    });
+    // ==========================================
 
     let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${s}</span>`).join('')}</div>` : "";
     let certItemsHTML = "";
     engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
-    let eduItemsHTML = "";
-    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
 
     if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
         const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
@@ -1075,7 +1084,6 @@ function processImageUpload(event) {
 }
 function removePhotoImage() { engineState.globalCachedProfileImageStream=""; if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; executeMasterCompilationRenderPipeline(); }
 
-// UPDATED TO ACCEPT FORMAT PARAMETER
 function displaySubscriptionGateway(format = 'pdf') {
     engineState.pendingExportFormat = format;
     if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
@@ -1145,7 +1153,7 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 }
 
 // ==========================================
-// CORRECTED PRINT & EXPORT FUNCTION
+// FIX: MS Word Compatible Formatting Logic
 // ==========================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
@@ -1155,22 +1163,31 @@ function dpdSmartPrint() {
     
     if (engineState.pendingExportFormat === 'word') {
         
-        // --- WORD DOCUMENT (.DOC) EXPORT LOGIC ---
         const printElement = document.getElementById('canvasDocumentRenderTree');
         
-        // Wrapping the HTML to ensure Word handles it cleanly as an ATS-friendly linear layout
         let sourceHTML = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head>
             <meta charset='utf-8'>
+            <title>Resume</title>
             <style>
-                body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #000; }
-                h1 { font-size: 24pt; font-weight: bold; margin-bottom: 5pt; color: #000; text-transform: uppercase; }
+                /* Forces MS Word to ignore Tailwind containers and use full page width */
+                @page { margin: 1in; size: 8.5in 11in; }
+                body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 11pt; color: #000; width: 100%; max-width: 100%; padding: 0; margin: 0; }
+                h1 { font-size: 20pt; font-weight: bold; margin-bottom: 2pt; color: #000; text-transform: uppercase; text-align: left; }
                 h3 { font-size: 12pt; font-weight: bold; border-bottom: 1px solid #000; padding-bottom: 2pt; margin-top: 15pt; margin-bottom: 5pt; text-transform: uppercase; color: #000; }
-                ul { margin-top: 0; padding-left: 20pt; margin-bottom: 10pt; }
-                li { margin-bottom: 3pt; text-align: justify; }
-                p { margin: 2pt 0; text-align: justify; }
+                
+                ul { margin-top: 5pt; padding-left: 20pt; margin-bottom: 10pt; list-style-type: disc !important; display: block; }
+                li { margin-bottom: 4pt; text-align: justify; font-size: 10.5pt; color: #111; display: list-item; }
+                p { margin: 4pt 0; text-align: justify; font-size: 10.5pt; color: #111; display: block; }
                 b, strong { font-weight: bold; color: #000; }
+                
+                /* Aggressive resets against Tailwind flexbox rendering */
+                div, .w-full, .max-w-full, .resume-print-canvas { display: block !important; width: 100% !important; max-width: 100% !important; margin: 0 !important; padding: 0 !important; }
+                .flex { display: block !important; width: 100% !important; }
+                .justify-between { display: block !important; width: 100% !important; }
+                .grid { display: block !important; width: 100% !important; }
+                span { display: inline !important; }
             </style>
         </head>
         <body>
@@ -1178,7 +1195,6 @@ function dpdSmartPrint() {
         </body>
         </html>`;
         
-        // Generate the blob and trigger download
         const blob = new Blob(['\ufeff', sourceHTML], { type: 'application/msword' });
         const url = URL.createObjectURL(blob);
         const link = document.createElement('a');
@@ -1189,30 +1205,21 @@ function dpdSmartPrint() {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
         
-        document.title = originalTitle; // Restore original tab title
+        document.title = originalTitle; 
         
-        // Trigger the feedback window immediately after download completes
         setTimeout(() => {
             const fm = document.getElementById('feedbackModalGate');
-            if (fm) {
-                fm.classList.remove('hidden');
-                fm.style.display = 'flex';
-            }
+            if (fm) fm.classList.remove('hidden');
         }, 800);
         
     } else {
-
-        // --- STANDARD PDF / PRINT LOGIC ---
         window.onafterprint = function() {
             document.title = originalTitle;
             setTimeout(() => {
                 const fm = document.getElementById('feedbackModalGate');
-                if (fm) {
-                    fm.classList.remove('hidden');
-                    fm.style.display = 'flex';
-                }
+                if (fm) fm.classList.remove('hidden');
             }, 800);
-            window.onafterprint = null; // Clean up listener
+            window.onafterprint = null; 
         };
 
         showPrintTipThenPrint(400, () => {
@@ -1223,12 +1230,27 @@ function dpdSmartPrint() {
 // ==========================================
 
 // ==========================================
-// NEW FEEDBACK MODAL FUNCTIONS (Web3Forms)
+// FIX: Feedback Modal Close Issue
 // ==========================================
 function closeFeedbackModal() {
     const fm = document.getElementById('feedbackModalGate');
-    if(fm) fm.classList.add('hidden');
+    if(fm) {
+        fm.classList.add('hidden');
+        fm.style.display = ''; // Removes any forced display rules so it actually vanishes
+    }
+    
+    // Resets the button so it is fresh next time
+    setTimeout(() => {
+        const btn = document.getElementById('submitFeedbackBtn');
+        if(btn) {
+            btn.innerText = 'Submit Feedback ✓';
+            btn.classList.replace('bg-emerald-600', 'bg-blue-600');
+            btn.classList.replace('hover:bg-emerald-500', 'hover:bg-blue-500');
+            btn.disabled = false;
+        }
+    }, 500);
 }
+// ==========================================
 
 async function submitFeedbackData() {
     const rating = document.getElementById('feedbackRatingInput').value;
@@ -1291,11 +1313,7 @@ async function submitFeedbackData() {
         alert("Something went wrong while submitting. Please try again.");
     }
 }
-// ==========================================
 
-// ==========================================
-// AI ATS ANALYSIS FUNCTION 
-// ==========================================
 async function executeAIAtsAnalysis() {
     const jd = document.getElementById('jobDescriptionTarget').value.trim();
     if (!jd) { alert("Please paste a Job Description first."); return; }
@@ -1356,11 +1374,7 @@ async function executeAIAtsAnalysis() {
         btn.disabled = false;
     }
 }
-// ==========================================
 
-// ==========================================
-// AI EXPERIENCE OPTIMIZER FUNCTION
-// ==========================================
 async function executeDynamicAiExperienceGeneration(idx) {
     const exp = engineState.experience[idx];
     const targetTitle = document.getElementById('formTitle')?.value || "Professional";
@@ -1406,7 +1420,6 @@ async function executeDynamicAiExperienceGeneration(idx) {
         if (overlay) overlay.classList.remove('active'); 
     }
 }
-// ==========================================
 
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
