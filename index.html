@@ -274,6 +274,7 @@
         </div>
     </div>
 
+    <!-- START: Subscription Gate -->
     <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
             <div id="payScreen1">
@@ -316,6 +317,38 @@
             </div>
         </div>
     </div>
+    <!-- END: Subscription Gate -->
+
+    <!-- START: NEW Feedback Modal -->
+    <div id="feedbackModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
+            <button onclick="closeFeedbackModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg leading-none">✕</button>
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">🎉</div>
+                <h3 class="text-lg font-black text-slate-100">Download Complete!</h3>
+                <p class="text-xs text-slate-400 mt-1">Help us improve DPD AI Resume Builder.</p>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">How did you hear about us?</label>
+                    <select id="feedbackSourceInput" class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none">
+                        <option value="" disabled selected>Select an option...</option>
+                        <option value="LinkedIn">LinkedIn</option>
+                        <option value="YouTube">YouTube</option>
+                        <option value="Google Search">Google Search</option>
+                        <option value="Friend/Colleague">Friend or Colleague</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Any feedback or feature requests?</label>
+                    <textarea id="feedbackTextInput" rows="3" class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none" placeholder="Tell us what you liked or what we can improve..."></textarea>
+                </div>
+                <button id="submitFeedbackBtn" onclick="submitFeedbackData()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow transition-all">Submit Feedback ✓</button>
+            </div>
+        </div>
+    </div>
+    <!-- END: NEW Feedback Modal -->
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -1005,7 +1038,7 @@ function processImageUpload(event) {
 function removePhotoImage() { engineState.globalCachedProfileImageStream=""; if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; executeMasterCompilationRenderPipeline(); }
 
 function displaySubscriptionGateway() {
-    if (checkActiveSubscriptionPass()) { alert('✅ Subscription active. You can download or print your resume now.'); dpdSmartPrint(); return; }
+    if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
     document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
 
@@ -1071,6 +1104,7 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
     setTimeout(printFn, afterDelayMs);
 }
 
+// MODIFIED TO TRIGGER FEEDBACK FORM AFTER PRINTING
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
@@ -1079,9 +1113,55 @@ function dpdSmartPrint() {
     
     showPrintTipThenPrint(400, () => {
         window.print();
-        setTimeout(() => document.title = originalTitle, 1000);
+        setTimeout(() => {
+            document.title = originalTitle;
+            // CHECK IF FEEDBACK HAS ALREADY BEEN SHOWN
+            if (!localStorage.getItem('dpd_feedback_done')) {
+                setTimeout(() => {
+                    const fm = document.getElementById('feedbackModalGate');
+                    if(fm) fm.classList.remove('hidden');
+                }, 1000);
+            }
+        }, 1000);
     }); 
 }
+
+// ==========================================
+// NEW FEEDBACK MODAL FUNCTIONS
+// ==========================================
+function closeFeedbackModal() {
+    const fm = document.getElementById('feedbackModalGate');
+    if(fm) fm.classList.add('hidden');
+    localStorage.setItem('dpd_feedback_done', 'true'); // Prevents it from showing again
+}
+
+async function submitFeedbackData() {
+    const source = document.getElementById('feedbackSourceInput').value;
+    const text = document.getElementById('feedbackTextInput').value.trim();
+    const btn = document.getElementById('submitFeedbackBtn');
+    
+    if (!source && !text) {
+        alert("Please provide some feedback or let us know how you found us before submitting.");
+        return;
+    }
+
+    btn.innerText = 'Submitting...';
+    btn.disabled = true;
+
+    // Simulating API Call to backend (You can replace this with a real fetch to your backend later)
+    setTimeout(() => {
+        btn.innerText = 'Thank you! 🎉';
+        btn.classList.replace('bg-blue-600', 'bg-emerald-600');
+        btn.classList.replace('hover:bg-blue-500', 'hover:bg-emerald-500');
+        
+        localStorage.setItem('dpd_feedback_done', 'true');
+        
+        setTimeout(() => {
+            closeFeedbackModal();
+        }, 1500);
+    }, 800);
+}
+// ==========================================
 
 // ==========================================
 // NEW AI ATS ANALYSIS FUNCTION ADDED HERE
