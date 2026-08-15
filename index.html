@@ -1134,7 +1134,7 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 }
 
 // ==========================================
-// CORRECTED PRINT FUNCTION (Waits for PDF dialog to close)
+// CORRECTED PRINT FUNCTION (Highly Reliable Fallback)
 // ==========================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
@@ -1142,25 +1142,19 @@ function dpdSmartPrint() {
     if (userName) document.title = userName + " - Resume";
     else document.title = "ATS Approved Resume";
     
-    // Set up a one-time event listener that waits for the print dialog to close
-    window.addEventListener("afterprint", function cleanupPrint(event) {
-        document.title = originalTitle; // Restore original tab title
-        
-        // Remove the listener so it doesn't fire multiple times
-        window.removeEventListener("afterprint", cleanupPrint);
-
-        // Check if they've already given feedback. If not, show the modal.
-        if (!localStorage.getItem('dpd_feedback_done')) {
-            setTimeout(() => {
-                const fm = document.getElementById('feedbackModalGate');
-                if(fm) fm.classList.remove('hidden');
-            }, 500); // Wait half a second after the print window closes to show the popup
-        }
-    });
-
-    // Show the tip banner, then open the print dialog
     showPrintTipThenPrint(400, () => {
+        // This is a blocking command in browsers. The code stops here until the user saves or cancels.
         window.print();
+        
+        // This code executes immediately after the print dialog disappears
+        setTimeout(() => {
+            document.title = originalTitle;
+            
+            // REMOVED: localStorage check is gone so it will ALWAYS pop up for you!
+            const fm = document.getElementById('feedbackModalGate');
+            if(fm) fm.classList.remove('hidden');
+            
+        }, 1000);
     }); 
 }
 // ==========================================
@@ -1171,7 +1165,7 @@ function dpdSmartPrint() {
 function closeFeedbackModal() {
     const fm = document.getElementById('feedbackModalGate');
     if(fm) fm.classList.add('hidden');
-    localStorage.setItem('dpd_feedback_done', 'true'); // Prevents it from showing again
+    // LOCALSTORAGE SAVE IS REMOVED HERE TOO FOR TESTING
 }
 
 async function submitFeedbackData() {
@@ -1219,8 +1213,6 @@ async function submitFeedbackData() {
             btn.innerText = 'Thank you! 🎉';
             btn.classList.replace('bg-blue-600', 'bg-emerald-600');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-emerald-500');
-            
-            localStorage.setItem('dpd_feedback_done', 'true');
             
             setTimeout(() => {
                 closeFeedbackModal();
