@@ -1133,27 +1133,37 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
     setTimeout(printFn, afterDelayMs);
 }
 
-// MODIFIED TO TRIGGER FEEDBACK FORM AFTER PRINTING
+// ==========================================
+// CORRECTED PRINT FUNCTION (Waits for PDF dialog to close)
+// ==========================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
     if (userName) document.title = userName + " - Resume";
     else document.title = "ATS Approved Resume";
     
+    // Set up a one-time event listener that waits for the print dialog to close
+    window.addEventListener("afterprint", function cleanupPrint(event) {
+        document.title = originalTitle; // Restore original tab title
+        
+        // Remove the listener so it doesn't fire multiple times
+        window.removeEventListener("afterprint", cleanupPrint);
+
+        // Check if they've already given feedback. If not, show the modal.
+        if (!localStorage.getItem('dpd_feedback_done')) {
+            setTimeout(() => {
+                const fm = document.getElementById('feedbackModalGate');
+                if(fm) fm.classList.remove('hidden');
+            }, 500); // Wait half a second after the print window closes to show the popup
+        }
+    });
+
+    // Show the tip banner, then open the print dialog
     showPrintTipThenPrint(400, () => {
         window.print();
-        setTimeout(() => {
-            document.title = originalTitle;
-            // CHECK IF FEEDBACK HAS ALREADY BEEN SHOWN
-            if (!localStorage.getItem('dpd_feedback_done')) {
-                setTimeout(() => {
-                    const fm = document.getElementById('feedbackModalGate');
-                    if(fm) fm.classList.remove('hidden');
-                }, 1000);
-            }
-        }, 1000);
     }); 
 }
+// ==========================================
 
 // ==========================================
 // NEW FEEDBACK MODAL FUNCTIONS (Web3Forms)
