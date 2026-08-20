@@ -1143,7 +1143,7 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
-    document.title = userName ? (userName + " - Resume") : "ATS Approved Resume";
+    document.title = (userName ? (userName.replace(/\s+/g, '_') + "_Resume") : "ATS_Approved_Resume") + ".pdf";
     const filename = userName ? (userName.replace(/\s+/g, '_') + "_Resume") : "ATS_Approved_Resume";
     
     if (engineState.pendingExportFormat === 'word') {
