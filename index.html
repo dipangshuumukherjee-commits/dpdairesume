@@ -811,7 +811,8 @@ function renderExperienceFormInputs() {
     </div>`).join('');
 }
 
-function addNewExperienceNodeItem() { engineState.experience.push({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
+// CHANGED: .push() to .unshift() to add items to the top
+function addNewExperienceNodeItem() { engineState.experience.unshift({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
 function deleteExperienceNodeItem(i) { engineState.experience.splice(i,1); renderExperienceFormInputs(); runMasterManualSyncAndGenerate(); }
 
 function syncProjField(i,f,v) { if(!engineState.projects[i]) engineState.projects[i]={title:"",tools:"",link:"",description:""}; engineState.projects[i][f]=v; runMasterManualSyncAndGenerate(); }
@@ -829,7 +830,9 @@ function renderProjectFormInputs() {
         <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Key Outcomes & Details (Use new lines to create bullet points)</label><textarea rows="3" oninput="syncProjField(${idx},'description',this.value)" placeholder="Built interactive dashboards analyzing 50k+ records to optimize supply chain inventory flow by 15%." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(proj.description)}</textarea></div>
     </div>`).join('');
 }
-function addNewProjectNodeItem() { engineState.projects.push({title:"",tools:"",link:"",description:""}); renderProjectFormInputs(); }
+
+// CHANGED: .push() to .unshift() to add items to the top
+function addNewProjectNodeItem() { engineState.projects.unshift({title:"",tools:"",link:"",description:""}); renderProjectFormInputs(); }
 function deleteProjectNodeItem(i) { engineState.projects.splice(i,1); renderProjectFormInputs(); runMasterManualSyncAndGenerate(); }
 
 function syncEduField(i,f,v) { if(!engineState.education[i]) engineState.education[i]={school:"",degree:"",year:""}; engineState.education[i][f]=v; runMasterManualSyncAndGenerate(); }
@@ -846,7 +849,9 @@ function renderEducationFormInputs() {
         </div>
     </div>`).join('');
 }
-function addNewEducationNodeItem() { engineState.education.push({school:"",degree:"",year:""}); renderEducationFormInputs(); }
+
+// CHANGED: .push() to .unshift() to add items to the top
+function addNewEducationNodeItem() { engineState.education.unshift({school:"",degree:"",year:""}); renderEducationFormInputs(); }
 function deleteEducationNodeItem(i) { engineState.education.splice(i,1); renderEducationFormInputs(); runMasterManualSyncAndGenerate(); }
 
 function syncCertField(i,f,v) { if(!engineState.certifications[i]) engineState.certifications[i]={name:"",issuer:""}; engineState.certifications[i][f]=v; runMasterManualSyncAndGenerate(); }
@@ -860,7 +865,9 @@ function renderCertificationFormInputs() {
         <div><label class="block text-[10px] text-slate-400 mb-0.5">Issuer / Authority</label><input type="text" value="${esc(cert.issuer)}" oninput="syncCertField(${idx},'issuer',this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
     </div>`).join('');
 }
-function addNewCertificationNodeItem() { engineState.certifications.push({name:"",issuer:""}); renderCertificationFormInputs(); }
+
+// CHANGED: .push() to .unshift() to add items to the top
+function addNewCertificationNodeItem() { engineState.certifications.unshift({name:"",issuer:""}); renderCertificationFormInputs(); }
 function deleteCertificationNodeItem(i) { engineState.certifications.splice(i,1); renderCertificationFormInputs(); runMasterManualSyncAndGenerate(); }
 
 function calculateAndRenderAtsScoringMetrics() {
