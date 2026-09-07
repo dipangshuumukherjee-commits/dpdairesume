@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary SEO & Keyword Optimization -->
-    <title>AI Resume Builder for Data Analysts | 100% ATS-Approved</title>
-    <meta name="description" content="Stop failing automated scans. Build 100% ATS-approved resumes tailored for Data Analysts, SQL developers, and tech professionals in minutes.">
-    <meta name="keywords" content="AI resume builder for data analysts, 100% ATS-approved resume builder, resume builder for tech professionals, data analytics career transition resume, resume builder India">
+    <title>AI Resume Builder for All Industries | 100% ATS-Approved</title>
+    <meta name="description" content="Stop failing automated scans. Build 100% ATS-approved resumes tailored for job seekers across all industries in minutes.">
+    <meta name="keywords" content="AI resume builder, 100% ATS-approved resume builder, resume builder for all industries, career transition resume, resume builder India">
     
     <!-- Open Graph / Facebook / LinkedIn Preview Tags -->
     <meta property="og:title" content="DPD AI Resume — 100% ATS-Approved Builder" />
-    <meta property="og:description" content="Free AI-powered tool to build ATS-optimized resumes for Data Analysts and Tech Professionals." />
+    <meta property="og:description" content="Free AI-powered tool to build ATS-optimized resumes for all job seekers across industries." />
     <meta property="og:url" content="https://dpdai-resume.vercel.app" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DPD AI Resume Builder" />
@@ -49,20 +49,63 @@
         }
         #parsingOverlay { display:none; }
         #parsingOverlay.active { display:flex; }
-        #dpdCoverPage { position:fixed; inset:0; z-index:60; background:radial-gradient(circle at 30% 20%, #1e3a8a22, transparent 60%), #0f172a; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:28px; }
+        
+        /* NEW COVER PAGE STYLES */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: .7; transform: scale(1.05); }
+        }
+        .animate-pulse-slow { animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        .glass-panel { background: rgba(15, 23, 42, 0.7); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); }
+        #dpdCoverPage { position:fixed; inset:0; z-index:60; background-color: #020617; display:flex; align-items:center; justify-content:center; flex-direction:column; overflow: hidden; }
         #dpdCoverPage.dpd-hide { display:none; }
         .dpd-brand-mark { font-weight:900; letter-spacing:.5px; }
     </style>
 </head>
 <body class="p-3 md:p-6">
 
+    <!-- START: NEW STYLISH & ENERGETIC COVER PAGE -->
     <div id="dpdCoverPage" class="no-print">
-        <div class="text-3xl md:text-5xl dpd-brand-mark text-slate-100 tracking-tight">DPD <span class="text-blue-500">AI</span> RESUME</div>
-        <!-- SEO Primary Heading Embedded Cleanly inside Cover Page -->
-        <h1 class="text-slate-300 text-sm md:text-base max-w-lg text-center px-6 font-semibold">The 100% ATS-Approved AI Resume Builder for Data Analysts & Tech Professionals</h1>
-        <p class="text-slate-400 text-xs md:text-sm max-w-sm text-center px-6">AI-powered semantic mapping built to bypass corporate tracking filters in minutes.</p>
-        <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 px-8 rounded-lg shadow-lg text-sm tracking-wide transition-transform transform active:scale-95">Create ATS Approved Resume</button>
+        
+        <!-- Energetic Background Elements -->
+        <div class="absolute top-[-10%] left-[-10%] w-[500px] h-[500px] bg-blue-600/30 rounded-full blur-[120px] animate-pulse-slow"></div>
+        <div class="absolute bottom-[-10%] right-[-10%] w-[400px] h-[400px] bg-emerald-600/20 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+        
+        <!-- Glassmorphism Container -->
+        <div class="glass-panel relative z-10 flex flex-col items-center justify-center p-8 md:p-14 rounded-3xl shadow-2xl max-w-4xl mx-4 text-center border-t border-white/10 space-y-6">
+            
+            <!-- Trust Badge -->
+            <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-blue-900/40 border border-blue-500/30 text-blue-300 text-[10px] md:text-xs font-bold uppercase tracking-widest mb-2 shadow-inner">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]"></span> Live ATS Scanning API
+            </div>
+
+            <!-- Brand Logo -->
+            <div class="text-5xl md:text-7xl dpd-brand-mark text-white tracking-tighter drop-shadow-lg">
+                DPD <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">AI</span> RESUME
+            </div>
+            
+            <!-- SEO Primary Heading -->
+            <h1 class="text-2xl md:text-4xl font-black text-slate-100 max-w-2xl leading-tight">
+                The 100% ATS-Approved AI Resume Builder for <span class="text-emerald-400">All Job Seekers Across Industries</span>
+            </h1>
+            
+            <!-- Subtitle -->
+            <p class="text-slate-400 text-sm md:text-base max-w-xl leading-relaxed">
+                Stop getting rejected by automated bots. Our advanced semantic AI maps your experience directly into strict corporate tracking filters in minutes.
+            </p>
+            
+            <!-- Action Area -->
+            <div class="pt-4 flex flex-col items-center gap-4 w-full">
+                <button onclick="document.getElementById('dpdCoverPage').classList.add('dpd-hide')" class="w-full sm:w-auto bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black py-4 px-10 rounded-full shadow-[0_0_40px_-10px_rgba(59,130,246,0.8)] text-sm md:text-base tracking-wide transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center gap-2 border border-blue-400/30">
+                    ⚡ Build Your ATS Resume Now
+                </button>
+                <div class="flex items-center gap-2 text-xs text-slate-500 font-medium mt-2">
+                    <span class="text-amber-400 text-sm">★★★★★</span> Trusted by thousands of professionals worldwide
+                </div>
+            </div>
+        </div>
     </div>
+    <!-- END: NEW COVER PAGE -->
 
     <div class="no-print" style="position:fixed; top:14px; left:16px; z-index:40; display:flex; align-items:center; gap:12px;">
         <span class="dpd-brand-mark text-slate-100 text-sm md:text-base">DPD <span class="text-blue-500">AI</span> RESUME</span>
@@ -253,7 +296,7 @@
                     <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
                         <div class="flex items-center gap-1 mb-2 text-amber-400">⭐⭐⭐⭐⭐</div>
                         <p class="text-slate-400 italic">"I was struggling with table formatting in Word that kept messing up my applications. The clean, 100% ATS-approved layouts here fixed the issue instantly. Highly recommended."</p>
-                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Amit P., SQL Developer</p>
+                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Amit P., Professional</p>
                     </div>
                 </div>
             </div>
@@ -263,12 +306,12 @@
                 <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">Frequently Asked Questions</h2>
                 <div class="space-y-3 text-xs">
                     <div>
-                        <h3 class="font-semibold text-blue-400">Why is an ATS-approved resume builder important for data analysts?</h3>
-                        <p class="text-slate-400 mt-1 leading-relaxed">Data analytics roles require specific technical keywords like SQL, Power BI, Advanced Excel, and Python. Standard templates often use tables or text boxes that confuse automated Applicant Tracking Systems (ATS). Our 100% ATS-approved resume builder ensures your technical skills are mapped cleanly into single-column structures so hiring algorithms can score your profile accurately.</p>
+                        <h3 class="font-semibold text-blue-400">Why is an ATS-approved resume builder important for job seekers?</h3>
+                        <p class="text-slate-400 mt-1 leading-relaxed">Corporate roles require specific professional keywords. Standard templates often use tables or text boxes that confuse automated Applicant Tracking Systems (ATS). Our 100% ATS-approved resume builder ensures your skills are mapped cleanly into single-column structures so hiring algorithms can score your profile accurately.</p>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-blue-400">How does AI optimize a resume for tech professionals and career transitions?</h3>
-                        <p class="text-slate-400 mt-1 leading-relaxed">Our integrated AI engine analyzes unstructured work history and aligns it with formatting structures required by corporate hiring platforms like Workday, Greenhouse, and Taleo. Whether you have 14 years of operational experience or are pivoting directly into tech, our parser structures your achievements into high-impact bullet points.</p>
+                        <h3 class="font-semibold text-blue-400">How does AI optimize a resume for career transitions?</h3>
+                        <p class="text-slate-400 mt-1 leading-relaxed">Our integrated AI engine analyzes unstructured work history and aligns it with formatting structures required by corporate hiring platforms like Workday, Greenhouse, and Taleo. Whether you have years of experience or are pivoting into a new industry, our parser structures your achievements into high-impact bullet points.</p>
                     </div>
                 </div>
             </div>
@@ -278,7 +321,7 @@
                 <div>
                     <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2 mb-3">About DPD AI Resume</h2>
                     <p class="text-xs text-slate-400 leading-relaxed text-justify">
-                        <strong>DPD AI Resume</strong> was built by Dipangshu Mukherjee, a data professional with 14 years of operational experience, including 8 years managing complex supply chain data at Tata Projects Ltd. Transitioning into Data Analytics, he realized that traditional resumes often fail Applicant Tracking Systems (ATS) due to poor formatting. This tool was engineered to solve that exact problem—using AI and strict structural layouts to help data analysts, SQL developers, and tech professionals bypass automated filters and land interviews.
+                        <strong>DPD AI Resume</strong> was built by Dipangshu Mukherjee, a data professional with 14 years of operational experience, including 8 years managing complex supply chain data at Tata Projects Ltd. Transitioning into Data Analytics, he realized that traditional resumes often fail Applicant Tracking Systems (ATS) due to poor formatting. This tool was engineered to solve that exact problem—using AI and strict structural layouts to help professionals bypass automated filters and land interviews.
                     </p>
                 </div>
                 <div>
@@ -811,7 +854,6 @@ function renderExperienceFormInputs() {
     </div>`).join('');
 }
 
-// CHANGED: .push() to .unshift() to add items to the top
 function addNewExperienceNodeItem() { engineState.experience.unshift({company:"",role:"",dates:"",duties:""}); renderExperienceFormInputs(); }
 function deleteExperienceNodeItem(i) { engineState.experience.splice(i,1); renderExperienceFormInputs(); runMasterManualSyncAndGenerate(); }
 
@@ -831,7 +873,6 @@ function renderProjectFormInputs() {
     </div>`).join('');
 }
 
-// CHANGED: .push() to .unshift() to add items to the top
 function addNewProjectNodeItem() { engineState.projects.unshift({title:"",tools:"",link:"",description:""}); renderProjectFormInputs(); }
 function deleteProjectNodeItem(i) { engineState.projects.splice(i,1); renderProjectFormInputs(); runMasterManualSyncAndGenerate(); }
 
@@ -850,7 +891,6 @@ function renderEducationFormInputs() {
     </div>`).join('');
 }
 
-// CHANGED: .push() to .unshift() to add items to the top
 function addNewEducationNodeItem() { engineState.education.unshift({school:"",degree:"",year:""}); renderEducationFormInputs(); }
 function deleteEducationNodeItem(i) { engineState.education.splice(i,1); renderEducationFormInputs(); runMasterManualSyncAndGenerate(); }
 
@@ -866,7 +906,6 @@ function renderCertificationFormInputs() {
     </div>`).join('');
 }
 
-// CHANGED: .push() to .unshift() to add items to the top
 function addNewCertificationNodeItem() { engineState.certifications.unshift({name:"",issuer:""}); renderCertificationFormInputs(); }
 function deleteCertificationNodeItem(i) { engineState.certifications.splice(i,1); renderCertificationFormInputs(); runMasterManualSyncAndGenerate(); }
 
