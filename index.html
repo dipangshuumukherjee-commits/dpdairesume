@@ -224,7 +224,7 @@
                         <div id="certificationsDynamicFormWrapper" class="space-y-3"></div>
                     </div>
                     <div class="pt-4 border-t border-slate-700/50 space-y-3">
-                        <h4 class="text-sm font-bold text-slate-300">⚙️ Engineering System Data Stream Console</h4>
+                        <h4 class="text-sm font-bold text-slate-300">⚙️️ Engineering System Data Stream Console</h4>
                         <textarea id="rawContentData" class="w-full h-32 bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-mono focus:outline-none focus:border-blue-500" placeholder="Extracted clean text tracking mirror displays inside here..."></textarea>
                         <button type="button" onclick="runDirectPayloadSyncExtraction()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-1">⚡ Run Parsing & Format Sync</button>
                     </div>
@@ -595,7 +595,7 @@ async function smartParseAndFill(raw) {
         const response = await fetch('/api/gemini', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
+                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. IMPORTANT: For 'company' under 'experience', extract the FULL string including any brackets, project details, and locations (e.g. 'Company Name (Project, Location)'). Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
             })
         });
 
