@@ -595,7 +595,7 @@ async function smartParseAndFill(raw) {
         const response = await fetch('/api/gemini', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
+                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
             })
         });
 
@@ -706,7 +706,7 @@ function parseResume(raw) {
             if (/Present|\d{4}/i.test(row) && (row.includes('—') || row.includes('-')) && !row.startsWith('•')) {
                 if (currentExp) experience.push(currentExp);
                 let slices = row.split(/[—–|-]/);
-                let comp = slices[0] ? slices[0].trim().split(/[,|•]/) : ["Company"];
+                let comp = slices[0] ? slices[0].trim().split(/[|•]/) : ["Company"];
                 currentExp = { company: comp[0].trim(), role: comp[1] ? comp[1].trim() : "Specialist", dates: slices.slice(1).join('—').trim(), duties: "" };
             } else if (currentExp) currentExp.duties += (currentExp.duties ? "\n" : "") + row.replace(/^[•\-*]\s*/, '').trim();
         });
