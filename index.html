@@ -1432,7 +1432,7 @@ async function smartParseAndFill(raw) {
         const response = await fetch('/api/gemini', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
+                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. CRITICAL RULES: 1. In 'personal.address', only extract the candidate's personal home/city location from the contact header (e.g. 'Pirpainti, Bhagalpur, Bihar'). NEVER extract company names or job locations as personal.address. 2. In 'personal.title', extract the candidate's professional designation/headline; do not extract section headings. 3. In 'projects', only include projects explicitly listed under a Projects section; companies with 'Projects' in their name (e.g. Tata Projects Limited) belong strictly under 'experience'. Never invent fallback tools like 'Analytical Tools'—leave tools blank if not mentioned in the resume. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
             })
         });
 
@@ -1468,8 +1468,15 @@ async function smartParseAndFill(raw) {
 
 function reflowToLines(input) {
     let t = input;
-    const HEADING_WORDS = ['PROFESSIONAL\\s+SUMMARY','CAREER\\s+OBJECTIVE','SUMMARY','OBJECTIVE','WORK\\s+EXPERIENCE','EXPERIENCE','PROJECTS?','KEY\\s+PROJECTS','TECHNICAL\\s+PROJECTS','EDUCATION','KEY\\s+SKILLS','SKILLS','CERTIFICATIONS?','LANGUAGES?'];
-    t = t.replace(new RegExp('\\b(' + HEADING_WORDS.join('|') + ')\\b', 'gi'), '\n$1\n');
+    const HEADING_WORDS = [
+        'PROFESSIONAL\\s+SUMMARY', 'EXECUTIVE\\s+SUMMARY', 'CAREER\\s+OBJECTIVE', 'SUMMARY', 'OBJECTIVE',
+        'WORK\\s+EXPERIENCE', 'PROFESSIONAL\\s+EXPERIENCE', 'EMPLOYMENT\\s+HISTORY', 'WORK\\s+HISTORY',
+        'KEY\\s+TECHNICAL\\s+PROJECTS', 'TECHNICAL\\s+PROJECTS', 'KEY\\s+PROJECTS',
+        'EDUCATION\\s*&\\s*QUALIFICATIONS', 'ACADEMIC\\s+QUALIFICATIONS', 'EDUCATION',
+        'SKILLS\\s*&\\s*CORE\\s+COMPETENCIES', 'CORE\\s+COMPETENCIES', 'KEY\\s+SKILLS', 'TECHNICAL\\s+SKILLS', 'SKILLS',
+        'PROFESSIONAL\\s+CERTIFICATIONS', 'CERTIFICATIONS?', 'LANGUAGES?\\s*KNOWN', 'LANGUAGES?'
+    ];
+    t = t.replace(new RegExp('(?:^|\\n)\\s*(' + HEADING_WORDS.join('|') + ')\\s*(?:\\n|$)', 'gi'), '\n\n$1\n');
     t = t.replace(/\s+(?=[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,})/g, '\n');
     t = t.replace(/\s+(?=\+?\d[\d\-\s]{6,14}\d(?!\d))/g, '\n');
     return t.replace(/\s*([•\-*►▪▸→✓✔])\s*/g, '\n$1 ').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
@@ -1478,106 +1485,223 @@ function reflowToLines(input) {
 function parseResume(raw) {
     let text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n');
     if (text.split('\n').filter(l => l.trim().length > 0).length < 10) text = reflowToLines(text);
-    const upperText = text.toUpperCase();
-    
-    const markers = [
-        { id: "SUMMARY", idx: upperText.search(/SUMMARY|OBJECTIVE|PROFESSIONAL SUMMARY|EXECUTIVE PROFILE|PERSONAL STATEMENT/i) },
-        { id: "EXPERIENCE", idx: upperText.search(/WORK EXPERIENCE|EXPERIENCE|EMPLOYMENT HISTORY|WORK HISTORY/i) },
-        { id: "PROJECTS", idx: upperText.search(/PROJECTS?|KEY PROJECTS|TECHNICAL PROJECTS/i) },
-        { id: "SKILLS", idx: upperText.search(/KEY SKILLS|SKILLS|CORE COMPETENCIES/i) },
-        { id: "EDUCATION", idx: upperText.search(/EDUCATION|ACADEMIC ACCOMPLISHMENTS|ACADEMIC QUALIFICATIONS/i) },
-        { id: "CERTIFICATIONS", idx: upperText.search(/CERTIFICATION|CERTIFICATIONS/i) }
-    ].filter(m => m.idx !== -1).sort((a, b) => a.idx - b.idx);
+
+    // Section Definitions anchored to line starts to avoid matching company names (e.g. Tata Projects)
+    const sectionDefinitions = [
+        { id: "SUMMARY", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|CAREER\s+OBJECTIVE|EXECUTIVE\s+PROFILE|PERSONAL\s+STATEMENT|SUMMARY|OBJECTIVE)\s*(?:\n|$)/i },
+        { id: "EXPERIENCE", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+EXPERIENCE|WORK\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE)\s*(?:\n|$)/i },
+        { id: "PROJECTS", regex: /(?:^|\n)\s*(?:KEY\s+TECHNICAL\s+PROJECTS|TECHNICAL\s+PROJECTS|KEY\s+PROJECTS|NOTABLE\s+PROJECTS|ACADEMIC\s+PROJECTS|PROJECTS)\s*(?:\n|$)/i },
+        { id: "SKILLS", regex: /(?:^|\n)\s*(?:SKILLS\s*&\s*CORE\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|KEY\s+SKILLS|CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|SKILLS)\s*(?:\n|$)/i },
+        { id: "CERTIFICATIONS", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+CERTIFICATIONS|CERTIFICATIONS?|LICENSES?\s*&\s*CERTIFICATIONS?)\s*(?:\n|$)/i },
+        { id: "EDUCATION", regex: /(?:^|\n)\s*(?:ACADEMIC\s+QUALIFICATIONS|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|EDUCATION)\s*(?:\n|$)/i }
+    ];
+
+    const markers = [];
+    sectionDefinitions.forEach(sec => {
+        const m = text.match(sec.regex);
+        if (m) {
+            markers.push({ id: sec.id, idx: m.index, matchText: m[0] });
+        }
+    });
+
+    markers.sort((a, b) => a.idx - b.idx);
 
     const sectionsData = {};
     markers.forEach((marker, index) => {
-        let end = markers[index + 1] ? markers[index + 1].idx : text.length;
-        sectionsData[marker.id] = text.substring(marker.idx, end).trim(); 
+        const contentStart = marker.idx + marker.matchText.length;
+        const end = markers[index + 1] ? markers[index + 1].idx : text.length;
+        sectionsData[marker.id] = text.substring(contentStart, end).trim();
     });
 
+    const headerEnd = markers.length > 0 ? markers[0].idx : text.length;
+    const headerText = text.substring(0, headerEnd).trim();
+    const headerLines = headerEnd > 0 ? headerText.split('\n').map(l => l.trim()).filter(Boolean) : text.split('\n').slice(0, 8);
+
+    // 1. EXTRACT NAME & PROFESSIONAL TITLE
     let name = "", title = "";
-    const allLines = text.split('\n');
-    for (let i = 0; i < Math.min(allLines.length, 12); i++) {
-        let l = allLines[i].trim();
-        if (l.length > 3 && l.length < 45 && !/@/.test(l) && !/^\+?\d/.test(l) && !/RESUME|CURRICULUM/i.test(l)) {
-            if (!name) name = l; else if (!title && l.length < 60) { title = l; break; }
+    const invalidTitleWords = /^(?:RESUME|CURRICULUM|VITAE|CV|PROFILE|SUMMARY|EXPERIENCE|OBJECTIVE|CONTACT)$/i;
+
+    for (let i = 0; i < headerLines.length; i++) {
+        let l = headerLines[i].trim();
+        if (/@/.test(l) || /linkedin\.com|github\.com|http/i.test(l) || /^\+?\d[\d\s\-,]{7,}/.test(l)) continue;
+        if (l.length < 3 || l.length > 80) continue;
+        if (invalidTitleWords.test(l)) continue;
+
+        if (!name) {
+            name = l;
+        } else if (!title) {
+            title = l;
+            break;
         }
     }
 
+    // 2. EXTRACT CONTACT INFO
     const email = (text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) || [""])[0].trim();
-    const mobile = (text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}\b/) || [""])[0].trim();
+    const mobile = (text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}(?:\s*,\s*\d{10})?|\b(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/) || [""])[0].trim();
     const linkedin = (text.match(/linkedin\.com\/in\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
     const github = (text.match(/github\.com\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
     const portfolio = (text.match(/(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\/(?:portfolio|dashboard|[a-zA-Z0-9_\-]+)/i) || [""])[0].trim();
 
+    // 3. EXTRACT LABELS & ADDRESS (BOUNDED TO HEADER LINES)
     function extractLabel(patterns) {
         for (const pat of patterns) {
-            const m = text.match(new RegExp(pat + '\\s*[:\-—]\\s*([^\\n]{1,120})', 'i'));
+            const m = text.match(new RegExp('(?:^|\n)\s*' + pat + '\s*[:\-—]\s*([^\n]{1,120})', 'i'));
             if (m) return m[1].replace(/\s+/g, ' ').trim();
         }
         return "";
     }
-    
-    const languages = extractLabel(['languages?\\s*known','languages?','linguistic']);
-    let address = extractLabel(['address','location','city']);
+
+    const languages = extractLabel(['languages?\\s*known', 'languages?', 'linguistic']);
+    let address = extractLabel(['address', 'location']);
+
     if (!address) {
-        for (let l of allLines) {
-            let lt = l.trim();
-            if (lt.length > 8 && lt.length < 120 && !/@/.test(lt) && (/india|bengal|delhi|mumbai|bangalore|pune|hyderabad|dubai|london|usa|california|new york/i.test(lt) || /\b\d{5,6}\b/.test(lt))) { address = lt; break; }
+        for (const hl of headerLines) {
+            const segments = hl.split(/[•|]/).map(s => s.trim());
+            for (const seg of segments) {
+                if (/@/.test(seg)) continue;
+                if (/linkedin\.com|github\.com|http/i.test(seg)) continue;
+                if (/^\+?\d[\d\s\-,]{7,}/.test(seg)) continue;
+                if (seg.length >= 5 && seg.length <= 70) {
+                    if (name && seg.toLowerCase() === name.toLowerCase()) continue;
+                    if (title && seg.toLowerCase() === title.toLowerCase()) continue;
+                    if (/,/.test(seg) || /india|delhi|mumbai|bangalore|bihar|bhagalpur|pirpainti|kolkata|pune|hyderabad|dubai|uae|usa|london|uk|texas|california|new york/i.test(seg)) {
+                        address = seg;
+                        break;
+                    }
+                }
+            }
+            if (address) break;
         }
     }
 
-    let summary = sectionsData["SUMMARY"] ? sectionsData["SUMMARY"].split('\n').slice(1).join(' ').replace(/\s+/g,' ').trim() : "";
-    
+    // 4. SUMMARY
+    let summary = (sectionsData["SUMMARY"] || "").replace(/\s+/g, ' ').trim();
+
+    // 5. SKILLS
     const skills = [];
     if (sectionsData["SKILLS"]) {
-        sectionsData["SKILLS"].split('\n').slice(1).forEach(row => {
-            row.replace(/^[•\-*]\s*/, '').split(/[,|•|;]/).forEach(t => { if(t.trim().length > 1 && t.trim().length < 35) skills.push(t.trim()); });
+        sectionsData["SKILLS"].split('\n').forEach(row => {
+            row.replace(/^[•\-*►▪▸→✓✔]\s*/, '').split(/[,|•;►▪▸]/).forEach(t => {
+                const clean = t.trim();
+                if (clean.length > 1 && clean.length < 40 && !/^(?:SKILLS|CORE COMPETENCIES)$/i.test(clean)) {
+                    skills.push(clean);
+                }
+            });
         });
     }
 
+    // 6. WORK EXPERIENCE
     const experience = [];
     if (sectionsData["EXPERIENCE"]) {
         let currentExp = null;
-        sectionsData["EXPERIENCE"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => {
-            if (/Present|\d{4}/i.test(row) && (row.includes('—') || row.includes('-')) && !row.startsWith('•')) {
+        const expLines = sectionsData["EXPERIENCE"].split('\n').map(l => l.trim()).filter(Boolean);
+
+        expLines.forEach(line => {
+            const dateMatch = line.match(/(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4}\s*(?:–|—|-|to)\s*(?:Present|(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4})/i)
+                           || line.match(/\b\d{4}\s*(?:–|—|-)\s*(?:Present|\d{4})\b/i);
+
+            if (dateMatch && !line.startsWith('•') && !line.startsWith('-') && !line.startsWith('*')) {
                 if (currentExp) experience.push(currentExp);
-                let slices = row.split(/[—–|-]/);
-                let comp = slices[0] ? slices[0].trim().split(/[|•]/) : ["Company"];
-                currentExp = { company: comp[0].trim(), role: comp[1] ? comp[1].trim() : "Specialist", dates: slices.slice(1).join('—').trim(), duties: "" };
-            } else if (currentExp) currentExp.duties += (currentExp.duties ? "\n" : "") + row.replace(/^[•\-*]\s*/, '').trim();
+                
+                let dateStr = dateMatch[0].trim();
+                let remaining = line.replace(dateMatch[0], '').trim();
+                
+                let parts = remaining.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
+                let role = "Specialist";
+                let comp = "Organization";
+                
+                if (parts.length >= 2) {
+                    role = parts[0];
+                    comp = parts.slice(1).join(' — ');
+                } else if (parts.length === 1) {
+                    comp = parts[0];
+                }
+
+                currentExp = { company: comp, role: role, dates: dateStr, duties: "" };
+            } else if (currentExp) {
+                const cleanDuty = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
+                if (cleanDuty) {
+                    if (currentExp.duties && (line.startsWith('•') || line.startsWith('-') || line.startsWith('*'))) {
+                        currentExp.duties += "\n" + cleanDuty;
+                    } else if (currentExp.duties) {
+                        currentExp.duties += " " + cleanDuty;
+                    } else {
+                        currentExp.duties = cleanDuty;
+                    }
+                }
+            }
         });
         if (currentExp) experience.push(currentExp);
     }
 
+    // 7. KEY TECHNICAL PROJECTS
     const projects = [];
     if (sectionsData["PROJECTS"]) {
         let currentProj = null;
-        sectionsData["PROJECTS"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => {
-            if (!row.startsWith('•') && !row.startsWith('-') && row.length < 80) {
+        const projLines = sectionsData["PROJECTS"].split('\n').map(l => l.trim()).filter(Boolean);
+
+        projLines.forEach(line => {
+            const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*');
+            const hasTechBracket = /\[(.*?)\]/.test(line);
+            const isLink = /^https?:\/\//i.test(line) || /github\.com/i.test(line);
+
+            if (!isBullet && !isLink && (hasTechBracket || line.includes('—') || (line.length < 70 && !line.endsWith('.')))) {
                 if (currentProj) projects.push(currentProj);
-                currentProj = { title: row, tools: "Analytical Tools", link: "", description: "" };
-            } else if (currentProj) currentProj.description += (currentProj.description ? "\n" : "") + row.replace(/^[•\-*]\s*/, '').trim();
+
+                let title = line;
+                let tools = "";
+                
+                const toolsMatch = line.match(/\[(.*?)\]/);
+                if (toolsMatch) {
+                    tools = toolsMatch[1].trim();
+                    title = line.replace(/\[(.*?)\]/, '').replace(/[—–|-]\s*$/, '').trim();
+                }
+
+                currentProj = { title: title, tools: tools, link: "", description: "" };
+            } else if (isLink && currentProj) {
+                currentProj.link = line.trim();
+            } else if (currentProj) {
+                const cleanDesc = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
+                if (cleanDesc) {
+                    if (currentProj.description && isBullet) {
+                        currentProj.description += "\n" + cleanDesc;
+                    } else if (currentProj.description) {
+                        currentProj.description += " " + cleanDesc;
+                    } else {
+                        currentProj.description = cleanDesc;
+                    }
+                }
+            }
         });
         if (currentProj) projects.push(currentProj);
     }
 
+    // 8. EDUCATION
     const education = [];
     if (sectionsData["EDUCATION"]) {
-        sectionsData["EDUCATION"].split('\n').slice(1).map(r => r.trim()).filter(Boolean).forEach(row => { 
-            if (/\d{4}/.test(row) || /degree|bachelor|master|university|college|school/i.test(row)) {
-                let yr = row.match(/\d{4}/)?.[0] || "Year";
-                let pieces = row.replace(/\d{4}/, '').split(/[—–|,]/);
-                education.push({ school: pieces.slice(1).join(', ').trim() || pieces[0].trim(), degree: pieces[0].trim(), year: yr });
+        sectionsData["EDUCATION"].split('\n').map(r => r.trim()).filter(Boolean).forEach(row => {
+            if (/\d{4}/.test(row) || /degree|bachelor|master|university|college|school|hs|madhyamik|wbchse|wbbse/i.test(row)) {
+                let yr = row.match(/\d{4}/)?.[0] || "";
+                let pieces = row.replace(/\b\d{4}\b/, '').split(/[—–|,]/).map(p => p.trim()).filter(Boolean);
+                let degree = pieces[0] || "Degree";
+                let school = pieces.slice(1).join(', ') || "University / Board";
+                education.push({ degree, school, year: yr });
             }
         });
     }
 
+    // 9. CERTIFICATIONS
     const certifications = [];
     if (sectionsData["CERTIFICATIONS"]) {
-        sectionsData["CERTIFICATIONS"].split('\n').slice(1).forEach(row => {
-            let parts = row.replace(/^[•\-*]\s*/, '').split(/[—–|,]/);
-            if(parts[0].trim().length > 2) certifications.push({ name: parts[0].trim(), issuer: parts.slice(1).join(', ').trim() || "Provider" });
+        sectionsData["CERTIFICATIONS"].split('\n').map(r => r.trim()).filter(Boolean).forEach(row => {
+            let clean = row.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
+            if (clean.length > 2) {
+                let parts = clean.split(/[—–|,]/).map(p => p.trim()).filter(Boolean);
+                certifications.push({
+                    name: parts[0] || clean,
+                    issuer: parts.slice(1).join(', ') || ""
+                });
+            }
         });
     }
 
@@ -2478,7 +2602,7 @@ async function executeAIAtsAnalysis() {
     btn.disabled = true;
 
     const canvas = document.getElementById('canvasDocumentRenderTree');
-    const resumeText = canvas.innerText || canvas.textContent;
+    const resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
 
     try {
         const response = await fetch('/api/gemini', {
@@ -2605,7 +2729,7 @@ async function generateAiCoverLetter() {
     if (output) output.value = "Drafting bespoke cover letter tailored to your profile and target country standard...";
 
     const canvas = document.getElementById('canvasDocumentRenderTree');
-    const resumeText = canvas.innerText || canvas.textContent;
+    const resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
     const c = engineState.targetCountry;
 
     const countrySpellingNote = c === 'uk' ? "Use British English spelling (e.g. specialised, organised, analytical)." :
