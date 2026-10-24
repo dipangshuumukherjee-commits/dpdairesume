@@ -7,8 +7,8 @@
     
     <!-- Primary SEO & Keyword Optimization -->
     <title>AI Resume Builder for All Industries | 100% ATS-Approved</title>
-    <meta name="description" content="Stop failing automated scans. Build 100% ATS-approved resumes tailored for job seekers across all industries in minutes.">
-    <meta name="keywords" content="AI resume builder, 100% ATS-approved resume builder, resume builder for all industries, career transition resume, resume builder India">
+    <meta name="description" content="Stop failing automated scans. Build 100% ATS-approved resumes tailored for job seekers across all industries in minutes. USA, UK, India, and Dubai (UAE) compliant formats.">
+    <meta name="keywords" content="AI resume builder, 100% ATS-approved resume builder, resume builder for all industries, career transition resume, resume builder India, US ATS resume, UK CV format, Dubai UAE resume">
     
     <!-- Open Graph / Facebook / LinkedIn Preview Tags -->
     <meta property="og:title" content="DPD AI Resume — 100% ATS-Approved Builder" />
@@ -37,15 +37,17 @@
         .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
         .resume-print-canvas { width: 210mm; max-width: 100%; min-height: 297mm; background: #ffffff; color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: all 0.2s linear; }
+        .resume-print-canvas.us-letter-canvas { width: 8.5in; min-height: 11in; }
         @media print {
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-            html, body { background: #ffffff !important; color: #1e293b !important; padding: 0 !important; margin: 0 !important; width: 210mm !important; min-height: 297mm !important; overflow: visible !important; }
+            html, body { background: #ffffff !important; color: #1e293b !important; padding: 0 !important; margin: 0 !important; width: 100% !important; min-height: 100% !important; overflow: visible !important; }
             .no-print { display: none !important; }
             body > div, div[style*="padding-top"], .max-w-\[1700px\], .xl\:col-span-7, #dpdPrintRoot { display: block !important; position: static !important; padding: 0 !important; margin: 0 !important; border: none !important; width: 100% !important; max-width: none !important; box-shadow: none !important; overflow: visible !important; }
             .space-y-4 > *, .space-y-4 > * + *, .gap-4 { margin-top: 0 !important; margin-bottom: 0 !important; gap: 0 !important; }
             .resume-print-canvas, #printTargetSandbox, .print-full-width { width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 2.5rem !important; box-shadow: none !important; display: block !important; border-radius: 0 !important; background: #ffffff !important; overflow: visible !important; position: relative !important; box-sizing: border-box !important; }
+            .us-letter-canvas { width: 8.5in !important; max-width: 8.5in !important; min-height: 11in !important; }
             #dpdWatermark { display: none !important; }
-            @page { size: A4 portrait; margin: 0; }
+            @page { size: auto; margin: 0; }
         }
         #parsingOverlay { display:none; }
         #parsingOverlay.active { display:flex; }
@@ -112,13 +114,22 @@
         }
         #dpdCoverPage.dpd-hide { display: none !important; }
         .dpd-brand-mark { font-weight: 900; letter-spacing: .5px; }
+
+        /* Smooth pulse for auto-save check */
+        .save-indicator-pulse {
+            animation: dot-pulse 1.8s infinite;
+        }
+        @keyframes dot-pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
     </style>
 </head>
 <body class="p-3 md:p-6">
 
     <!-- START: GLOBAL TOP RIGHT LOGO -->
     <div class="no-print" style="position:fixed; top:16px; right:16px; z-index:70;">
-        <img src="logo.png" alt="DPD AI Resume Builder Logo" class="h-10 md:h-14 w-auto object-contain rounded shadow-lg drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] transition-transform hover:scale-105">
+        <img src="logo.png" alt="DPD AI Resume Builder Logo" class="h-10 md:h-14 w-auto object-contain rounded shadow-lg drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] transition-transform hover:scale-105" onerror="this.style.display='none'">
     </div>
     <!-- END: GLOBAL TOP RIGHT LOGO -->
 
@@ -138,13 +149,13 @@
                     <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-500/30">📄</div>
                     <div>
                         <span class="text-lg md:text-xl dpd-brand-mark text-white tracking-tight">DPD <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">AI</span> RESUME</span>
-                        <span class="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">v6.0 Engine</span>
+                        <span class="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">v7.0 Global Multi-Country</span>
                     </div>
                 </div>
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold tracking-wide">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                     <span class="w-2 h-2 rounded-full bg-emerald-400 -ml-4"></span>
-                    Gemini AI + Workday / Taleo ATS Parser Online
+                    US • UK • Dubai (UAE) • India ATS Engines Online
                 </div>
             </div>
 
@@ -155,7 +166,7 @@
                 <div class="lg:col-span-7 text-left space-y-6">
                     
                     <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-400/20 text-blue-300 text-xs font-semibold">
-                        <span>🎯 Built for Career Transitions, Freshers & Experienced Pros</span>
+                        <span>🎯 Built for USA, UK, Dubai (UAE) & India Recruiter Compliance</span>
                     </div>
 
                     <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-[1.12] tracking-tight">
@@ -163,30 +174,37 @@
                     </h1>
 
                     <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-                        Upload your old PDF/Word resume or start from scratch. Our semantic AI rewrites your work history into high-impact bullet points, matches missing Job Description keywords, and formats everything into <strong>100% single-column ATS-approved templates</strong>.
+                        Upload your old PDF/Word resume or start fresh. Switch between <strong>🇮🇳 India, 🇺🇸 USA, 🇬🇧 UK, and 🇦🇪 Dubai (UAE)</strong> compliance rules with 1 click. Zero data loss with continuous auto-save, instant JD keyword injection, and bullet metric linters.
                     </p>
 
-                    <!-- 3 Concrete Value Pills -->
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                            <span class="text-emerald-400 text-base mt-0.5">⚡</span>
+                    <!-- 4 Concrete Value Pills -->
+                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
+                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
+                            <span class="text-emerald-400 text-sm mt-0.5">🌍</span>
                             <div>
-                                <div class="text-xs font-bold text-white">Auto-Fill Parser</div>
-                                <div class="text-[11px] text-slate-400">Upload old PDF/DOCX & extract in 1 click</div>
+                                <div class="text-[11px] font-bold text-white">4 Country Standards</div>
+                                <div class="text-[10px] text-slate-400">US, UK, UAE & India ATS</div>
                             </div>
                         </div>
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                            <span class="text-blue-400 text-base mt-0.5">🤖</span>
+                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
+                            <span class="text-blue-400 text-sm mt-0.5">☁️</span>
                             <div>
-                                <div class="text-xs font-bold text-white">JD Keyword Matcher</div>
-                                <div class="text-[11px] text-slate-400">Spot missing skills before applying</div>
+                                <div class="text-[11px] font-bold text-white">Live Auto-Save</div>
+                                <div class="text-[10px] text-slate-400">Never lose a single keystroke</div>
                             </div>
                         </div>
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-3 flex items-start gap-2.5">
-                            <span class="text-purple-400 text-base mt-0.5">📥</span>
+                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
+                            <span class="text-indigo-400 text-sm mt-0.5">🎯</span>
                             <div>
-                                <div class="text-xs font-bold text-white">PDF & Native Word</div>
-                                <div class="text-[11px] text-slate-400">6 recruiter-tested A4 themes</div>
+                                <div class="text-[11px] font-bold text-white">1-Click Skill Add</div>
+                                <div class="text-[10px] text-slate-400">Inject missing JD keywords</div>
+                            </div>
+                        </div>
+                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
+                            <span class="text-purple-400 text-sm mt-0.5">✉️</span>
+                            <div>
+                                <div class="text-[11px] font-bold text-white">AI Cover Letter</div>
+                                <div class="text-[10px] text-slate-400">Tailored matching letter</div>
                             </div>
                         </div>
                     </div>
@@ -201,7 +219,7 @@
                             <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
                                 <span>✓ No Sign-Up Required to Build</span>
                             </div>
-                            <div class="text-[11px] text-slate-400">Live ATS score updates as you type</div>
+                            <div class="text-[11px] text-slate-400">Select your target country & export instantly</div>
                         </div>
                     </div>
 
@@ -212,7 +230,7 @@
                             <span class="text-slate-200 ml-1">4.9/5 Rating</span>
                         </div>
                         <span>•</span>
-                        <span>Used by professionals transitioning into Data Analytics, IT, Engineering & Operations</span>
+                        <span>Used by candidates landing offers across US, UK, Gulf & India tech companies</span>
                     </div>
                 </div>
 
@@ -228,15 +246,15 @@
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                             <div>
                                 <div class="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">ATS Match Score</div>
-                                <div class="text-sm font-black text-white leading-none">96 / 100 <span class="text-[10px] text-emerald-400 font-bold">PASS</span></div>
+                                <div class="text-sm font-black text-white leading-none">98 / 100 <span class="text-[10px] text-emerald-400 font-bold">PASS</span></div>
                             </div>
                         </div>
 
                         <!-- Simulated Resume Header -->
                         <div class="border-b-2 border-red-700 pb-3 pr-28">
                             <div class="text-base font-black text-red-700 uppercase tracking-tight">RAHUL SHARMA</div>
-                            <div class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Data Analyst & MIS Specialist</div>
-                            <div class="text-[9px] text-slate-500 mt-1">rahul.s@email.com • +91 98765 43210 • India</div>
+                            <div class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Senior Data Analyst & BI Lead</div>
+                            <div class="text-[9px] text-slate-500 mt-1">rahul.s@email.com • +91 98765 43210 • Austin, TX / Remote</div>
                         </div>
 
                         <!-- Simulated AI Keyword Match Pills -->
@@ -245,25 +263,25 @@
                             <div class="flex flex-wrap gap-1.5">
                                 <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ SQL & Power BI</span>
                                 <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ Advanced Excel</span>
-                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ Python</span>
-                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300 px-2 py-0.5 rounded-md">✓ KPI Dashboards</span>
-                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300 px-2 py-0.5 rounded-md">✓ ERP Inventory</span>
+                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ Python ETL</span>
+                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300 px-2 py-0.5 rounded-md">✓ Data Modeling</span>
+                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300 px-2 py-0.5 rounded-md">✓ Snowflake</span>
                             </div>
                         </div>
 
-                        <!-- Simulated AI Bullet Points -->
+                        <!-- Simulated AI Bullet Points with Metric Highlights -->
                         <div class="mt-3 space-y-1.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
                             <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-extrabold text-slate-800">WORK EXPERIENCE</span>
-                                <span class="text-[9px] font-bold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200">⚡ AI Optimized</span>
+                                <span class="text-[10px] font-extrabold text-slate-800">PROFESSIONAL EXPERIENCE</span>
+                                <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">🔥 High Metric Strength</span>
                             </div>
-                            <p class="text-[10px] text-slate-600 leading-snug">• Engineered automated <b>Power BI & SQL</b> dashboards tracking 50,000+ inventory SKUs, reducing reporting variance by <b>28%</b>.</p>
-                            <p class="text-[10px] text-slate-600 leading-snug">• Streamlined supply chain material reconciliation using <b>Advanced Excel</b> macros and ERP data pipelines.</p>
+                            <p class="text-[10px] text-slate-600 leading-snug">• Spearheaded automated <b>Power BI & SQL</b> dashboards tracking 50,000+ inventory SKUs, reducing reporting variance by <b>28%</b>.</p>
+                            <p class="text-[10px] text-slate-600 leading-snug">• Engineered automated Python ETL pipelines, saving <b>18 analyst hours/week</b> and boosting throughput by <b>34%</b>.</p>
                         </div>
 
                         <!-- Interactive Card Bottom Prompt -->
                         <div onclick="enterResumeBuilderStudio()" class="mt-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl p-2.5 flex items-center justify-between cursor-pointer transition-colors">
-                            <span class="text-[11px] font-bold text-slate-200">👉 Click to customize this template with your data</span>
+                            <span class="text-[11px] font-bold text-slate-200">👉 Click to open with your target country format</span>
                             <span class="text-xs bg-blue-600 px-2.5 py-1 rounded-lg font-black">Open ➔</span>
                         </div>
                     </div>
@@ -274,9 +292,15 @@
     </div>
     <!-- END: REALISTIC HIGH-CONVERSION SAAS COVER PAGE -->
 
-    <div class="no-print" style="position:fixed; top:14px; left:16px; z-index:40; display:flex; align-items:center; gap:12px;">
+    <!-- TOP GLOBAL BAR -->
+    <div class="no-print" style="position:fixed; top:14px; left:16px; z-index:40; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
         <span class="dpd-brand-mark text-slate-100 text-sm md:text-base">DPD <span class="text-blue-500">AI</span> RESUME</span>
         <span id="subscriptionStatusBadge" class="text-[10px] font-semibold uppercase tracking-[0.12em] rounded-full px-3 py-1" style="background:#334155; color:#cbd5e1;">Checking access...</span>
+        <!-- Continuous Auto-Save Status Indicator -->
+        <div id="autoSaveIndicator" class="flex items-center gap-1.5 text-[11px] font-medium text-slate-300 bg-slate-900/90 border border-slate-700/80 px-2.5 py-1 rounded-full shadow-sm">
+            <span id="autoSaveDot" class="w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse"></span>
+            <span id="autoSaveLabel">☁️ Saved locally</span>
+        </div>
     </div>
 
     <div id="parsingOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm items-center justify-center z-50 flex-col gap-4 no-print">
@@ -293,10 +317,50 @@
         📌 For a perfect print/PDF layout: in the print window, click <strong>"More settings"</strong>, set <strong>Margins → None</strong>, and <strong>uncheck "Headers and footers"</strong>. This is a one-time browser setting.
     </div>
 
+    <!-- MAIN APP CONTAINER -->
     <div class="max-w-[1700px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-4 print:block" style="padding-top:56px">
 
+        <!-- LEFT COLUMN: STUDIO CONTROLS & FORM INPUTS -->
         <div class="xl:col-span-5 bg-slate-800 rounded-xl border border-slate-700 flex flex-col overflow-hidden no-print relative" style="height:calc(100vh - 64px);position:sticky;top:60px">
 
+            <!-- 1. TARGET COUNTRY SELECTOR & SECTION ORDER TOGGLE -->
+            <div class="p-3 bg-slate-900/95 border-b border-slate-700/80 space-y-2.5">
+                <div class="flex items-center justify-between flex-wrap gap-2">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-[11px] font-black uppercase tracking-wider text-slate-300">🌍 Country ATS Standard:</span>
+                        <span id="countryStatusPill" class="text-[10px] font-extrabold px-2 py-0.5 rounded bg-blue-900/60 text-blue-300 border border-blue-600/40">🇮🇳 India Style</span>
+                    </div>
+                    <!-- Fresher vs Experienced Order Switcher -->
+                    <div class="flex items-center gap-1.5 bg-slate-950 p-0.5 rounded-lg border border-slate-800">
+                        <button type="button" onclick="setResumeMode('experienced')" id="btnModeExperienced" class="px-2 py-0.5 text-[10px] font-extrabold rounded bg-indigo-600 text-white transition-all shadow-sm">👔 Experienced</button>
+                        <button type="button" onclick="setResumeMode('fresher')" id="btnModeFresher" class="px-2 py-0.5 text-[10px] font-semibold rounded text-slate-400 hover:text-white transition-all">🎓 Student/Fresher</button>
+                    </div>
+                </div>
+
+                <!-- 4 Country Buttons -->
+                <div class="grid grid-cols-4 gap-1.5 text-center">
+                    <button type="button" onclick="setTargetCountry('india')" id="btnCountry-india" class="py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white border border-blue-400 shadow-sm flex items-center justify-center gap-1">
+                        <span>🇮🇳</span> <span class="hidden sm:inline">India</span>
+                    </button>
+                    <button type="button" onclick="setTargetCountry('usa')" id="btnCountry-usa" class="py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1">
+                        <span>🇺🇸</span> <span class="hidden sm:inline">USA</span>
+                    </button>
+                    <button type="button" onclick="setTargetCountry('uk')" id="btnCountry-uk" class="py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1">
+                        <span>🇬🇧</span> <span class="hidden sm:inline">UK (CV)</span>
+                    </button>
+                    <button type="button" onclick="setTargetCountry('dubai')" id="btnCountry-dubai" class="py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1">
+                        <span>🇦🇪</span> <span class="hidden sm:inline">Dubai (UAE)</span>
+                    </button>
+                </div>
+
+                <!-- Country Intelligence Banner -->
+                <div id="countryRuleBanner" class="text-[10px] bg-slate-950/70 border border-slate-800 rounded-lg p-2 text-slate-300 leading-relaxed flex items-start gap-1.5">
+                    <span class="text-blue-400 text-xs">ℹ️</span>
+                    <span id="countryRuleText">🇮🇳 <b>India Standard:</b> A4 size, includes Notice Period, Languages Known, and optional fresher verification declaration.</span>
+                </div>
+            </div>
+
+            <!-- TABS NAVIGATION -->
             <div class="grid grid-cols-5 bg-slate-900 text-center text-xs font-bold border-b border-slate-700 tracking-wide">
                 <button id="tabBtn-1" onclick="switchSection(1)" class="py-3 text-blue-400 border-b-2 border-blue-500 transition-all">Personal</button>
                 <button id="tabBtn-2" onclick="switchSection(2)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Summary</button>
@@ -305,8 +369,10 @@
                 <button id="tabBtn-5" onclick="switchSection(5)" class="py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all">Skills / AI</button>
             </div>
 
+            <!-- TAB CONTENT CONTAINER -->
             <div class="p-5 overflow-y-auto flex-1 space-y-6 custom-scroll pb-24">
 
+                <!-- SECTION 1: PERSONAL PROFILE -->
                 <div id="sectionPanel-1" class="space-y-4">
                     <div class="border-2 border-dashed border-blue-600/60 p-4 rounded-xl bg-slate-900/60 text-center space-y-2">
                         <span class="block text-xs font-bold text-blue-400 uppercase tracking-wide">upload resume if any</span>
@@ -317,13 +383,29 @@
                         <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
                         <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
                     </div>
-                    <div class="bg-slate-900/40 p-3 rounded-lg border border-slate-700 space-y-2">
-                        <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Avatar Photo Upload (Optional)</label>
+
+                    <!-- AVATAR PHOTO CONTAINER (WITH DYNAMIC COMPLIANCE ADAPTATION) -->
+                    <div id="photoUploaderCard" class="bg-slate-900/40 p-3 rounded-lg border border-slate-700 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wide">Avatar Photo Upload</label>
+                            <span id="photoCompliancePill" class="text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">Optional</span>
+                        </div>
                         <div class="flex items-center gap-3">
                             <input type="file" id="imageAssetUploader" accept="image/*" onchange="processImageUpload(event)" class="block w-full text-xs text-slate-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer">
                             <button onclick="removePhotoImage()" class="text-[11px] bg-red-900/40 text-red-300 border border-red-700/40 px-2 py-1 rounded hover:bg-red-800/60">Remove</button>
                         </div>
+                        <!-- Auto-hide compliance alert for USA / UK -->
+                        <div id="photoHiddenComplianceNotice" class="hidden text-[10px] text-amber-300 bg-amber-950/40 border border-amber-700/40 p-2 rounded leading-snug">
+                            🛡️ <b>Anti-Discrimination Compliance:</b> Photo is saved in your profile, but automatically suppressed on USA/UK resume canvases to protect your application from automated EEOC/ATS rejection filters.
+                        </div>
                     </div>
+
+                    <!-- DYNAMIC COUNTRY-SPECIFIC MANDATORY FORM FIELDS CONTAINER -->
+                    <div id="countrySpecificFieldsContainer" class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/80 space-y-3">
+                        <!-- Rendered dynamically by renderCountrySpecificFormFields() -->
+                    </div>
+
+                    <!-- STANDARD CONTACT FIELDS -->
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Full Name</label><input type="text" id="formName" oninput="syncFormStateToEngine()" placeholder="John Doe" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Target Designation</label><input type="text" id="formTitle" oninput="syncFormStateToEngine()" placeholder="Data Analyst / Engineer" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
@@ -332,14 +414,15 @@
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">LinkedIn Profile</label><input type="url" id="formLinkedIn" oninput="syncFormStateToEngine()" placeholder="linkedin.com/in/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">GitHub / Tech Repo</label><input type="url" id="formGitHub" oninput="syncFormStateToEngine()" placeholder="github.com/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Portfolio / Live URL</label><input type="url" id="formPortfolio" oninput="syncFormStateToEngine()" placeholder="yourwebsite.com / dashboard link" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">Location Address</label><input type="text" id="formAddress" oninput="syncFormStateToEngine()" placeholder="City, State, India" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-400 mb-1">Languages Known (Comma Separated)</label><input type="text" id="formLanguages" oninput="syncFormStateToEngine()" placeholder="English, Hindi, Bengali (Professional Working Proficiency)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label id="lblLocationAddress" class="block text-xs font-semibold text-slate-400 mb-1">Location Address</label><input type="text" id="formAddress" oninput="syncFormStateToEngine()" placeholder="City, State, Country" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div id="wrapperFormLanguages" class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-400 mb-1">Languages Known (Comma Separated)</label><input type="text" id="formLanguages" oninput="syncFormStateToEngine()" placeholder="English, Hindi, Bengali (Professional Working Proficiency)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                     </div>
                 </div>
 
+                <!-- SECTION 2: EXECUTIVE SUMMARY / PERSONAL STATEMENT -->
                 <div id="sectionPanel-2" class="hidden space-y-4">
                     <div class="flex items-center justify-between border-b border-slate-700 pb-2 gap-2">
-                        <h3 class="text-base font-bold text-slate-200">📝 Executive Summary / Career Objective</h3>
+                        <h3 id="panelSummaryHeadingTitle" class="text-base font-bold text-slate-200">📝 Executive Summary / Career Objective</h3>
                         <div class="flex items-center gap-1.5 no-print">
                             <select id="formSummaryToneSelect" class="bg-slate-900 text-slate-300 text-[11px] rounded px-2 py-1 border border-slate-700 focus:outline-none"><option value="Executive">Executive</option><option value="Technical">Technical</option><option value="Creative">Creative</option></select>
                             <button type="button" onclick="executeDynamicAiSummaryGeneration()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-1 px-2.5 rounded shadow transition-all">⚡ AI Generate</button>
@@ -348,10 +431,11 @@
                     <textarea id="formSummary" oninput="syncFormStateToEngine()" rows="8" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-sm text-slate-300 font-sans focus:outline-none focus:border-blue-500" placeholder="Review generated string maps configurations here..."></textarea>
                 </div>
 
+                <!-- SECTION 3: EXPERIENCE & PROJECTS -->
                 <div id="sectionPanel-3" class="space-y-6 hidden">
                     <div class="space-y-4">
                         <div class="flex items-center justify-between border-b border-slate-700 pb-2">
-                            <h3 class="text-base font-bold text-slate-200">💼 Professional Experience Timeline</h3>
+                            <h3 id="panelExpHeadingTitle" class="text-base font-bold text-slate-200">💼 Professional Experience Timeline</h3>
                             <button type="button" onclick="addNewExperienceNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Experience</button>
                         </div>
                         <div id="experienceDynamicFormWrapper" class="space-y-4"></div>
@@ -360,7 +444,7 @@
                     <div class="space-y-4 pt-4 border-t border-slate-700">
                         <div class="flex items-center justify-between border-b border-slate-700 pb-2">
                             <div>
-                                <h3 class="text-base font-bold text-slate-200">💻 Key Technical Projects & Build Repositories</h3>
+                                <h3 id="panelProjHeadingTitle" class="text-base font-bold text-slate-200">💻 Key Technical Projects & Build Repositories</h3>
                                 <p class="text-[10px] text-slate-400">Essential for ATS keyword matching in technical & analytical roles.</p>
                             </div>
                             <button type="button" onclick="addNewProjectNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Project</button>
@@ -369,16 +453,18 @@
                     </div>
                 </div>
 
+                <!-- SECTION 4: EDUCATION -->
                 <div id="sectionPanel-4" class="space-y-4 hidden">
                     <div class="flex items-center justify-between border-b border-slate-700 pb-2">
-                        <h3 class="text-base font-bold text-slate-200">🎓 Academic History Profiles</h3>
+                        <h3 id="panelEduHeadingTitle" class="text-base font-bold text-slate-200">🎓 Academic History Profiles</h3>
                         <button type="button" onclick="addNewEducationNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Education</button>
                     </div>
                     <div id="educationDynamicFormWrapper" class="space-y-4"></div>
                 </div>
 
+                <!-- SECTION 5: SKILLS / AI / DATA CONSOLE -->
                 <div id="sectionPanel-5" class="hidden space-y-4">
-                    <h3 class="text-base font-bold text-slate-200">🛠️ Technical Core Skills Set</h3>
+                    <h3 id="panelSkillsHeadingTitle" class="text-base font-bold text-slate-200">🛠️ Technical Core Skills Set</h3>
                     <div><label class="block text-xs font-semibold text-slate-400 mb-1">Core Professional Competencies (Comma Separated)</label><input type="text" id="formSkillsList" oninput="syncFormStateToEngine()" placeholder="e.g. Power BI, SQL, Advanced Excel, Oracle ERP, Machine Learning" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                     <div class="pt-4 border-t border-slate-700 space-y-3">
                         <div class="flex items-center justify-between"><h4 class="text-sm font-bold text-slate-300">📜 Professional Certifications (Optional)</h4><button type="button" onclick="addNewCertificationNodeItem()" class="bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs py-1.5 px-3 rounded">＋ Add Certification</button></div>
@@ -392,13 +478,17 @@
                 </div>
             </div>
 
+            <!-- BOTTOM ACTIONS -->
             <div class="absolute bottom-0 left-0 right-0 bg-slate-900 border-t border-slate-700 p-4 grid grid-cols-2 gap-3 z-10 shadow-xl">
                 <button type="button" onclick="runMasterManualSyncAndGenerate()" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-white font-bold text-xs py-3 px-4 rounded-lg shadow transition-all flex items-center justify-center gap-1">🔄 Sync Manual Corrections</button>
                 <button type="button" onclick="triggerNextSectionNavigationStep()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs py-3 px-4 rounded-lg shadow transition-all flex items-center justify-center gap-0.5">Next Section Step ➔</button>
             </div>
         </div>
 
+        <!-- RIGHT COLUMN: ANALYTICS, AI ATS MATCHER, PREVIEW CANVAS & EXPORTS -->
         <div class="xl:col-span-7 flex flex-col space-y-4 print:w-full print:max-w-full">
+            
+            <!-- LIVE SCORING & METRIC LINTER ANALYTICS -->
             <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print shadow-lg">
                 <div class="grid grid-cols-1 md:grid-cols-12 items-center gap-4">
                     <div class="md:col-span-3 text-center md:text-left"><span class="block text-xs font-bold text-slate-400 uppercase tracking-wide">Live Scoring Analytics</span><h4 class="text-xl font-black text-slate-100">📊 ATS Score Match</h4></div>
@@ -408,23 +498,47 @@
                     </div>
                     <div class="md:col-span-2 text-center"><span id="atsMetricBadge" class="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40">Incomplete</span></div>
                 </div>
+
+                <!-- 4 Core Criteria Checks -->
                 <div class="pt-2 border-t border-slate-700/50 grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] font-semibold">
                     <div id="chk-ident" class="flex items-center gap-1 text-red-400">❌ Name Staged</div>
                     <div id="chk-summary" class="flex items-center gap-1 text-red-400">❌ Summary Depth</div>
                     <div id="chk-social" class="flex items-center gap-1 text-red-400">❌ Links Connected</div>
                     <div id="chk-skills" class="flex items-center gap-1 text-red-400">❌ Skills & Projects</div>
                 </div>
+
+                <!-- FEATURE C: WEAK-VERB & METRIC LINTER ("BULLET STRENGTH INDICATOR") -->
+                <div id="bulletLinterContainer" class="pt-2 border-t border-slate-700/50 text-[11px] flex items-start gap-2 text-slate-300">
+                    <span id="linterIcon" class="text-base">💡</span>
+                    <div class="flex-1 min-w-0" id="linterFeedbackText">
+                        <span class="font-bold text-slate-200">Bullet Strength Linter:</span> Add quantifiable metrics (%, numbers, ₹/$) to experience bullets to maximize ATS ranking.
+                    </div>
+                </div>
             </div>
 
-            <!-- START: Deep AI ATS Matcher -->
-            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print shadow-lg mt-3">
-                <label class="block text-xs font-bold text-blue-400 uppercase tracking-wide">Target Job Description (AI Matcher)</label>
+            <!-- DEEP AI ATS MATCHER & 1-CLICK MISSING SKILL CHIPS -->
+            <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 space-y-3 no-print shadow-lg">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold text-blue-400 uppercase tracking-wide">Target Job Description (AI Keyword Matcher)</label>
+                    <span class="text-[10px] text-slate-400">Pastes & compares against current resume</span>
+                </div>
                 <textarea id="jobDescriptionTarget" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500" placeholder="Paste the target job description here to generate a real AI ATS score and extract missing skills..."></textarea>
-                <button type="button" onclick="executeAIAtsAnalysis()" id="btnAIAtsAnalyze" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-2">🤖 Run Deep AI ATS Analysis</button>
-                <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-1"></div>
-            </div>
-            <!-- END: Deep AI ATS Matcher -->
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <button type="button" onclick="executeAIAtsAnalysis()" id="btnAIAtsAnalyze" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-2">
+                        <span>🤖 Run Deep AI ATS Analysis</span>
+                    </button>
+                    <!-- FEATURE D: 1-CLICK AI COVER LETTER GENERATOR (HIGH-CONVERSION VALUE ADD) -->
+                    <button type="button" onclick="openCoverLetterGeneratorModal()" class="w-full bg-gradient-to-r from-teal-700 to-cyan-700 hover:from-teal-600 hover:to-cyan-600 text-white font-bold py-2 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-2">
+                        <span>✉️ Generate Matching AI Cover Letter</span>
+                    </button>
+                </div>
 
+                <!-- FEATURE B: 1-CLICK "ADD MISSING SKILL TO RESUME" CHIPS BANNER -->
+                <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-2"></div>
+            </div>
+
+            <!-- 100% ATS-APPROVED LAYOUT THEME SELECTOR -->
             <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 space-y-2 no-print shadow-sm">
                 <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select 100% ATS-Approved Layout Theme Format:</span>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs font-semibold">
@@ -437,12 +551,19 @@
                 </div>
             </div>
 
-            <!-- EXPORT BUTTONS UPDATE (DOCX & PDF) -->
-            <div class="flex justify-end gap-3 no-print">
-                <button onclick="displaySubscriptionGateway('word')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">📝 Download as Word (.doc)</button>
-                <button onclick="displaySubscriptionGateway('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">💾 Download as PDF</button>
+            <!-- EXPORT ACTION BUTTONS -->
+            <div class="flex flex-wrap items-center justify-between gap-3 no-print">
+                <div class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                    <span>Active Standard:</span>
+                    <strong id="activeStandardLabel" class="text-slate-200">🇮🇳 India (A4 Portrait)</strong>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="displaySubscriptionGateway('word')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">📝 Download as Word (.doc)</button>
+                    <button onclick="displaySubscriptionGateway('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">💾 Download as PDF</button>
+                </div>
             </div>
 
+            <!-- LIVE RESUME PREVIEW CANVAS -->
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
@@ -450,46 +571,44 @@
                 </div>
             </div>
 
-            <!-- SEO Testimonials Section (Hidden during Print/PDF export) -->
+            <!-- SEO TESTIMONIALS SECTION -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 no-print text-slate-300 mt-6 shadow-lg">
-                <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">What Our Users Say</h2>
+                <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">What Global Job Seekers Say</h2>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mt-4">
-                    <!-- Review 1 -->
                     <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
                         <div class="flex items-center gap-1 mb-2 text-amber-400">⭐⭐⭐⭐⭐</div>
-                        <p class="text-slate-400 italic">"This AI builder helped me transition from a Store Assistant to a Data Analyst role! The ATS keyword scanner is brilliant and exactly what I needed to get past the filters."</p>
-                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Rahul S., Data Analyst</p>
+                        <p class="text-slate-400 italic">"The USA strict ATS mode saved my application! It automatically hid my photo and stripped demographic data that was getting me filtered out by US recruiters."</p>
+                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— John D., Software Engineer (Austin, TX)</p>
                     </div>
-                    <!-- Review 2 -->
                     <div class="bg-slate-900 p-4 rounded-lg border border-slate-700">
                         <div class="flex items-center gap-1 mb-2 text-amber-400">⭐⭐⭐⭐⭐</div>
-                        <p class="text-slate-400 italic">"I was struggling with table formatting in Word that kept messing up my applications. The clean, 100% ATS-approved layouts here fixed the issue instantly. Highly recommended."</p>
-                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Amit P., Professional</p>
+                        <p class="text-slate-400 italic">"Switching to Dubai format added my Employment Visa status, UAE Driving License, and headshot in the exact order Gulf hiring managers look for. Landed interviews within a week."</p>
+                        <p class="text-slate-300 font-bold mt-2 text-[10px] uppercase tracking-wide">— Farhan K., Operations Specialist (Dubai)</p>
                     </div>
                 </div>
             </div>
 
-            <!-- SEO FAQ Section targeting Long-Tail Keywords (Hidden during Print/PDF export) -->
+            <!-- SEO FAQ SECTION -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-4 no-print text-slate-300 mt-6 shadow-lg">
                 <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2">Frequently Asked Questions</h2>
                 <div class="space-y-3 text-xs">
                     <div>
-                        <h3 class="font-semibold text-blue-400">Why is an ATS-approved resume builder important for job seekers?</h3>
-                        <p class="text-slate-400 mt-1 leading-relaxed">Corporate roles require specific professional keywords. Standard templates often use tables or text boxes that confuse automated Applicant Tracking Systems (ATS). Our 100% ATS-approved resume builder ensures your skills are mapped cleanly into single-column structures so hiring algorithms can score your profile accurately.</p>
+                        <h3 class="font-semibold text-blue-400">Why do USA and UK resumes prohibit profile photos?</h3>
+                        <p class="text-slate-400 mt-1 leading-relaxed">In the United States and the United Kingdom, strict Equal Employment Opportunity (EEO) and anti-discrimination laws make recruiters instantly reject resumes containing photos, date of birth, or marital status to prevent unconscious bias lawsuits. Our builder automatically enforces compliance.</p>
                     </div>
                     <div>
-                        <h3 class="font-semibold text-blue-400">How does AI optimize a resume for career transitions?</h3>
-                        <p class="text-slate-400 mt-1 leading-relaxed">Our integrated AI engine analyzes unstructured work history and aligns it with formatting structures required by corporate hiring platforms like Workday, Greenhouse, and Taleo. Whether you have years of experience or are pivoting into a new industry, our parser structures your achievements into high-impact bullet points.</p>
+                        <h3 class="font-semibold text-blue-400">Why does Dubai (UAE) require visa status and photos?</h3>
+                        <p class="text-slate-400 mt-1 leading-relaxed">In the UAE and Gulf region, companies must sponsor employment visas and manage travel logistics. Employers actively look for a professional headshot, current visa status (Visit/Employment/Golden Visa), nationality, and a valid UAE driving license upfront.</p>
                     </div>
                 </div>
             </div>
 
-            <!-- About & Contact Section (Hidden during Print/PDF export) -->
+            <!-- ABOUT & CONTACT SECTION -->
             <div class="bg-slate-800 p-6 rounded-xl border border-slate-700 space-y-6 no-print text-slate-300 shadow-lg mb-8">
                 <div>
                     <h2 class="text-lg font-bold text-slate-100 border-b border-slate-700 pb-2 mb-3">About DPD AI Resume</h2>
                     <p class="text-xs text-slate-400 leading-relaxed text-justify">
-                        <strong>DPD AI Resume</strong> was built by Dipangshu Mukherjee, a data professional with 14 years of operational experience, including 8 years managing complex supply chain data at Tata Projects Ltd. Transitioning into Data Analytics, he realized that traditional resumes often fail Applicant Tracking Systems (ATS) due to poor formatting. This tool was engineered to solve that exact problem—using AI and strict structural layouts to help professionals bypass automated filters and land interviews.
+                        <strong>DPD AI Resume</strong> was built by Dipangshu Mukherjee, a data professional with 14 years of operational experience, including 8 years managing complex supply chain data at Tata Projects Ltd. Transitioning into Data Analytics, he realized that traditional resumes often fail Applicant Tracking Systems (ATS) due to improper formatting or international compliance mismatches. This tool solves that exact problem—dynamically tailoring resumes to US, UK, UAE, and Indian hiring standards with single-click AI precision.
                     </p>
                 </div>
                 <div>
@@ -506,14 +625,14 @@
         </div>
     </div>
 
-    <!-- START: Subscription Gate -->
+    <!-- MODAL 1: SUBSCRIPTION PAYMENT GATE (RAZORPAY ₹19 & ₹59) -->
     <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
             <div id="payScreen1">
                 <div class="text-center mb-5">
                     <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
                     <h3 class="text-lg font-black text-slate-100">Unlock Premium Export</h3>
-                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume</p>
+                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
                 </div>
                 <div class="space-y-3 mb-5">
                     <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
@@ -521,7 +640,10 @@
                         <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
                     <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
-                        <div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited</span><span class="block text-xs text-slate-400">Unlimited downloads for 30 days</span></div>
+                        <div>
+                            <span class="block text-sm font-bold text-slate-200">Monthly Unlimited <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-extrabold ml-1">POPULAR</span></span>
+                            <span class="block text-xs text-slate-400">Includes AI Cover Letter + 30 days downloads</span>
+                        </div>
                         <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500">per month</span></div>
                     </div>
                 </div>
@@ -550,9 +672,61 @@
             </div>
         </div>
     </div>
-    <!-- END: Subscription Gate -->
 
-    <!-- START: NEW Feedback Modal -->
+    <!-- MODAL 2: 1-CLICK AI COVER LETTER GENERATOR (HIGH VALUE FEATURE) -->
+    <div id="coverLetterModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-800 border border-slate-700 max-w-2xl w-full rounded-2xl p-6 shadow-2xl relative max-h-[90vh] flex flex-col">
+            <button onclick="closeCoverLetterModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg leading-none">✕</button>
+            
+            <div class="mb-4">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">✉️</span>
+                    <h3 class="text-lg font-black text-slate-100">AI Tailored Cover Letter</h3>
+                </div>
+                <p class="text-xs text-slate-400 mt-0.5">Synthesized from your candidate profile & target job description matching <span id="coverLetterCountryTag" class="text-blue-400 font-bold">India</span> standard.</p>
+            </div>
+
+            <!-- Tone and Options -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-3 bg-slate-900/60 p-2.5 rounded-xl border border-slate-700/60 text-xs">
+                <div>
+                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">Letter Tone</label>
+                    <select id="coverLetterToneSelect" class="w-full bg-slate-900 border border-slate-700 rounded px-2 py-1.5 text-xs text-slate-200 outline-none">
+                        <option value="Impactful & Confident">Impactful & Confident</option>
+                        <option value="Technical & Analytical">Technical & Analytical</option>
+                        <option value="Executive & Strategic">Executive & Strategic</option>
+                    </select>
+                </div>
+                <div class="sm:col-span-2 flex items-end">
+                    <button type="button" onclick="generateAiCoverLetter()" id="btnRegenerateCoverLetter" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-1.5 px-3 rounded text-xs shadow flex items-center justify-center gap-1.5">
+                        <span>⚡ Generate / Rewrite with AI</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Editable Letter Text Area -->
+            <div class="flex-1 overflow-y-auto mb-4 custom-scroll">
+                <textarea id="coverLetterTextOutput" rows="12" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-4 text-xs text-slate-200 font-sans leading-relaxed focus:outline-none focus:border-blue-500" placeholder="Click 'Generate / Rewrite with AI' to produce a custom cover letter tailored to your profile and job description..."></textarea>
+            </div>
+
+            <!-- Action Buttons: Copy, Word Download, Print, Close -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2 border-t border-slate-700/60 text-xs font-bold">
+                <button type="button" onclick="copyCoverLetterToClipboard()" id="btnCopyCoverLetter" class="bg-slate-700 hover:bg-slate-600 text-slate-200 py-2.5 px-3 rounded-lg flex items-center justify-center gap-1">
+                    <span>📋 Copy</span>
+                </button>
+                <button type="button" onclick="downloadCoverLetterAsWord()" class="bg-indigo-700 hover:bg-indigo-600 text-white py-2.5 px-3 rounded-lg flex items-center justify-center gap-1">
+                    <span>📝 Word (.doc)</span>
+                </button>
+                <button type="button" onclick="printCoverLetter()" class="bg-blue-600 hover:bg-blue-500 text-white py-2.5 px-3 rounded-lg flex items-center justify-center gap-1">
+                    <span>🖨️ Print / PDF</span>
+                </button>
+                <button type="button" onclick="closeCoverLetterModal()" class="bg-slate-800 hover:bg-slate-700 text-slate-400 py-2.5 px-3 rounded-lg border border-slate-700">
+                    <span>Close</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL 3: FEEDBACK MODAL (AFTER DOWNLOAD) -->
     <div id="feedbackModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
             <button onclick="closeFeedbackModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg leading-none">✕</button>
@@ -591,17 +765,46 @@
             </div>
         </div>
     </div>
-    <!-- END: NEW Feedback Modal -->
 
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
+// MASTER ENGINE STATE (ALL 4 COUNTRIES, ORDER MODES, AUTO-SAVE)
 let engineState = {
-    activeSectionTab: 1, activeLayoutTemplateID: 1,
-    globalCachedProfileImageStream: "", selectedSubscriptionValue: 19,
-    pendingExportFormat: 'pdf', 
-    personal: { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" },
-    summary: "", experience: [], projects: [], education: [], certifications: [], skills: []
+    activeSectionTab: 1,
+    activeLayoutTemplateID: 1,
+    targetCountry: 'india',      // 'india' | 'usa' | 'uk' | 'dubai'
+    resumeMode: 'experienced',   // 'experienced' | 'fresher'
+    globalCachedProfileImageStream: "",
+    selectedSubscriptionValue: 19,
+    pendingExportFormat: 'pdf',
+    personal: {
+        name: "", title: "", email: "", mobile: "",
+        linkedin: "", github: "", portfolio: "",
+        address: "", languages: ""
+    },
+    // Country specific parameters
+    countryData: {
+        // Dubai (UAE)
+        visaStatus: "Employment Visa",
+        nationality: "",
+        drivingLicense: "Valid UAE Driving License",
+        dubaiAvailability: "Immediate Joining",
+        // India
+        noticePeriod: "Immediate / 15 Days",
+        includeDeclaration: true,
+        declarationText: "I hereby declare that all the information provided above is true and correct to the best of my knowledge.",
+        // UK
+        rightToWork: "British Citizen / Full Right to Work",
+        includeReferences: true,
+        referencesText: "References available upon request"
+    },
+    summary: "",
+    experience: [],
+    projects: [],
+    education: [],
+    certifications: [],
+    skills: []
 };
 
 // Smooth manual entry transition when user clicks the Cover Page CTA button
@@ -649,13 +852,282 @@ function renderSubscriptionStatusIndicator() {
 }
 
 function switchSection(n) {
-    document.getElementById(`sectionPanel-${engineState.activeSectionTab}`).classList.add('hidden');
-    document.getElementById(`tabBtn-${engineState.activeSectionTab}`).className = "py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all";
+    document.getElementById(`sectionPanel-${engineState.activeSectionTab}`)?.classList.add('hidden');
+    const oldBtn = document.getElementById(`tabBtn-${engineState.activeSectionTab}`);
+    if (oldBtn) oldBtn.className = "py-3 text-slate-400 border-b-2 border-transparent hover:text-slate-200 transition-all";
+    
     engineState.activeSectionTab = n;
-    document.getElementById(`sectionPanel-${n}`).classList.remove('hidden');
-    document.getElementById(`tabBtn-${n}`).className = "py-3 text-blue-400 border-b-2 border-blue-500 transition-all";
+    document.getElementById(`sectionPanel-${n}`)?.classList.remove('hidden');
+    const newBtn = document.getElementById(`tabBtn-${n}`);
+    if (newBtn) newBtn.className = "py-3 text-blue-400 border-b-2 border-blue-500 transition-all";
 }
 function triggerNextSectionNavigationStep() { switchSection(engineState.activeSectionTab < 5 ? engineState.activeSectionTab + 1 : 1); }
+
+// ========================================================
+// 1. TARGET COUNTRY SWITCHING & RECRUITER ATS COMPLIANCE
+// ========================================================
+const countryConfig = {
+    india: {
+        label: "🇮🇳 India Style",
+        paperSize: "A4 (210mm x 297mm)",
+        summaryTitle: "Executive Summary",
+        expTitle: "Work Experience",
+        skillsTitle: "Core Competencies & Key Skills",
+        eduTitle: "Academic Qualifications",
+        projTitle: "Key Technical Projects",
+        ruleText: "🇮🇳 <b>India Standard:</b> A4 size, includes Notice Period, Languages Known, and optional fresher verification declaration.",
+        allowPhoto: true,
+        photoPill: "Optional / Common",
+        usLetter: false
+    },
+    usa: {
+        label: "🇺🇸 USA Style",
+        paperSize: "US Letter (8.5in x 11in)",
+        summaryTitle: "Professional Summary",
+        expTitle: "Professional Experience",
+        skillsTitle: "Technical Skills & Competencies",
+        eduTitle: "Education",
+        projTitle: "Technical Projects & Contributions",
+        ruleText: "🇺🇸 <b>USA Strict ATS Standard:</b> STRICTLY NO PHOTO (auto-hidden). No age, gender, marital status, or full street address to comply with EEO anti-discrimination laws. US Letter size.",
+        allowPhoto: false, // Strictly suppressed on canvas
+        photoPill: "Hidden (EEO ATS Rule)",
+        usLetter: true
+    },
+    uk: {
+        label: "🇬🇧 UK Style (CV)",
+        paperSize: "A4 (210mm x 297mm)",
+        summaryTitle: "Personal Statement",
+        expTitle: "Work History",
+        skillsTitle: "Core Skills & Expertise",
+        eduTitle: "Education & Qualifications",
+        projTitle: "Key Projects",
+        ruleText: "🇬🇧 <b>UK Standard (CV):</b> STRICTLY NO PHOTO (auto-hidden). Uses 'Personal Statement' in British English. Includes Right to Work status & 'References available upon request'.",
+        allowPhoto: false,
+        photoPill: "Hidden (UK CV Rule)",
+        usLetter: false
+    },
+    dubai: {
+        label: "🇦🇪 Dubai / UAE Style",
+        paperSize: "A4 (210mm x 297mm)",
+        summaryTitle: "Executive Profile",
+        expTitle: "Professional Experience",
+        skillsTitle: "Core Competencies & Expertise",
+        eduTitle: "Education & Credentials",
+        projTitle: "Key Projects & Milestones",
+        ruleText: "🇦🇪 <b>Dubai / UAE Standard:</b> PHOTO HIGHLY EXPECTED. Mandatory inclusion of Visa Status (Employment/Visit/Golden), Nationality, UAE Driving License, & Notice Period.",
+        allowPhoto: true,
+        photoPill: "Required / Expected",
+        usLetter: false
+    }
+};
+
+function setTargetCountry(countryKey) {
+    if (!countryConfig[countryKey]) return;
+    engineState.targetCountry = countryKey;
+
+    // Update active button styles
+    ['india', 'usa', 'uk', 'dubai'].forEach(c => {
+        const btn = document.getElementById(`btnCountry-${c}`);
+        if (!btn) return;
+        if (c === countryKey) {
+            btn.className = "py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-blue-600 text-white border border-blue-400 shadow-sm flex items-center justify-center gap-1";
+        } else {
+            btn.className = "py-1.5 px-1 rounded-lg text-xs font-bold transition-all bg-slate-800 text-slate-300 border border-slate-700 hover:bg-slate-700 flex items-center justify-center gap-1";
+        }
+    });
+
+    const cfg = countryConfig[countryKey];
+    const statusPill = document.getElementById('countryStatusPill');
+    if (statusPill) statusPill.innerText = cfg.label;
+
+    const ruleText = document.getElementById('countryRuleText');
+    if (ruleText) ruleText.innerHTML = cfg.ruleText;
+
+    const standardLabel = document.getElementById('activeStandardLabel');
+    if (standardLabel) standardLabel.innerText = `${cfg.label} (${cfg.paperSize})`;
+
+    const coverTag = document.getElementById('coverLetterCountryTag');
+    if (coverTag) coverTag.innerText = cfg.label;
+
+    // Update Form Panel Headings
+    if (document.getElementById('panelSummaryHeadingTitle')) {
+        document.getElementById('panelSummaryHeadingTitle').innerText = `📝 ${cfg.summaryTitle}`;
+    }
+    if (document.getElementById('panelExpHeadingTitle')) {
+        document.getElementById('panelExpHeadingTitle').innerText = `💼 ${cfg.expTitle}`;
+    }
+    if (document.getElementById('panelProjHeadingTitle')) {
+        document.getElementById('panelProjHeadingTitle').innerText = `💻 ${cfg.projTitle}`;
+    }
+    if (document.getElementById('panelEduHeadingTitle')) {
+        document.getElementById('panelEduHeadingTitle').innerText = `🎓 ${cfg.eduTitle}`;
+    }
+    if (document.getElementById('panelSkillsHeadingTitle')) {
+        document.getElementById('panelSkillsHeadingTitle').innerText = `🛠️ ${cfg.skillsTitle}`;
+    }
+
+    // Photo compliance warning
+    const photoNotice = document.getElementById('photoHiddenComplianceNotice');
+    const photoPill = document.getElementById('photoCompliancePill');
+    if (photoPill) photoPill.innerText = cfg.photoPill;
+    if (photoNotice) {
+        if (!cfg.allowPhoto && engineState.globalCachedProfileImageStream) {
+            photoNotice.classList.remove('hidden');
+        } else {
+            photoNotice.classList.add('hidden');
+        }
+    }
+
+    // Adapt placeholders
+    const addrInput = document.getElementById('formAddress');
+    if (addrInput) {
+        addrInput.placeholder = countryKey === 'usa' ? "City, State (e.g. Austin, TX)" :
+                               countryKey === 'uk' ? "City, UK (e.g. Manchester, UK)" :
+                               countryKey === 'dubai' ? "City, UAE (e.g. Dubai, UAE)" :
+                               "City, State, India";
+    }
+
+    // Render country specific form inputs
+    renderCountrySpecificFormFields();
+
+    // Re-render compilation
+    runMasterManualSyncAndGenerate();
+}
+
+function renderCountrySpecificFormFields() {
+    const container = document.getElementById('countrySpecificFieldsContainer');
+    if (!container) return;
+
+    const c = engineState.targetCountry;
+    const cd = engineState.countryData;
+
+    if (c === 'dubai') {
+        container.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1.5">🇦🇪 UAE Mandatory Dossier Fields</span>
+                <span class="text-[9px] uppercase font-extrabold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Gulf Standard</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Visa Status</label>
+                    <select id="fieldDubaiVisa" onchange="syncCountryField('visaStatus', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                        <option value="Employment Visa" ${cd.visaStatus==='Employment Visa'?'selected':''}>Employment Visa (Transferable)</option>
+                        <option value="Golden Visa" ${cd.visaStatus==='Golden Visa'?'selected':''}>Golden Visa (10-Year Self-Sponsored)</option>
+                        <option value="Visit / Tourist Visa" ${cd.visaStatus==='Visit / Tourist Visa'?'selected':''}>Visit / Tourist Visa (Immediate Joining)</option>
+                        <option value="Freelance / Green Visa" ${cd.visaStatus==='Freelance / Green Visa'?'selected':''}>Freelance / Green Visa</option>
+                        <option value="Cancelled Visa" ${cd.visaStatus==='Cancelled Visa'?'selected':''}>Cancelled Visa (Grace Period)</option>
+                        <option value="Residence / Spouse Visa" ${cd.visaStatus==='Residence / Spouse Visa'?'selected':''}>Residence / Spouse Visa</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Nationality</label>
+                    <input type="text" id="fieldDubaiNationality" value="${esc(cd.nationality)}" oninput="syncCountryField('nationality', this.value)" placeholder="e.g. Indian / British / Emirati" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">UAE Driving License</label>
+                    <select id="fieldDubaiLicense" onchange="syncCountryField('drivingLicense', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                        <option value="Valid UAE Driving License" ${cd.drivingLicense==='Valid UAE Driving License'?'selected':''}>Valid UAE Driving License</option>
+                        <option value="GCC Driving License" ${cd.drivingLicense==='GCC Driving License'?'selected':''}>GCC Driving License</option>
+                        <option value="In Progress" ${cd.drivingLicense==='In Progress'?'selected':''}>Driving License In Progress</option>
+                        <option value="Not Applicable" ${cd.drivingLicense==='Not Applicable'?'selected':''}>Not Applicable</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Joining Availability</label>
+                    <input type="text" id="fieldDubaiAvailability" value="${esc(cd.dubaiAvailability)}" oninput="syncCountryField('dubaiAvailability', this.value)" placeholder="Immediate / 15 Days / 1 Month" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                </div>
+            </div>`;
+    } else if (c === 'india') {
+        container.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+                <span class="text-xs font-bold text-blue-400 flex items-center gap-1.5">🇮🇳 India Recruiter Details</span>
+                <span class="text-[9px] uppercase font-extrabold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Indian ATS</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Notice Period / Availability</label>
+                    <input type="text" id="fieldIndiaNotice" value="${esc(cd.noticePeriod)}" oninput="syncCountryField('noticePeriod', this.value)" placeholder="e.g. Immediate / 15 Days / 30 Days / Serving Notice" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                </div>
+                <div class="flex items-center pt-5">
+                    <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                        <input type="checkbox" id="fieldIndiaDeclaration" ${cd.includeDeclaration?'checked':''} onchange="syncCountryField('includeDeclaration', this.checked)" class="rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0">
+                        <span>Include Verification Declaration at Bottom</span>
+                    </label>
+                </div>
+            </div>`;
+    } else if (c === 'uk') {
+        container.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+                <span class="text-xs font-bold text-cyan-400 flex items-center gap-1.5">🇬🇧 UK CV Compliance Parameters</span>
+                <span class="text-[9px] uppercase font-extrabold text-slate-400 bg-slate-800 px-2 py-0.5 rounded">UK Standard</span>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Right to Work in UK</label>
+                    <input type="text" id="fieldUkRightToWork" value="${esc(cd.rightToWork)}" oninput="syncCountryField('rightToWork', this.value)" placeholder="e.g. British Citizen / Skilled Worker Visa / Graduate Route" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                </div>
+                <div class="flex items-center pt-5">
+                    <label class="inline-flex items-center gap-2 cursor-pointer text-xs text-slate-300">
+                        <input type="checkbox" id="fieldUkReferences" ${cd.includeReferences?'checked':''} onchange="syncCountryField('includeReferences', this.checked)" class="rounded bg-slate-900 border-slate-700 text-blue-600 focus:ring-0">
+                        <span>Include "References available upon request"</span>
+                    </label>
+                </div>
+            </div>`;
+    } else if (c === 'usa') {
+        container.innerHTML = `
+            <div class="flex items-center justify-between border-b border-slate-700/60 pb-1.5">
+                <span class="text-xs font-bold text-amber-400 flex items-center gap-1.5">🇺🇸 US ATS Anti-Bias Auto-Guard</span>
+                <span class="text-[9px] uppercase font-extrabold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded border border-emerald-800">EEOC Compliant</span>
+            </div>
+            <p class="text-[11px] text-slate-300 leading-relaxed">
+                US hiring systems strictly reject resumes with photos, age, marital status, or full street addresses to prevent discrimination lawsuits. Your resume canvas and exports will automatically omit photos and full addresses.
+            </p>`;
+    }
+}
+
+function syncCountryField(field, value) {
+    engineState.countryData[field] = value;
+    runMasterManualSyncAndGenerate();
+}
+
+// ========================================================
+// 2. FRESHER / STUDENT VS EXPERIENCED SECTION REORDERING
+// ========================================================
+function setResumeMode(modeKey) {
+    engineState.resumeMode = modeKey;
+    const btnExp = document.getElementById('btnModeExperienced');
+    const btnFrsh = document.getElementById('btnModeFresher');
+    if (modeKey === 'experienced') {
+        if (btnExp) btnExp.className = "px-2 py-0.5 text-[10px] font-extrabold rounded bg-indigo-600 text-white transition-all shadow-sm";
+        if (btnFrsh) btnFrsh.className = "px-2 py-0.5 text-[10px] font-semibold rounded text-slate-400 hover:text-white transition-all";
+    } else {
+        if (btnExp) btnExp.className = "px-2 py-0.5 text-[10px] font-semibold rounded text-slate-400 hover:text-white transition-all";
+        if (btnFrsh) btnFrsh.className = "px-2 py-0.5 text-[10px] font-extrabold rounded bg-emerald-600 text-white transition-all shadow-sm";
+    }
+    runMasterManualSyncAndGenerate();
+}
+
+// ========================================================
+// 3. CONTINUOUS AUTO-SAVE TO LOCALSTORAGE (ZERO DATA LOSS)
+// ========================================================
+let autoSaveTimeout = null;
+function triggerContinuousAutoSave() {
+    const dot = document.getElementById('autoSaveDot');
+    const label = document.getElementById('autoSaveLabel');
+    if (label) label.innerText = "💾 Saving...";
+    if (dot) dot.className = "w-2 h-2 rounded-full bg-amber-400 animate-ping";
+
+    clearTimeout(autoSaveTimeout);
+    autoSaveTimeout = setTimeout(() => {
+        try {
+            localStorage.setItem('dpd_autosave_state', JSON.stringify(engineState));
+            if (label) label.innerText = "☁️ Saved locally";
+            if (dot) dot.className = "w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse";
+        } catch(e) {
+            if (label) label.innerText = "⚠️ Auto-save error";
+        }
+    }, 350);
+}
 
 function clearAllFormInputStateData() {
     if(!confirm("Are you sure you want to scrub all fields back to a blank template?")) return;
@@ -817,11 +1289,11 @@ function parseResume(raw) {
     const upperText = text.toUpperCase();
     
     const markers = [
-        { id: "SUMMARY", idx: upperText.search(/SUMMARY|OBJECTIVE|PROFESSIONAL SUMMARY/i) },
-        { id: "EXPERIENCE", idx: upperText.search(/WORK EXPERIENCE|EXPERIENCE|EMPLOYMENT HISTORY/i) },
+        { id: "SUMMARY", idx: upperText.search(/SUMMARY|OBJECTIVE|PROFESSIONAL SUMMARY|EXECUTIVE PROFILE|PERSONAL STATEMENT/i) },
+        { id: "EXPERIENCE", idx: upperText.search(/WORK EXPERIENCE|EXPERIENCE|EMPLOYMENT HISTORY|WORK HISTORY/i) },
         { id: "PROJECTS", idx: upperText.search(/PROJECTS?|KEY PROJECTS|TECHNICAL PROJECTS/i) },
         { id: "SKILLS", idx: upperText.search(/KEY SKILLS|SKILLS|CORE COMPETENCIES/i) },
-        { id: "EDUCATION", idx: upperText.search(/EDUCATION|ACADEMIC ACCOMPLISHMENTS/i) },
+        { id: "EDUCATION", idx: upperText.search(/EDUCATION|ACADEMIC ACCOMPLISHMENTS|ACADEMIC QUALIFICATIONS/i) },
         { id: "CERTIFICATIONS", idx: upperText.search(/CERTIFICATION|CERTIFICATIONS/i) }
     ].filter(m => m.idx !== -1).sort((a, b) => a.idx - b.idx);
 
@@ -859,7 +1331,7 @@ function parseResume(raw) {
     if (!address) {
         for (let l of allLines) {
             let lt = l.trim();
-            if (lt.length > 8 && lt.length < 120 && !/@/.test(lt) && (/india|bengal|delhi|mumbai|bangalore|pune|hyderabad/i.test(lt) || /\b\d{6}\b/.test(lt))) { address = lt; break; }
+            if (lt.length > 8 && lt.length < 120 && !/@/.test(lt) && (/india|bengal|delhi|mumbai|bangalore|pune|hyderabad|dubai|london|usa|california|new york/i.test(lt) || /\b\d{5,6}\b/.test(lt))) { address = lt; break; }
         }
     }
 
@@ -962,43 +1434,73 @@ function runMasterManualSyncAndGenerate() {
     
     if(document.getElementById('formSkillsList')) engineState.skills = document.getElementById('formSkillsList').value.split(',').map(v => v.trim()).filter(Boolean);
 
-    engineState.experience = [];
-    document.querySelectorAll('#experienceDynamicFormWrapper > div').forEach(card => {
-        const inp = card.querySelectorAll('input, textarea');
-        if (inp.length >= 4) engineState.experience.push({ company: inp[0].value.trim(), role: inp[1].value.trim(), dates: inp[2].value.trim(), duties: inp[3].value.trim() });
-    });
+    const expCards = document.querySelectorAll('#experienceDynamicFormWrapper > div');
+    if (expCards.length > 0) {
+        engineState.experience = [];
+        expCards.forEach(card => {
+            const inp = card.querySelectorAll('input, textarea');
+            if (inp.length >= 4) engineState.experience.push({ company: inp[0].value.trim(), role: inp[1].value.trim(), dates: inp[2].value.trim(), duties: inp[3].value.trim() });
+        });
+    }
 
-    engineState.projects = [];
-    document.querySelectorAll('#projectsDynamicFormWrapper > div').forEach(card => {
-        const inp = card.querySelectorAll('input, textarea');
-        if (inp.length >= 4) engineState.projects.push({ title: inp[0].value.trim(), tools: inp[1].value.trim(), link: inp[2].value.trim(), description: inp[3].value.trim() });
-    });
+    const projCards = document.querySelectorAll('#projectsDynamicFormWrapper > div');
+    if (projCards.length > 0) {
+        engineState.projects = [];
+        projCards.forEach(card => {
+            const inp = card.querySelectorAll('input, textarea');
+            if (inp.length >= 4) engineState.projects.push({ title: inp[0].value.trim(), tools: inp[1].value.trim(), link: inp[2].value.trim(), description: inp[3].value.trim() });
+        });
+    }
 
-    engineState.education = [];
-    document.querySelectorAll('#educationDynamicFormWrapper > div').forEach(card => {
-        const inp = card.querySelectorAll('input');
-        if (inp.length >= 3) engineState.education.push({ school: inp[0].value.trim(), degree: inp[1].value.trim(), year: inp[2].value.trim() });
-    });
+    const eduCards = document.querySelectorAll('#educationDynamicFormWrapper > div');
+    if (eduCards.length > 0) {
+        engineState.education = [];
+        eduCards.forEach(card => {
+            const inp = card.querySelectorAll('input');
+            if (inp.length >= 3) engineState.education.push({ school: inp[0].value.trim(), degree: inp[1].value.trim(), year: inp[2].value.trim() });
+        });
+    }
 
-    engineState.certifications = [];
-    document.querySelectorAll('#certificationsDynamicFormWrapper > div').forEach(card => {
-        const inp = card.querySelectorAll('input');
-        if (inp.length >= 2) engineState.certifications.push({ name: inp[0].value.trim(), issuer: inp[1].value.trim() });
-    });
+    const certCards = document.querySelectorAll('#certificationsDynamicFormWrapper > div');
+    if (certCards.length > 0) {
+        engineState.certifications = [];
+        certCards.forEach(card => {
+            const inp = card.querySelectorAll('input');
+            if (inp.length >= 2) engineState.certifications.push({ name: inp[0].value.trim(), issuer: inp[1].value.trim() });
+        });
+    }
 
     executeMasterCompilationRenderPipeline();
+    triggerContinuousAutoSave();
 }
 
+// ADAPTIVE COUNTRY-AWARE AI SUMMARY PROMPT
 async function executeDynamicAiSummaryGeneration() {
-    const t = document.getElementById('formTitle')?.value || "Professional", tone = document.getElementById('formSummaryToneSelect')?.value || "Executive", sk = document.getElementById('formSkillsList')?.value || "";
+    const t = document.getElementById('formTitle')?.value || "Professional";
+    const tone = document.getElementById('formSummaryToneSelect')?.value || "Executive";
+    const sk = document.getElementById('formSkillsList')?.value || "";
+    const c = engineState.targetCountry;
+
     const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus');
     if(overlay) overlay.classList.add('active');
-    if(status) status.innerText = "Composing objective profile sequence...";
+    if(status) status.innerText = `Composing ${countryConfig[c].summaryTitle} for ${countryConfig[c].label}...`;
+
+    let countryPromptRule = "";
+    if (c === 'usa') {
+        countryPromptRule = "Adhere strictly to US resume standards. Use American English, strong active verbs, and quantifiable impact metrics. Frame as a high-density 'Professional Summary'.";
+    } else if (c === 'uk') {
+        countryPromptRule = "Adhere strictly to UK CV standards. Use British English spelling (e.g. specialised, organisation, analyse). Frame as a reflective, impactful UK 'Personal Statement'.";
+    } else if (c === 'dubai') {
+        countryPromptRule = "Adhere to UAE / Gulf executive standards. Highlight cross-cultural leadership, operational scale, and high-stakes deliverables. Frame as an 'Executive Profile'.";
+    } else {
+        countryPromptRule = "Tailored for the Indian tech and corporate market. Highlight technical depth, delivery ownership, and core tool stack.";
+    }
 
     try {
+        const promptText = `Write a short 3-4 sentence professional ${countryConfig[c].summaryTitle} for a ${t} with core skills in: ${sk}. The tone should match a strictly ${tone} tone. ${countryPromptRule} Return raw plaintext only without labels or markdown blocks.`;
         const response = await fetch('/api/gemini', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: `Write a short 3-4 sentence professional resume executive summary profile paragraph for a ${t} with core skills in: ${sk}. The tone should match a strictly ${tone} tone. Return raw plaintext only without labels or markdown blocks.` }] }] })
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
         });
         const data = await response.json();
         const textVal = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || `Performance-oriented ${t} equipped with critical cross-functional capabilities. Adept at handling operational workflows and driving execution loops cleanly across enterprise data environments using: ${sk || 'industry tools'}.`;
@@ -1088,6 +1590,9 @@ function renderCertificationFormInputs() {
 function addNewCertificationNodeItem() { engineState.certifications.unshift({name:"",issuer:""}); renderCertificationFormInputs(); }
 function deleteCertificationNodeItem(i) { engineState.certifications.splice(i,1); renderCertificationFormInputs(); runMasterManualSyncAndGenerate(); }
 
+// ========================================================
+// 4. ATS SCORING & WEAK-VERB / METRIC LINTER
+// ========================================================
 function calculateAndRenderAtsScoringMetrics() {
     let score = 0;
     const set = (id, pass, passText, failText) => {
@@ -1123,6 +1628,68 @@ function calculateAndRenderAtsScoringMetrics() {
         else if (score < 85) { fb.innerText="Good threshold alignment. Attach more core keywords parameters to boost rating."; badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40"; badge.innerText="Optimized"; }
         else { fb.innerText="Elite parsing balance verified. Formatting structure matches automated search parameters."; badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40"; badge.innerText="ATS Pass"; }
     }
+
+    // WEAK-VERB & METRIC LINTER CALCULATION
+    runBulletMetricLinter();
+}
+
+function runBulletMetricLinter() {
+    const linterText = document.getElementById('linterFeedbackText');
+    const linterIcon = document.getElementById('linterIcon');
+    if (!linterText || !linterIcon) return;
+
+    const allBullets = [];
+    (engineState.experience || []).forEach(e => {
+        if (e.duties) {
+            e.duties.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean).forEach(b => allBullets.push(b));
+        }
+    });
+    (engineState.projects || []).forEach(p => {
+        if (p.description) {
+            p.description.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean).forEach(b => allBullets.push(b));
+        }
+    });
+
+    if (allBullets.length === 0) {
+        linterIcon.innerText = "💡";
+        linterText.innerHTML = `<span class="font-bold text-slate-200">Bullet Strength Linter:</span> Add bullet points with numbers (%, ₹, $, numbers) to boost ATS score.`;
+        return;
+    }
+
+    const metricRegex = /\b\d+(?:\.\d+)?%?|\b(?:\$|₹|€|£)\s*\d+|\b\d+\s*(?:k|m|cr|lakh|crore|skus?|x|hrs?|days?|users?|clients?|records?)\b|\b\d+[\+\%]/i;
+    let metricCount = 0;
+    const weakPhrases = [
+        { re: /\bresponsible for\b/i, tip: "'Responsible for' → use 'Spearheaded' or 'Directed'" },
+        { re: /\bworked on\b/i, tip: "'Worked on' → use 'Engineered' or 'Architected'" },
+        { re: /\bhelped with\b/i, tip: "'Helped with' → use 'Facilitated' or 'Accelerated'" },
+        { re: /\btasked with\b/i, tip: "'Tasked with' → use 'Orchestrated' or 'Executed'" },
+        { re: /\bhandled\b/i, tip: "'Handled' → use 'Administered' or 'Streamlined'" }
+    ];
+    let detectedWeakTips = [];
+
+    allBullets.forEach(b => {
+        if (metricRegex.test(b)) metricCount++;
+        weakPhrases.forEach(w => {
+            if (w.re.test(b) && !detectedWeakTips.includes(w.tip)) {
+                detectedWeakTips.push(w.tip);
+            }
+        });
+    });
+
+    const metricPct = Math.round((metricCount / allBullets.length) * 100);
+
+    if (metricPct >= 50 && detectedWeakTips.length === 0) {
+        linterIcon.innerText = "🔥";
+        linterText.innerHTML = `<span class="font-bold text-emerald-400">High Impact Bullets:</span> <b>${metricCount}/${allBullets.length} (${metricPct}%)</b> bullets include quantifiable metrics and active verbs. Excellent ATS pass rate!`;
+    } else if (metricPct < 50) {
+        linterIcon.innerText = "💡";
+        const needed = Math.max(1, Math.ceil(allBullets.length * 0.5) - metricCount);
+        let weakNotice = detectedWeakTips.length ? ` <span class="text-amber-300 font-semibold">[Weak phrasing: ${detectedWeakTips[0]}]</span>` : "";
+        linterText.innerHTML = `<span class="font-bold text-amber-300">Metric Opportunity:</span> Only <b>${metricCount}/${allBullets.length}</b> bullets have metrics. Add numbers/percentages to <b>${needed} more bullet${needed>1?'s':''}</b> to boost ATS ranking by +10%!${weakNotice}`;
+    } else {
+        linterIcon.innerText = "⚡";
+        linterText.innerHTML = `<span class="font-bold text-blue-300">Action Verb Tip:</span> Strong metrics (${metricPct}%), but upgrade passive words: <span class="text-amber-300 font-semibold">${detectedWeakTips.slice(0, 2).join('; ')}</span>.`;
+    }
 }
 
 function formatATSBullets(text) {
@@ -1132,6 +1699,9 @@ function formatATSBullets(text) {
     return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
 }
 
+// ========================================================
+// 5. MASTER CANVAS COMPILATION (COUNTRY & ORDER AWARE)
+// ========================================================
 function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
     const canvas = document.getElementById('canvasDocumentRenderTree');
@@ -1139,9 +1709,21 @@ function executeMasterCompilationRenderPipeline() {
     
     const themes = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"};
     const hex = themes[engineState.activeLayoutTemplateID]||"#b91c1c";
+    const cfg = countryConfig[engineState.targetCountry] || countryConfig.india;
 
+    // Paper size handling for US Letter vs A4
+    const sandbox = document.getElementById('printTargetSandbox');
+    if (sandbox) {
+        if (cfg.usLetter) {
+            sandbox.classList.add('us-letter-canvas');
+        } else {
+            sandbox.classList.remove('us-letter-canvas');
+        }
+    }
+
+    // Photo logic: strictly hide for USA & UK
     let imgHTML = "";
-    if (engineState.globalCachedProfileImageStream) {
+    if (cfg.allowPhoto && engineState.globalCachedProfileImageStream) {
         imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
     }
 
@@ -1149,7 +1731,13 @@ function executeMasterCompilationRenderPipeline() {
     const cTitle = esc(document.getElementById('formTitle')?.value.trim() || "Target Designation");
     const cEmail = esc(document.getElementById('formEmail')?.value.trim() || "email@domain.com");
     const cMobile = esc(document.getElementById('formMobile')?.value.trim() || "Contact No");
-    const cAddress = esc(document.getElementById('formAddress')?.value.trim() || "Location Address");
+    
+    // Address handling: for USA, ensure clean City, State representation
+    let cAddress = esc(document.getElementById('formAddress')?.value.trim() || "");
+    if (!cAddress) {
+        cAddress = engineState.targetCountry === 'usa' ? "City, State" : "Location Address";
+    }
+
     const cLanguages = esc(document.getElementById('formLanguages')?.value.trim() || "");
 
     let socialHTML = "";
@@ -1160,7 +1748,38 @@ function executeMasterCompilationRenderPipeline() {
     if (gHb) socialHTML += `<span>• <b>GitHub:</b> ${gHb}</span>`;
     if (pFolio) socialHTML += `<span>• <b>Portfolio:</b> ${pFolio}</span>`;
 
-    let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${esc(engineState.summary)}</p>` : "";
+    // Dynamic Country Contact Extras
+    let countryHeaderExtrasHTML = "";
+    if (engineState.targetCountry === 'dubai') {
+        const cd = engineState.countryData;
+        countryHeaderExtrasHTML = `
+            <div class="mt-2 text-[10px] bg-slate-50 border border-slate-200 rounded p-1.5 flex flex-wrap gap-x-3 gap-y-1 font-medium text-slate-700">
+                <span><b>Visa Status:</b> ${esc(cd.visaStatus||'Employment Visa')}</span>
+                ${cd.nationality ? `<span>• <b>Nationality:</b> ${esc(cd.nationality)}</span>` : ''}
+                ${cd.drivingLicense ? `<span>• <b>License:</b> ${esc(cd.drivingLicense)}</span>` : ''}
+                ${cd.dubaiAvailability ? `<span>• <b>Notice:</b> ${esc(cd.dubaiAvailability)}</span>` : ''}
+            </div>`;
+    } else if (engineState.targetCountry === 'uk' && engineState.countryData.rightToWork) {
+        countryHeaderExtrasHTML = `
+            <div class="mt-1 text-[10px] text-slate-600 font-medium">
+                <b>Right to Work:</b> ${esc(engineState.countryData.rightToWork)}
+            </div>`;
+    } else if (engineState.targetCountry === 'india' && engineState.countryData.noticePeriod) {
+        countryHeaderExtrasHTML = `
+            <div class="mt-1 text-[10px] text-slate-600 font-medium">
+                <b>Notice Period:</b> ${esc(engineState.countryData.noticePeriod)}
+            </div>`;
+    }
+
+    // Dynamic Section Titles based on Country
+    const summaryTitle = cfg.summaryTitle;
+    const expTitle = cfg.expTitle;
+    const projTitle = cfg.projTitle;
+    const skillsTitle = cfg.skillsTitle;
+    const eduTitle = cfg.eduTitle;
+
+    // Building individual blocks
+    const summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${esc(engineState.summary)}</p>` : "";
 
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
@@ -1175,63 +1794,86 @@ function executeMasterCompilationRenderPipeline() {
     });
 
     let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${esc(s)}</span>`).join('')}</div>` : "";
+    
     let certItemsHTML = "";
     engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${esc(c.name)}</b>${c.issuer?` — ${esc(c.issuer)}`:''}</div>`; });
+    
     let eduItemsHTML = "";
     engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${esc(e.degree||'Degree Course')}</b> — ${esc(e.school||'University Board')}</span><span class="text-slate-500">${esc(e.year||'')}</span></div>`; });
 
-    if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
-        const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
-        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase ${borderStyle} mt-5" style="color:${hex};border-color:${engineState.activeLayoutTemplateID === 3 ? '#94a3b8' : hex};">${t}</h3>`;
-
-        canvas.innerHTML = `
-            <div class="space-y-1 text-slate-800">
-                <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
-                    <div class="flex-1 min-w-0">
-                        <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
-                        <div class="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-slate-600 font-medium items-center">
-                            <span><b>Email:</b> ${cEmail}</span><span>• <b>Phone:</b> ${cMobile}</span><span>• <b>Address:</b> ${cAddress}</span>${socialHTML}
-                        </div>
-                        ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
-                    </div>
-                    ${imgHTML}
+    // Section Footer Extras (India Declaration or UK References)
+    let countryFooterExtrasHTML = "";
+    if (engineState.targetCountry === 'india' && engineState.countryData.includeDeclaration) {
+        countryFooterExtrasHTML = `
+            <div class="mt-5 pt-3 border-t border-slate-200 text-[10px] text-slate-500 italic">
+                <p><b>Declaration:</b> ${esc(engineState.countryData.declarationText)}</p>
+                <div class="flex justify-between mt-2 font-semibold not-italic text-slate-600">
+                    <span>${cAddress}</span>
+                    <span>${cName}</span>
                 </div>
-                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
-                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
-                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
-                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
-                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
-                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
             </div>`;
-    } 
-    else if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
-        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-5 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${t}</h3>`;
-
-        canvas.innerHTML = `
-            <div class="space-y-1 text-slate-800">
-                <div class="flex items-start justify-between pb-3 border-b" style="border-color:${hex}40;">
-                    <div class="flex-1 min-w-0">
-                        <h1 class="text-3xl font-black tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-extrabold text-slate-600 uppercase tracking-widest mt-0.5">${cTitle}</p>
-                        <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
-                            <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
-                        </div>
-                        ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
-                    </div>
-                    ${imgHTML}
-                </div>
-                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
-                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
-                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
-                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
-                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
-                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+    } else if (engineState.targetCountry === 'uk' && engineState.countryData.includeReferences) {
+        countryFooterExtrasHTML = `
+            <div class="mt-5 pt-2 border-t border-slate-200 text-center text-[10px] text-slate-500 font-semibold">
+                ${esc(engineState.countryData.referencesText)}
             </div>`;
-    } 
-    else if (engineState.activeLayoutTemplateID === 5) {
-        const sh = t => `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-5 text-center" style="color:${hex};border-color:#cbd5e1;">${t}</h3>`;
+    }
 
+    // Helper generator for section headers depending on template
+    const makeHeader = (text) => {
+        if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
+            const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase ${borderStyle} mt-5" style="color:${hex};border-color:${engineState.activeLayoutTemplateID === 3 ? '#94a3b8' : hex};">${text}</h3>`;
+        } else if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-5 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${text}</h3>`;
+        } else if (engineState.activeLayoutTemplateID === 5) {
+            return `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-5 text-center" style="color:${hex};border-color:#cbd5e1;">${text}</h3>`;
+        } else {
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1.5 rounded mb-2 mt-5 text-white" style="background-color:${hex};">${text}</h3>`;
+        }
+    };
+
+    // Constructing Modular Sections according to Reordering Mode
+    const sectionMap = {
+        summary: summaryHTML ? `<div>${makeHeader(summaryTitle)}${summaryHTML}</div>` : "",
+        experience: expItemsHTML ? `<div>${makeHeader(expTitle)}<div>${expItemsHTML}</div></div>` : "",
+        projects: projItemsHTML ? `<div>${makeHeader(projTitle)}<div>${projItemsHTML}</div></div>` : "",
+        skills: skillsItemsHTML ? `<div>${makeHeader(skillsTitle)}${skillsItemsHTML}</div>` : "",
+        certifications: certItemsHTML ? `<div>${makeHeader('Professional Certifications')}<div>${certItemsHTML}</div></div>` : "",
+        education: eduItemsHTML ? `<div>${makeHeader(eduTitle)}<div>${eduItemsHTML}</div></div>` : ""
+    };
+
+    // SECTION ORDERING LOGIC:
+    // Experienced: Summary -> Experience -> Projects -> Skills -> Certifications -> Education
+    // Fresher: Summary -> Education -> Projects -> Skills -> Experience -> Certifications
+    let orderedSectionsHTML = "";
+    if (engineState.resumeMode === 'fresher') {
+        orderedSectionsHTML = [
+            sectionMap.summary,
+            sectionMap.education,
+            sectionMap.projects,
+            sectionMap.skills,
+            sectionMap.experience,
+            sectionMap.certifications
+        ].join('');
+    } else {
+        orderedSectionsHTML = [
+            sectionMap.summary,
+            sectionMap.experience,
+            sectionMap.projects,
+            sectionMap.skills,
+            sectionMap.certifications,
+            sectionMap.education
+        ].join('');
+    }
+
+    // Languages Known row (only if not strictly suppressed for US ATS)
+    const showLanguages = engineState.targetCountry !== 'usa' && cLanguages;
+    const languagesHTML = showLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : '';
+
+    // Render Canvas Body based on Template Styling
+    if (engineState.activeLayoutTemplateID === 5) {
+        // Retro Centered Style
         canvas.innerHTML = `
             <div class="space-y-1 text-slate-800">
                 <div class="flex flex-col items-center text-center pb-4">
@@ -1241,19 +1883,14 @@ function executeMasterCompilationRenderPipeline() {
                     <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
                         <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
                     </div>
-                    ${cLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages:</b> ${cLanguages}</div>` : ''}
+                    ${countryHeaderExtrasHTML}
+                    ${languagesHTML}
                 </div>
-                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
-                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
-                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
-                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
-                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
-                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+                ${orderedSectionsHTML}
+                ${countryFooterExtrasHTML}
             </div>`;
-    } 
-    else if (engineState.activeLayoutTemplateID === 6) {
-        const sh = t => `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1.5 rounded mb-2 mt-5 text-white" style="background-color:${hex};">${t}</h3>`;
-
+    } else if (engineState.activeLayoutTemplateID === 6) {
+        // Royal Banner Style
         canvas.innerHTML = `
             <div class="space-y-1 text-slate-800">
                 <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm mb-4" style="background-color: ${hex};">
@@ -1262,16 +1899,32 @@ function executeMasterCompilationRenderPipeline() {
                         <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
                         <div class="mt-2 text-[10px] opacity-90 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
                         <div class="text-[10px] opacity-90 flex flex-wrap gap-x-3 font-medium mt-0.5">${socialHTML}</div>
-                        ${cLanguages ? `<div class="mt-1 text-[10px] opacity-80 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : ''}
+                        ${countryHeaderExtrasHTML}
+                        ${languagesHTML}
                     </div>
                     ${imgHTML}
                 </div>
-                ${summaryHTML ? `<div>${sh('Professional Summary')}${summaryHTML}</div>` : ""}
-                ${expItemsHTML ? `<div>${sh('Work Experience')}<div>${expItemsHTML}</div></div>` : ""}
-                ${projItemsHTML ? `<div>${sh('Key Technical Projects')}<div>${projItemsHTML}</div></div>` : ""}
-                ${skillsItemsHTML ? `<div>${sh('Skills & Core Competencies')}${skillsItemsHTML}</div>` : ""}
-                ${certItemsHTML ? `<div>${sh('Professional Certifications')}<div>${certItemsHTML}</div></div>` : ""}
-                ${eduItemsHTML ? `<div>${sh('Education')}<div>${eduItemsHTML}</div></div>` : ""}
+                ${orderedSectionsHTML}
+                ${countryFooterExtrasHTML}
+            </div>`;
+    } else {
+        // Clean Minimal / Crimson / Navy / Tech Single-Column Style
+        canvas.innerHTML = `
+            <div class="space-y-1 text-slate-800">
+                <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
+                    <div class="flex-1 min-w-0">
+                        <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                        <div class="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-slate-600 font-medium items-center">
+                            <span><b>Email:</b> ${cEmail}</span><span>• <b>Phone:</b> ${cMobile}</span><span>• <b>Location:</b> ${cAddress}</span>${socialHTML}
+                        </div>
+                        ${countryHeaderExtrasHTML}
+                        ${languagesHTML}
+                    </div>
+                    ${imgHTML}
+                </div>
+                ${orderedSectionsHTML}
+                ${countryFooterExtrasHTML}
             </div>`;
     }
 }
@@ -1289,10 +1942,25 @@ function applyVisualTemplateFormat(id) {
 function processImageUpload(event) {
     const file = event.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = e => { engineState.globalCachedProfileImageStream = e.target.result; executeMasterCompilationRenderPipeline(); };
+    reader.onload = e => { 
+        engineState.globalCachedProfileImageStream = e.target.result; 
+        const notice = document.getElementById('photoHiddenComplianceNotice');
+        if (notice && (engineState.targetCountry === 'usa' || engineState.targetCountry === 'uk')) {
+            notice.classList.remove('hidden');
+        }
+        executeMasterCompilationRenderPipeline(); 
+        triggerContinuousAutoSave();
+    };
     reader.readAsDataURL(file);
 }
-function removePhotoImage() { engineState.globalCachedProfileImageStream=""; if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; executeMasterCompilationRenderPipeline(); }
+function removePhotoImage() { 
+    engineState.globalCachedProfileImageStream=""; 
+    if(document.getElementById('imageAssetUploader')) document.getElementById('imageAssetUploader').value=""; 
+    const notice = document.getElementById('photoHiddenComplianceNotice');
+    if (notice) notice.classList.add('hidden');
+    executeMasterCompilationRenderPipeline(); 
+    triggerContinuousAutoSave();
+}
 
 function displaySubscriptionGateway(format = 'pdf') {
     engineState.pendingExportFormat = format;
@@ -1362,25 +2030,306 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
     setTimeout(printFn, afterDelayMs);
 }
 
-// ==========================================
-// PERFECT NATIVE MS WORD EXPORT GENERATOR
-// ==========================================
+// ========================================================
+// 6. DEEP AI ATS MATCHER & 1-CLICK MISSING SKILL ADD CHIPS
+// ========================================================
+async function executeAIAtsAnalysis() {
+    const jd = document.getElementById('jobDescriptionTarget').value.trim();
+    if (!jd) { alert("Please paste a Job Description first."); return; }
+
+    const btn = document.getElementById('btnAIAtsAnalyze');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = "⏳ AI Brain is cross-referencing keywords...";
+    btn.disabled = true;
+
+    const canvas = document.getElementById('canvasDocumentRenderTree');
+    const resumeText = canvas.innerText || canvas.textContent;
+
+    try {
+        const response = await fetch('/api/gemini', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                contents: [{
+                    parts: [{
+                        text: `Act as a strict Applicant Tracking System scanner for the country ${engineState.targetCountry.toUpperCase()}. Compare the following Resume against the Job Description. Calculate an ATS match score (0-100). Identify up to 5 critical missing keywords/skills. Return ONLY valid JSON in this exact format: {"score": 85, "missing": ["skill1", "skill2"]}\n\nResume:\n${resumeText}\n\nJob Description:\n${jd}`
+                    }]
+                }]
+            })
+        });
+
+        const data = await response.json();
+        const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
+        const cleanJson = stripCodeFences(textResponse);
+        const parsed = JSON.parse(cleanJson);
+
+        const score = parsed.score || 0;
+        const missingList = Array.isArray(parsed.missing) ? parsed.missing : [];
+
+        document.getElementById('atsMeterTrackGauge').style.width = score + '%';
+        document.getElementById('atsPercentageLabel').innerText = score + '%';
+
+        const badge = document.getElementById('atsMetricBadge');
+        const fb = document.getElementById('atsFeedbackString');
+        const aiBanner = document.getElementById('aiAtsResultBanner');
+
+        if (score < 60) { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40"; badge.innerText="Low Match"; 
+        } else if (score < 80) { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40"; badge.innerText="Fair Match"; 
+        } else { 
+            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40"; badge.innerText="Strong Match"; 
+        }
+
+        if (missingList.length > 0) {
+            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${esc(missingList.join(', '))}</span>`;
+            if (aiBanner) {
+                aiBanner.classList.remove('hidden');
+                
+                // RENDER INTERACTIVE 1-CLICK ADD CHIPS
+                const chipsHTML = missingList.map(skill => {
+                    const safeSkill = esc(skill.trim());
+                    return `<button type="button" onclick="addMissingSkillChip('${safeSkill.replace(/'/g, "\\'")}', this)" class="inline-flex items-center gap-1 bg-indigo-900/80 hover:bg-indigo-700 text-indigo-200 border border-indigo-500/50 text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all transform active:scale-95 shadow-sm cursor-pointer">
+                        <span>＋</span> Add ${safeSkill}
+                    </button>`;
+                }).join(' ');
+
+                aiBanner.innerHTML = `
+                    <div class="flex items-center justify-between border-b border-slate-700/80 pb-1.5">
+                        <span class="font-bold text-blue-400 text-xs">🎯 AI ATS Match Score: ${score}%</span>
+                        <button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300 text-xs">✕</button>
+                    </div>
+                    <div class="text-[11px] text-amber-300 font-semibold">Click any missing keyword to inject it directly into your resume:</div>
+                    <div class="flex flex-wrap gap-2 pt-1">${chipsHTML}</div>`;
+            }
+        } else {
+            fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
+            if (aiBanner) {
+                aiBanner.classList.remove('hidden');
+                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-emerald-400">🎯 AI JD Match Score: ${score}% — Excellent Alignment!</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div>`;
+            }
+        }
+
+    } catch (error) {
+        console.error("AI Match Error:", error);
+        alert("AI Analysis failed. Ensure backend API is responding with JSON.");
+    } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    }
+}
+
+// 1-CLICK MISSING SKILL CHIP INJECTION HANDLER
+function addMissingSkillChip(skillName, btnElement) {
+    if (!skillName) return;
+    const currentSkills = engineState.skills || [];
+    const lowerSkill = skillName.toLowerCase();
+    
+    // Avoid duplicate
+    if (!currentSkills.some(s => s.toLowerCase() === lowerSkill)) {
+        currentSkills.push(skillName);
+        engineState.skills = currentSkills;
+        const skillsInput = document.getElementById('formSkillsList');
+        if (skillsInput) skillsInput.value = currentSkills.join(', ');
+        runMasterManualSyncAndGenerate();
+    }
+
+    // Interactive button state feedback
+    if (btnElement) {
+        btnElement.innerHTML = `✓ Added`;
+        btnElement.className = "inline-flex items-center gap-1 bg-emerald-950 text-emerald-300 border border-emerald-500/50 text-[11px] px-2.5 py-1 rounded-lg font-bold opacity-80 cursor-default";
+        btnElement.disabled = true;
+    }
+}
+
+// ========================================================
+// 7. 1-CLICK AI COVER LETTER GENERATOR (HIGH VALUE ADD)
+// ========================================================
+function openCoverLetterGeneratorModal() {
+    const jd = document.getElementById('jobDescriptionTarget')?.value.trim();
+    const modal = document.getElementById('coverLetterModalGate');
+    if (modal) modal.classList.remove('hidden');
+    
+    // Auto-generate if output is blank
+    const output = document.getElementById('coverLetterTextOutput');
+    if (output && !output.value.trim()) {
+        generateAiCoverLetter();
+    }
+}
+
+function closeCoverLetterModal() {
+    document.getElementById('coverLetterModalGate')?.classList.add('hidden');
+}
+
+async function generateAiCoverLetter() {
+    const jd = document.getElementById('jobDescriptionTarget')?.value.trim() || "General analytical or technical leadership position.";
+    const tone = document.getElementById('coverLetterToneSelect')?.value || "Impactful & Confident";
+    const btn = document.getElementById('btnRegenerateCoverLetter');
+    const output = document.getElementById('coverLetterTextOutput');
+    
+    if (btn) { btn.innerHTML = "⏳ AI is drafting your letter..."; btn.disabled = true; }
+    if (output) output.value = "Drafting bespoke cover letter tailored to your profile and target country standard...";
+
+    const canvas = document.getElementById('canvasDocumentRenderTree');
+    const resumeText = canvas.innerText || canvas.textContent;
+    const c = engineState.targetCountry;
+
+    const countrySpellingNote = c === 'uk' ? "Use British English spelling (e.g. specialised, organised, analytical)." :
+                               c === 'usa' ? "Use American English spelling and direct, active verbs." :
+                               c === 'dubai' ? "Emphasize multi-cultural execution scale, regional readiness, and immediate impact." :
+                               "Focus on analytical delivery ownership and technical competency.";
+
+    try {
+        const prompt = `Act as an elite executive career strategist. Write a tailored, high-converting 3-4 paragraph Cover Letter for this candidate applying to the position described in the Job Description.
+        Tone: ${tone}.
+        Country standard: ${countryConfig[c].label}. ${countrySpellingNote}
+        Candidate Name: ${engineState.personal.name || "Rahul Sharma"}
+        Target Role: ${engineState.personal.title || "Data Analyst / Specialist"}
+        Candidate Profile Details:\n${resumeText.slice(0, 1500)}
+        
+        Job Description:\n${jd.slice(0, 1500)}
+        
+        Format properly with Date, Hiring Team Salutation, 3 substantive paragraphs showcasing quantifiable metrics from candidate's experience, and professional signoff. Return ONLY raw plaintext letter without markdown fences or code markers.`;
+
+        const response = await fetch('/api/gemini', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        const data = await response.json();
+        let letter = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        letter = stripCodeFences(letter);
+        if (output) output.value = letter;
+    } catch(err) {
+        console.error("Cover letter gen failed:", err);
+        if (output) output.value = `Dear Hiring Manager,\n\nI am writing to express my strong enthusiasm for the ${engineState.personal.title || 'specialist'} role. With proven experience across data operations, technical delivery, and cross-functional problem solving, I am confident in my ability to drive measurable results for your organization.\n\nThroughout my background, I have consistently focused on automating workflows, eliminating reporting discrepancies, and delivering actionable insights that boost operational throughput. My technical skill set includes ${engineState.skills.slice(0, 5).join(', ') || 'modern analytical frameworks'}.\n\nI would welcome the opportunity to discuss how my expertise aligns with your strategic goals. Thank you for your time and consideration.\n\nSincerely,\n${engineState.personal.name || 'Candidate'}`;
+    } finally {
+        if (btn) { btn.innerHTML = "⚡ Generate / Rewrite with AI"; btn.disabled = false; }
+    }
+}
+
+function copyCoverLetterToClipboard() {
+    const text = document.getElementById('coverLetterTextOutput')?.value || "";
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        const btn = document.getElementById('btnCopyCoverLetter');
+        if (btn) {
+            const orig = btn.innerHTML;
+            btn.innerHTML = "✓ Copied!";
+            setTimeout(() => { btn.innerHTML = orig; }, 2000);
+        }
+    }).catch(() => { alert("Failed to copy automatically. Please select and copy manually."); });
+}
+
+function downloadCoverLetterAsWord() {
+    const text = document.getElementById('coverLetterTextOutput')?.value || "";
+    if (!text) return;
+    const paragraphs = text.split('\n\n').map(p => `<p style="margin-bottom:12pt;line-height:1.4;font-size:11pt;text-align:justify;">${esc(p).replace(/\n/g, '<br>')}</p>`).join('');
+    const wHTML = `
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <head><meta charset='utf-8'><title>Cover Letter</title>
+        <style>@page { margin: 1in; } body { font-family: 'Segoe UI', Arial, sans-serif; }</style>
+        </head><body>${paragraphs}</body></html>`;
+    const blob = new Blob(['\ufeff', wHTML], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = (engineState.personal.name ? engineState.personal.name.replace(/\s+/g, '_') : 'Candidate') + '_Cover_Letter.doc';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+}
+
+function printCoverLetter() {
+    const text = document.getElementById('coverLetterTextOutput')?.value || "";
+    if (!text) return;
+    const printWindow = window.open('', '_blank');
+    printWindow.document.write(`
+        <html><head><title>Cover Letter</title>
+        <style>body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; font-size: 11pt; } p { margin-bottom: 14pt; text-align: justify; white-space: pre-line; }</style>
+        </head><body><p>${esc(text)}</p><script>window.print();<\/script></body></html>`);
+    printWindow.document.close();
+}
+
+// ========================================================
+// 8. ADAPTIVE AI WORK EXPERIENCE REWRITING
+// ========================================================
+async function executeDynamicAiExperienceGeneration(idx) {
+    const exp = engineState.experience[idx];
+    const targetTitle = document.getElementById('formTitle')?.value || "Professional";
+    const targetSkills = document.getElementById('formSkillsList')?.value || "";
+    const currentDuties = exp.duties || "General operational duties.";
+    const c = engineState.targetCountry;
+    
+    const overlay = document.getElementById('parsingOverlay');
+    const status = document.getElementById('parsingStatus');
+    
+    if (overlay) overlay.classList.add('active');
+    if (status) status.innerText = `AI is rewriting experience for ${countryConfig[c].label} standards...`;
+
+    let countryPromptRule = "";
+    if (c === 'usa') {
+        countryPromptRule = "Use US English. Start every bullet point with strong active action verbs (e.g. Spearheaded, Engineered, Accelerated, Automated) and include quantifiable metrics (%, $, numbers).";
+    } else if (c === 'uk') {
+        countryPromptRule = "Use British English spelling (e.g. centralised, optimised, specialised). Focus on commercial impact and stakeholder delivery.";
+    } else if (c === 'dubai') {
+        countryPromptRule = "Focus on operational scale, cross-functional vendor management, revenue/cost impact, and rapid delivery.";
+    } else {
+        countryPromptRule = "Highlight data tools, process ownership, turnaround time reduction, and technical problem solving.";
+    }
+
+    try {
+        const prompt = `Act as an expert technical resume writer. Rewrite the following work experience into 3 to 4 impactful, data-driven, and ATS-optimized bullet points. 
+        The user worked as a ${exp.role} at ${exp.company}. 
+        Their target job title is: ${targetTitle}. 
+        Core skills to integrate naturally if applicable: ${targetSkills}.
+        ${countryPromptRule}
+        
+        Original description to improve:
+        ${currentDuties}
+        
+        Return ONLY the raw bullet points. Start each line with a • symbol. Do not include introductory text, labels, or markdown formatting blocks.`;
+
+        const response = await fetch('/api/gemini', {
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+        });
+        
+        const data = await response.json();
+        let textVal = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
+        
+        if (textVal) {
+            textVal = stripCodeFences(textVal);
+            engineState.experience[idx].duties = textVal;
+            renderExperienceFormInputs();
+            runMasterManualSyncAndGenerate();
+        }
+    } catch(err) {
+        console.error("AI Experience Gen Error:", err);
+        alert("AI optimization failed. Please check your connection or API.");
+    } finally { 
+        if (overlay) overlay.classList.remove('active'); 
+    }
+}
+
+// ========================================================
+// 9. NATIVE MS WORD & PDF EXPORTS (COUNTRY & ORDER AWARE)
+// ========================================================
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
     document.title = (userName ? (userName.replace(/\s+/g, '_') + "_Resume") : "ATS_Approved_Resume") + ".pdf";
     const filename = userName ? (userName.replace(/\s+/g, '_') + "_Resume") : "ATS_Approved_Resume";
+    const cfg = countryConfig[engineState.targetCountry] || countryConfig.india;
     
     if (engineState.pendingExportFormat === 'word') {
-        
-        // Build raw, native HTML specifically for Microsoft Word
         const hex = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"}[engineState.activeLayoutTemplateID]||"#b91c1c";
         
         let wHTML = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head><meta charset='utf-8'><title>Resume</title>
         <style>
-            @page { margin: 1in; size: 8.5in 11in; }
+            @page { margin: 1in; size: ${cfg.usLetter ? '8.5in 11in' : '210mm 297mm'}; }
             body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; color: #000; }
             h1 { font-size: 20pt; font-weight: bold; margin-bottom: 4pt; text-transform: uppercase; color: ${hex}; }
             h2 { font-size: 11pt; font-weight: bold; margin-bottom: 6pt; text-transform: uppercase; color: #333; }
@@ -1399,76 +2348,103 @@ function dpdSmartPrint() {
         let c = [];
         if(engineState.personal.email) c.push(`<b>Email:</b> ${esc(engineState.personal.email)}`);
         if(engineState.personal.mobile) c.push(`<b>Phone:</b> ${esc(engineState.personal.mobile)}`);
-        if(engineState.personal.address) c.push(`<b>Address:</b> ${esc(engineState.personal.address)}`);
+        if(engineState.personal.address) c.push(`<b>Location:</b> ${esc(engineState.personal.address)}`);
         if(engineState.personal.linkedin) c.push(`<b>LinkedIn:</b> ${esc(engineState.personal.linkedin)}`);
         if(engineState.personal.github) c.push(`<b>GitHub:</b> ${esc(engineState.personal.github)}`);
         if(engineState.personal.portfolio) c.push(`<b>Portfolio:</b> ${esc(engineState.personal.portfolio)}`);
 
         wHTML += `<div class="contact">${c.join(' &nbsp;|&nbsp; ')}</div>`;
 
-        if(engineState.personal.languages) {
+        // Country Specific Header Notes
+        if (engineState.targetCountry === 'dubai') {
+            const cd = engineState.countryData;
+            wHTML += `<div class="contact" style="margin-top:-6pt; background:#f4f4f5; padding:4pt;"><b>Visa Status:</b> ${esc(cd.visaStatus||'Employment Visa')} &nbsp;|&nbsp; <b>Nationality:</b> ${esc(cd.nationality||'')} &nbsp;|&nbsp; <b>License:</b> ${esc(cd.drivingLicense||'')} &nbsp;|&nbsp; <b>Notice:</b> ${esc(cd.dubaiAvailability||'')}</div>`;
+        } else if (engineState.targetCountry === 'uk' && engineState.countryData.rightToWork) {
+            wHTML += `<div class="contact" style="margin-top:-6pt;"><b>Right to Work:</b> ${esc(engineState.countryData.rightToWork)}</div>`;
+        } else if (engineState.targetCountry === 'india' && engineState.countryData.noticePeriod) {
+            wHTML += `<div class="contact" style="margin-top:-6pt;"><b>Notice Period:</b> ${esc(engineState.countryData.noticePeriod)}</div>`;
+        }
+
+        if(engineState.targetCountry !== 'usa' && engineState.personal.languages) {
             wHTML += `<div class="contact" style="margin-top:-8pt;"><b>Languages:</b> ${esc(engineState.personal.languages)}</div>`;
         }
 
-        if(engineState.summary) {
-            wHTML += `<h3>Professional Summary</h3><p>${esc(engineState.summary)}</p>`;
-        }
-
+        // Modular Sections for Word
+        const wordSummary = engineState.summary ? `<h3>${cfg.summaryTitle}</h3><p>${esc(engineState.summary)}</p>` : "";
+        
+        let wordExp = "";
         if(engineState.experience.length && (engineState.experience[0].company || engineState.experience[0].role)) {
-            wHTML += `<h3>Work Experience</h3>`;
+            wordExp += `<h3>${cfg.expTitle}</h3>`;
             engineState.experience.forEach(e => {
                 if(!e.company && !e.role) return;
-                wHTML += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
+                wordExp += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
                     <td align="left" valign="top"><b>${esc(e.role)}</b> &mdash; <b>${esc(e.company)}</b></td>
                     <td align="right" valign="top" style="color:#555;">${esc(e.dates)}</td>
                 </tr></table>`;
-                
                 if (e.duties) {
                     let lines = e.duties.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-                    if(lines.length === 1) wHTML += `<p>${esc(lines[0])}</p>`;
-                    else wHTML += `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+                    if(lines.length === 1) wordExp += `<p>${esc(lines[0])}</p>`;
+                    else wordExp += `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
                 }
             });
         }
 
+        let wordProj = "";
         if(engineState.projects.length && (engineState.projects[0].title)) {
-            wHTML += `<h3>Key Technical Projects</h3>`;
+            wordProj += `<h3>${cfg.projTitle}</h3>`;
             engineState.projects.forEach(p => {
                  if(!p.title) return;
-                 wHTML += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
+                 wordProj += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
                     <td align="left" valign="top"><b>${esc(p.title)}</b> ${p.tools ? `[${esc(p.tools)}]` : ''}</td>
                     <td align="right" valign="top" style="color:#2563eb;">${esc(p.link)}</td>
                 </tr></table>`;
                 if (p.description) {
                     let lines = p.description.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-                    if(lines.length === 1) wHTML += `<p>${esc(lines[0])}</p>`;
-                    else wHTML += `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
+                    if(lines.length === 1) wordProj += `<p>${esc(lines[0])}</p>`;
+                    else wordProj += `<ul>${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
                 }
             });
         }
 
+        let wordSkills = "";
         if(engineState.skills.length) {
-            wHTML += `<h3>Skills & Core Competencies</h3>`;
-            wHTML += `<p><b>Core Skills:</b> ${engineState.skills.map(s => esc(s)).join(' &nbsp;|&nbsp; ')}</p>`;
+            wordSkills += `<h3>${cfg.skillsTitle}</h3>`;
+            wordSkills += `<p><b>Core Skills:</b> ${engineState.skills.map(s => esc(s)).join(' &nbsp;|&nbsp; ')}</p>`;
         }
 
+        let wordCerts = "";
         if(engineState.certifications.length && engineState.certifications[0].name) {
-            wHTML += `<h3>Professional Certifications</h3><ul>`;
+            wordCerts += `<h3>Professional Certifications</h3><ul>`;
             engineState.certifications.forEach(c => {
-                if(c.name) wHTML += `<li><b>${esc(c.name)}</b>${c.issuer ? ` &mdash; ${esc(c.issuer)}` : ''}</li>`;
+                if(c.name) wordCerts += `<li><b>${esc(c.name)}</b>${c.issuer ? ` &mdash; ${esc(c.issuer)}` : ''}</li>`;
             });
-            wHTML += `</ul>`;
+            wordCerts += `</ul>`;
         }
 
+        let wordEdu = "";
         if(engineState.education.length && (engineState.education[0].school || engineState.education[0].degree)) {
-            wHTML += `<h3>Education</h3>`;
+            wordEdu += `<h3>${cfg.eduTitle}</h3>`;
             engineState.education.forEach(e => {
                 if(!e.school && !e.degree) return;
-                wHTML += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
+                wordEdu += `<table width="100%" border="0" cellpadding="0" cellspacing="0" style="margin-bottom:4pt;"><tr>
                     <td align="left" valign="top"><b>${esc(e.degree)}</b> &mdash; ${esc(e.school)}</td>
                     <td align="right" valign="top" style="color:#555;">${esc(e.year)}</td>
                 </tr></table>`;
             });
+        }
+
+        // Apply Mode Ordering to Word Export
+        if (engineState.resumeMode === 'fresher') {
+            wHTML += wordSummary + wordEdu + wordProj + wordSkills + wordExp + wordCerts;
+        } else {
+            wHTML += wordSummary + wordExp + wordProj + wordSkills + wordCerts + wordEdu;
+        }
+
+        // Word Footer Extras
+        if (engineState.targetCountry === 'india' && engineState.countryData.includeDeclaration) {
+            wHTML += `<div style="margin-top:14pt;border-top:1px solid #ccc;padding-top:6pt;font-size:9pt;font-style:italic;"><b>Declaration:</b> ${esc(engineState.countryData.declarationText)}</div>`;
+        } else if (engineState.targetCountry === 'uk' && engineState.countryData.includeReferences) {
+            wHTML += `<div style="margin-top:14pt;text-align:center;font-size:9pt;font-weight:bold;">${esc(engineState.countryData.referencesText)}</div>`;
         }
 
         wHTML += `</body></html>`;
@@ -1491,6 +2467,7 @@ function dpdSmartPrint() {
         }, 800);
         
     } else {
+        // PDF Export via Browser Print
         window.onafterprint = function() {
             document.title = originalTitle;
             setTimeout(() => {
@@ -1505,16 +2482,13 @@ function dpdSmartPrint() {
         }); 
     }
 }
-// ==========================================
 
-// ==========================================
-// FIX: Feedback Modal Close Logic
-// ==========================================
+// FEEDBACK MODAL CLOSE LOGIC
 function closeFeedbackModal() {
     const fm = document.getElementById('feedbackModalGate');
     if(fm) {
         fm.classList.add('hidden');
-        fm.style.display = ''; // Safely clear forced styles
+        fm.style.display = '';
     }
     
     setTimeout(() => {
@@ -1527,7 +2501,6 @@ function closeFeedbackModal() {
         }
     }, 500);
 }
-// ==========================================
 
 async function submitFeedbackData() {
     const rating = document.getElementById('feedbackRatingInput').value;
@@ -1554,10 +2527,7 @@ async function submitFeedbackData() {
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                
-                // <!-- LIVE ACCESS KEY EMBEDDED HERE -->
                 access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc", 
-                
                 subject: "New Feedback for DPD AI Resume Builder",
                 from_name: "DPD Resume Bot",
                 User_Name: userName,
@@ -1579,7 +2549,6 @@ async function submitFeedbackData() {
                 closeFeedbackModal();
             }, 1500);
         } else {
-            console.error("Web3Forms Error:", result);
             throw new Error(result.message);
         }
 
@@ -1591,122 +2560,9 @@ async function submitFeedbackData() {
     }
 }
 
-async function executeAIAtsAnalysis() {
-    const jd = document.getElementById('jobDescriptionTarget').value.trim();
-    if (!jd) { alert("Please paste a Job Description first."); return; }
-
-    const btn = document.getElementById('btnAIAtsAnalyze');
-    const originalText = btn.innerHTML;
-    btn.innerHTML = "⏳ AI Brain is cross-referencing keywords...";
-    btn.disabled = true;
-
-    const canvas = document.getElementById('canvasDocumentRenderTree');
-    const resumeText = canvas.innerText || canvas.textContent;
-
-    try {
-        const response = await fetch('/api/gemini', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: `Act as a strict Applicant Tracking System. Compare the following Resume against the Job Description. Calculate an ATS match score (0-100). Identify up to 5 critical missing keywords/skills. Return ONLY valid JSON in this exact format: {"score": 85, "missing": ["skill1", "skill2"]}\n\nResume:\n${resumeText}\n\nJob Description:\n${jd}`
-                    }]
-                }]
-            })
-        });
-
-        const data = await response.json();
-        const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
-        const cleanJson = stripCodeFences(textResponse);
-        const parsed = JSON.parse(cleanJson);
-
-        const score = parsed.score || 0;
-        const missing = (parsed.missing || []).join(', ');
-
-        document.getElementById('atsMeterTrackGauge').style.width = score + '%';
-        document.getElementById('atsPercentageLabel').innerText = score + '%';
-
-        const badge = document.getElementById('atsMetricBadge');
-        const fb = document.getElementById('atsFeedbackString');
-        const aiBanner = document.getElementById('aiAtsResultBanner');
-
-        if (score < 60) { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40"; badge.innerText="Low Match"; 
-        } else if (score < 80) { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40"; badge.innerText="Fair Match"; 
-        } else { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40"; badge.innerText="Strong Match"; 
-        }
-
-        if (missing) {
-            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${esc(missing)}</span>`;
-            if (aiBanner) {
-                aiBanner.classList.remove('hidden');
-                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-blue-400">🎯 AI JD Match Score: ${score}%</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div><div class="text-amber-300"><b>Missing Keywords to Add:</b> ${esc(missing)}</div>`;
-            }
-        } else {
-            fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
-            if (aiBanner) {
-                aiBanner.classList.remove('hidden');
-                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-emerald-400">🎯 AI JD Match Score: ${score}% — Excellent Alignment!</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div>`;
-            }
-        }
-
-    } catch (error) {
-        console.error("AI Match Error:", error);
-        alert("AI Analysis failed. Ensure backend API is responding with JSON.");
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
-    }
-}
-
-async function executeDynamicAiExperienceGeneration(idx) {
-    const exp = engineState.experience[idx];
-    const targetTitle = document.getElementById('formTitle')?.value || "Professional";
-    const targetSkills = document.getElementById('formSkillsList')?.value || "";
-    const currentDuties = exp.duties || "General operational duties.";
-    
-    const overlay = document.getElementById('parsingOverlay');
-    const status = document.getElementById('parsingStatus');
-    
-    if (overlay) overlay.classList.add('active');
-    if (status) status.innerText = "AI is rewriting experience to bypass ATS filters...";
-
-    try {
-        const prompt = `Act as an expert technical resume writer. Rewrite the following work experience into 3 to 4 impactful, data-driven, and ATS-optimized bullet points. 
-        The user worked as a ${exp.role} at ${exp.company}. 
-        Their target job title is: ${targetTitle}. 
-        Core skills to integrate naturally if applicable: ${targetSkills}.
-        
-        Original description to improve:
-        ${currentDuties}
-        
-        Return ONLY the raw bullet points. Start each line with a • symbol. Do not include introductory text, labels, or markdown formatting blocks.`;
-
-        const response = await fetch('/api/gemini', {
-            method: 'POST', 
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-        });
-        
-        const data = await response.json();
-        let textVal = data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim() || "";
-        
-        if (textVal) {
-            textVal = textVal.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
-            engineState.experience[idx].duties = textVal;
-            renderExperienceFormInputs();
-            runMasterManualSyncAndGenerate();
-        }
-    } catch(err) {
-        console.error("AI Experience Gen Error:", err);
-        alert("AI optimization failed. Please check your connection or API.");
-    } finally { 
-        if (overlay) overlay.classList.remove('active'); 
-    }
-}
-
+// ========================================================
+// 10. SYSTEM INITIALIZATION & STATE RESTORATION
+// ========================================================
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
     const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
@@ -1717,50 +2573,58 @@ window.onload = async function() {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
         localStorage.setItem('dpd_pass_expiry', String(Date.now() + (plan === 59 ? 30 : 7) * 24 * 60 * 60 * 1000));
         localStorage.setItem('dpd_pass_plan', String(plan));
-        localStorage.setItem('dpd_app_ver', 'dpd_v6_ats_pure');
+        localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
-    if (!returningFromPayment && localStorage.getItem('dpd_app_ver') !== 'dpd_v6_ats_pure') {
-        const keepKeys = ['dpd_pass_expiry','dpd_pass_plan','dpd_last_plan','dpd_form_backup'];
-        Object.keys(localStorage).forEach(k => { if (!keepKeys.includes(k)) localStorage.removeItem(k); });
-        localStorage.setItem('dpd_app_ver', 'dpd_v6_ats_pure');
+    let formRestored = false;
+
+    // Check backup from payment or continuous auto-save
+    let savedDataRaw = null;
+    if (returningFromPayment) {
+        savedDataRaw = localStorage.getItem('dpd_form_backup');
+    } else {
+        savedDataRaw = localStorage.getItem('dpd_autosave_state');
     }
 
-    let formRestored = false;
-    if (returningFromPayment) {
+    if (savedDataRaw) {
         try {
-            const backup = localStorage.getItem('dpd_form_backup');
-            if (backup) {
-                const saved = JSON.parse(backup);
-                if (saved && typeof saved === 'object') {
-                    if (saved.personal) Object.assign(engineState.personal, saved.personal);
-                    if (saved.summary) engineState.summary = saved.summary;
-                    if (Array.isArray(saved.experience)) engineState.experience = saved.experience;
-                    if (Array.isArray(saved.projects)) engineState.projects = saved.projects;
-                    if (Array.isArray(saved.education)) engineState.education = saved.education;
-                    if (Array.isArray(saved.certifications)) engineState.certifications = saved.certifications;
-                    if (Array.isArray(saved.skills)) engineState.skills = saved.skills;
-                    if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
-                    if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
-                    if (saved.pendingExportFormat) engineState.pendingExportFormat = saved.pendingExportFormat;
+            const saved = JSON.parse(savedDataRaw);
+            if (saved && typeof saved === 'object') {
+                if (saved.personal) Object.assign(engineState.personal, saved.personal);
+                if (saved.summary) engineState.summary = saved.summary;
+                if (Array.isArray(saved.experience)) engineState.experience = saved.experience;
+                if (Array.isArray(saved.projects)) engineState.projects = saved.projects;
+                if (Array.isArray(saved.education)) engineState.education = saved.education;
+                if (Array.isArray(saved.certifications)) engineState.certifications = saved.certifications;
+                if (Array.isArray(saved.skills)) engineState.skills = saved.skills;
+                if (saved.targetCountry) engineState.targetCountry = saved.targetCountry;
+                if (saved.resumeMode) engineState.resumeMode = saved.resumeMode;
+                if (saved.countryData) Object.assign(engineState.countryData, saved.countryData);
+                if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
+                if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
+                if (saved.pendingExportFormat) engineState.pendingExportFormat = saved.pendingExportFormat;
 
-                    const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
-                    s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
-                    s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
-                    s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
-                    s('formPortfolio', engineState.personal.portfolio); s('formAddress', engineState.personal.address);
-                    s('formLanguages', engineState.personal.languages); s('formSummary', engineState.summary);
-                    s('formSkillsList', engineState.skills.join(', '));
-                    formRestored = true; localStorage.removeItem('dpd_form_backup');
-                }
+                const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+                s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
+                s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
+                s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
+                s('formPortfolio', engineState.personal.portfolio); s('formAddress', engineState.personal.address);
+                s('formLanguages', engineState.personal.languages); s('formSummary', engineState.summary);
+                s('formSkillsList', engineState.skills.join(', '));
+                formRestored = true;
+                if (returningFromPayment) localStorage.removeItem('dpd_form_backup');
             }
-        } catch(e) {}
+        } catch(e) { console.warn("Could not restore saved state", e); }
     }
 
     if (!formRestored || engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
     if (!formRestored || engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
     if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
+
+    // Set initial country & mode configurations
+    setTargetCountry(engineState.targetCountry || 'india');
+    setResumeMode(engineState.resumeMode || 'experienced');
 
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     applyVisualTemplateFormat(engineState.activeLayoutTemplateID || 1);
