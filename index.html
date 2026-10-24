@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='[http://www.w3.org/2000/svg](http://www.w3.org/2000/svg)' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📄</text></svg>">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Primary SEO & Keyword Optimization -->
@@ -13,12 +13,12 @@
     <!-- Open Graph / Facebook / LinkedIn Preview Tags -->
     <meta property="og:title" content="DPD AI Resume — 100% ATS-Approved Builder" />
     <meta property="og:description" content="Free AI-powered tool to build ATS-optimized resumes for all job seekers across industries." />
-    <meta property="og:url" content="https://dpdai-resume.vercel.app" />
+    <meta property="og:url" content="[https://dpdai-resume.vercel.app](https://dpdai-resume.vercel.app)" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="DPD AI Resume Builder" />
     
     <!-- Clickable Preview Image Tags Linked to Your Uploaded Banner -->
-    <meta property="og:image" content="https://dpdai-resume.vercel.app/banner.jpg" />
+    <meta property="og:image" content="[https://dpdai-resume.vercel.app/banner.jpg](https://dpdai-resume.vercel.app/banner.jpg)" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
@@ -27,10 +27,10 @@
     const _cw = console.warn.bind(console);
     console.warn = (...a) => { if(a[0] && String(a[0]).includes('cdn.tailwindcss.com')) return; _cw(...a); };
     </script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
     <script>if(window.tailwind){tailwind.config={theme:{extend:{}}}}</script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js](https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js)"></script>
+    <script src="[https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js](https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js)"></script>
     <style>
         body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 6px; }
@@ -168,8 +168,8 @@
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Target Designation</label><input type="text" id="formTitle" oninput="syncFormStateToEngine()" placeholder="Data Analyst / Engineer" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Email Address</label><input type="email" id="formEmail" oninput="syncFormStateToEngine()" placeholder="email@domain.com" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Phone Number</label><input type="text" id="formMobile" oninput="syncFormStateToEngine()" placeholder="+91 98765 43210" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">LinkedIn Profile</label><input type="url" id="formLinkedIn" oninput="syncFormStateToEngine()" placeholder="linkedin.com/in/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
-                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">GitHub / Tech Repo</label><input type="url" id="formGitHub" oninput="syncFormStateToEngine()" placeholder="github.com/username" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">LinkedIn Profile</label><input type="url" id="formLinkedIn" oninput="syncFormStateToEngine()" placeholder="[linkedin.com/in/username](https://linkedin.com/in/username)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
+                        <div><label class="block text-xs font-semibold text-slate-400 mb-1">GitHub / Tech Repo</label><input type="url" id="formGitHub" oninput="syncFormStateToEngine()" placeholder="[github.com/username](https://github.com/username)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Portfolio / Live URL</label><input type="url" id="formPortfolio" oninput="syncFormStateToEngine()" placeholder="yourwebsite.com / dashboard link" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div><label class="block text-xs font-semibold text-slate-400 mb-1">Location Address</label><input type="text" id="formAddress" oninput="syncFormStateToEngine()" placeholder="City, State, India" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
                         <div class="sm:col-span-2"><label class="block text-xs font-semibold text-slate-400 mb-1">Languages Known (Comma Separated)</label><input type="text" id="formLanguages" oninput="syncFormStateToEngine()" placeholder="English, Hindi, Bengali (Professional Working Proficiency)" class="w-full bg-slate-900 border border-slate-700 rounded px-3 py-1.5 text-sm text-slate-200 focus:outline-none focus:border-blue-500"></div>
@@ -260,6 +260,7 @@
                 <label class="block text-xs font-bold text-blue-400 uppercase tracking-wide">Target Job Description (AI Matcher)</label>
                 <textarea id="jobDescriptionTarget" rows="3" class="w-full bg-slate-900 border border-slate-700 rounded p-2.5 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500" placeholder="Paste the target job description here to generate a real AI ATS score and extract missing skills..."></textarea>
                 <button type="button" onclick="executeAIAtsAnalysis()" id="btnAIAtsAnalyze" class="w-full bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded text-xs transition-all shadow flex items-center justify-center gap-2">🤖 Run Deep AI ATS Analysis</button>
+                <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-1"></div>
             </div>
             <!-- END: Deep AI ATS Matcher -->
 
@@ -267,11 +268,11 @@
                 <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select 100% ATS-Approved Layout Theme Format:</span>
                 <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs font-semibold">
                     <button onclick="applyVisualTemplateFormat(1)" id="tplBtn-1" class="py-2 px-1 rounded bg-red-700 text-white border border-red-500 shadow-sm transition-all text-center">1. Crimson</button>
-                    <button onclick="applyVisualTemplateFormat(2)" id="tplBtn-2" class="py-2 px-1 rounded bg-blue-950 text-white border border-blue-900 shadow-sm transition-all text-center">2. Navy</button>
+                    <button onclick="applyVisualTemplateFormat(2)" id="tplBtn-2" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">2. Navy</button>
                     <button onclick="applyVisualTemplateFormat(3)" id="tplBtn-3" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">3. Minimal</button>
                     <button onclick="applyVisualTemplateFormat(4)" id="tplBtn-4" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">4. Tech</button>
                     <button onclick="applyVisualTemplateFormat(5)" id="tplBtn-5" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">5. Retro</button>
-                    <button onclick="applyVisualTemplateFormat(6)" id="tplBtn-6" class="py-2 px-1 rounded bg-purple-900 text-white border border-purple-700 shadow-sm transition-all text-center">6. Royal</button>
+                    <button onclick="applyVisualTemplateFormat(6)" id="tplBtn-6" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">6. Royal</button>
                 </div>
             </div>
 
@@ -284,7 +285,7 @@
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
-                    <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
+                    <a id="dpdWatermark" href="[https://dpdai-resume.vercel.app](https://dpdai-resume.vercel.app)" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
             </div>
 
@@ -335,7 +336,7 @@
                     <div class="text-xs text-slate-400 space-y-2">
                         <p>📍 <strong>Location:</strong> Cooch Behar, West Bengal, India</p>
                         <p>📧 <strong>Email:</strong> <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a></p>
-                        <p>🔗 <strong>Network:</strong> <a href="https://linkedin.com/" target="_blank" class="text-blue-400 hover:underline">Connect with me on LinkedIn</a></p>
+                        <p>🔗 <strong>Network:</strong> <a href="[https://linkedin.com/](https://linkedin.com/)" target="_blank" class="text-blue-400 hover:underline">Connect with me on LinkedIn</a></p>
                         <p class="mt-3 italic opacity-80">For technical support, feedback, or feature requests, feel free to reach out directly!</p>
                     </div>
                 </div>
@@ -354,11 +355,11 @@
                     <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume</p>
                 </div>
                 <div class="space-y-3 mb-5">
-                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="[https://rzp.io/rzp/WY7F30Ou](https://rzp.io/rzp/WY7F30Ou)" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
                         <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
-                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="[https://rzp.io/rzp/jgXuBBn](https://rzp.io/rzp/jgXuBBn)" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Monthly Unlimited</span><span class="block text-xs text-slate-400">Unlimited downloads for 30 days</span></div>
                         <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500">per month</span></div>
                     </div>
@@ -367,6 +368,7 @@
                     <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">Cancel</button>
                     <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">19</span> on Razorpay →</button>
                 </div>
+                <button type="button" onclick="showPayScreen2()" class="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 hover:underline mt-3 block">Already paid? Click here to enter Payment ID manually →</button>
             </div>
 
             <div id="payScreen2" class="hidden">
@@ -431,7 +433,7 @@
     <!-- END: NEW Feedback Modal -->
 
 <script>
-pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+pdfjsLib.GlobalWorkerOptions.workerSrc = '[https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js](https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js)';
 
 let engineState = {
     activeSectionTab: 1, activeLayoutTemplateID: 1,
@@ -873,7 +875,7 @@ function renderProjectFormInputs() {
         <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Project Title</label><input type="text" value="${esc(proj.title)}" oninput="syncProjField(${idx},'title',this.value)" placeholder="e.g. Sales Pipeline Analysis Dashboard" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
         <div class="grid grid-cols-2 gap-3">
             <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Tools / Tech Stack</label><input type="text" value="${esc(proj.tools)}" oninput="syncProjField(${idx},'tools',this.value)" placeholder="e.g. SQL, Power BI, Advanced Excel" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
-            <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Live URL / Repo Link</label><input type="text" value="${esc(proj.link)}" oninput="syncProjField(${idx},'link',this.value)" placeholder="github.com/username/project" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
+            <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Live URL / Repo Link</label><input type="text" value="${esc(proj.link)}" oninput="syncProjField(${idx},'link',this.value)" placeholder="[github.com/username/project](https://github.com/username/project)" class="w-full bg-slate-900 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500"></div>
         </div>
         <div><label class="block text-[11px] font-semibold text-slate-400 mb-1">Key Outcomes & Details (Use new lines to create bullet points)</label><textarea rows="3" oninput="syncProjField(${idx},'description',this.value)" placeholder="Built interactive dashboards analyzing 50k+ records to optimize supply chain inventory flow by 15%." class="w-full bg-slate-900 border border-slate-700 rounded p-2 text-xs text-slate-300 font-sans focus:outline-none focus:border-blue-500">${esc(proj.description)}</textarea></div>
     </div>`).join('');
@@ -955,8 +957,8 @@ function calculateAndRenderAtsScoringMetrics() {
 function formatATSBullets(text) {
     if (!text) return "";
     const lines = text.split('\n').map(l => l.replace(/^[•\-*]\s*/, '').trim()).filter(Boolean);
-    if (lines.length === 1) return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5">${lines[0]}</p>`;
-    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${l}</li>`).join('')}</ul>`;
+    if (lines.length === 1) return `<p class="text-[11px] text-slate-600 leading-relaxed text-justify mt-1.5">${esc(lines[0])}</p>`;
+    return `<ul class="list-disc list-outside ml-4 mt-1.5 space-y-0.5 text-[11px] text-slate-600 text-justify">${lines.map(l => `<li>${esc(l)}</li>`).join('')}</ul>`;
 }
 
 function executeMasterCompilationRenderPipeline() {
@@ -972,40 +974,40 @@ function executeMasterCompilationRenderPipeline() {
         imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
     }
 
-    const cName = document.getElementById('formName')?.value.trim() || "YOUR NAME";
-    const cTitle = document.getElementById('formTitle')?.value.trim() || "Target Designation";
-    const cEmail = document.getElementById('formEmail')?.value.trim() || "email@domain.com";
-    const cMobile = document.getElementById('formMobile')?.value.trim() || "Contact No";
-    const cAddress = document.getElementById('formAddress')?.value.trim() || "Location Address";
-    const cLanguages = document.getElementById('formLanguages')?.value.trim() || "";
+    const cName = esc(document.getElementById('formName')?.value.trim() || "YOUR NAME");
+    const cTitle = esc(document.getElementById('formTitle')?.value.trim() || "Target Designation");
+    const cEmail = esc(document.getElementById('formEmail')?.value.trim() || "email@domain.com");
+    const cMobile = esc(document.getElementById('formMobile')?.value.trim() || "Contact No");
+    const cAddress = esc(document.getElementById('formAddress')?.value.trim() || "Location Address");
+    const cLanguages = esc(document.getElementById('formLanguages')?.value.trim() || "");
 
     let socialHTML = "";
-    const lIn = document.getElementById('formLinkedIn')?.value.trim() || "";
-    const gHb = document.getElementById('formGitHub')?.value.trim() || "";
-    const pFolio = document.getElementById('formPortfolio')?.value.trim() || "";
+    const lIn = esc(document.getElementById('formLinkedIn')?.value.trim() || "");
+    const gHb = esc(document.getElementById('formGitHub')?.value.trim() || "");
+    const pFolio = esc(document.getElementById('formPortfolio')?.value.trim() || "");
     if (lIn) socialHTML += `<span>• <b>LinkedIn:</b> ${lIn}</span>`;
     if (gHb) socialHTML += `<span>• <b>GitHub:</b> ${gHb}</span>`;
     if (pFolio) socialHTML += `<span>• <b>Portfolio:</b> ${pFolio}</span>`;
 
-    let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${engineState.summary}</p>` : "";
+    let summaryHTML = engineState.summary.trim() ? `<p class="text-[11px] text-slate-700 leading-relaxed text-justify font-normal mt-1.5">${esc(engineState.summary)}</p>` : "";
 
     let expItemsHTML = "";
     engineState.experience.forEach(e => {
         if (!e.company && !e.role) return;
-        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${e.role||'Role'} — <span class="font-extrabold text-slate-700">${e.company||'Organization'}</span></span><span class="text-slate-500 font-normal">${e.dates||''}</span></div>${formatATSBullets(e.duties)}</div>`;
+        expItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${esc(e.role||'Role')} — <span class="font-extrabold text-slate-700">${esc(e.company||'Organization')}</span></span><span class="text-slate-500 font-normal">${esc(e.dates||'')}</span></div>${formatATSBullets(e.duties)}</div>`;
     });
 
     let projItemsHTML = "";
     engineState.projects.forEach(p => {
         if (!p.title && !p.description) return;
-        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${p.title||'Project Title'} ${p.tools ? `— <span class="font-semibold text-slate-600">[${p.tools}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${p.link}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
+        projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${esc(p.title||'Project Title')} ${p.tools ? `— <span class="font-semibold text-slate-600">[${esc(p.tools)}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${esc(p.link)}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
     });
 
-    let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${s}</span>`).join('')}</div>` : "";
+    let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${esc(s)}</span>`).join('')}</div>` : "";
     let certItemsHTML = "";
-    engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${c.name}</b>${c.issuer?` — ${c.issuer}`:''}</div>`; });
+    engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${esc(c.name)}</b>${c.issuer?` — ${esc(c.issuer)}`:''}</div>`; });
     let eduItemsHTML = "";
-    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${e.degree||'Degree Course'}</b> — ${e.school||'University Board'}</span><span class="text-slate-500">${e.year||''}</span></div>`; });
+    engineState.education.forEach(e => { if(e.school||e.degree) eduItemsHTML += `<div class="flex justify-between text-[11px] text-slate-700 mt-1.5"><span><b class="text-slate-900">${esc(e.degree||'Degree Course')}</b> — ${esc(e.school||'University Board')}</span><span class="text-slate-500">${esc(e.year||'')}</span></div>`; });
 
     if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
         const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
@@ -1204,7 +1206,7 @@ function dpdSmartPrint() {
         const hex = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"}[engineState.activeLayoutTemplateID]||"#b91c1c";
         
         let wHTML = `
-        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
+        <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='[http://www.w3.org/TR/REC-html40](http://www.w3.org/TR/REC-html40)'>
         <head><meta charset='utf-8'><title>Resume</title>
         <style>
             @page { margin: 1in; size: 8.5in 11in; }
@@ -1374,7 +1376,7 @@ async function submitFeedbackData() {
     btn.disabled = true;
 
     try {
-        const response = await fetch('https://api.web3forms.com/submit', {
+        const response = await fetch('[https://api.web3forms.com/submit](https://api.web3forms.com/submit)', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -1444,7 +1446,7 @@ async function executeAIAtsAnalysis() {
 
         const data = await response.json();
         const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
-        const cleanJson = textResponse.replace(/```(?:json)?\s*/gi, '').replace(/\s*cleanup*/gi, '').replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
+        const cleanJson = stripCodeFences(textResponse);
         const parsed = JSON.parse(cleanJson);
 
         const score = parsed.score || 0;
@@ -1455,6 +1457,7 @@ async function executeAIAtsAnalysis() {
 
         const badge = document.getElementById('atsMetricBadge');
         const fb = document.getElementById('atsFeedbackString');
+        const aiBanner = document.getElementById('aiAtsResultBanner');
 
         if (score < 60) { 
             badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40"; badge.innerText="Low Match"; 
@@ -1465,9 +1468,17 @@ async function executeAIAtsAnalysis() {
         }
 
         if (missing) {
-            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${missing}</span>`;
+            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${esc(missing)}</span>`;
+            if (aiBanner) {
+                aiBanner.classList.remove('hidden');
+                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-blue-400">🎯 AI JD Match Score: ${score}%</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div><div class="text-amber-300"><b>Missing Keywords to Add:</b> ${esc(missing)}</div>`;
+            }
         } else {
             fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
+            if (aiBanner) {
+                aiBanner.classList.remove('hidden');
+                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-emerald-400">🎯 AI JD Match Score: ${score}% — Excellent Alignment!</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div>`;
+            }
         }
 
     } catch (error) {
@@ -1561,6 +1572,7 @@ window.onload = async function() {
                     if (Array.isArray(saved.skills)) engineState.skills = saved.skills;
                     if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
                     if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
+                    if (saved.pendingExportFormat) engineState.pendingExportFormat = saved.pendingExportFormat;
 
                     const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
                     s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
@@ -1580,6 +1592,7 @@ window.onload = async function() {
     if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
 
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
+    applyVisualTemplateFormat(engineState.activeLayoutTemplateID || 1);
     runMasterManualSyncAndGenerate();
 
     if (returningFromPayment || checkActiveSubscriptionPass()) document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
