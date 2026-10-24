@@ -538,16 +538,77 @@
                 <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-2"></div>
             </div>
 
-            <!-- 100% ATS-APPROVED LAYOUT THEME SELECTOR -->
-            <div class="bg-slate-800 p-3 rounded-xl border border-slate-700 space-y-2 no-print shadow-sm">
-                <span class="block text-xs font-bold text-slate-400 uppercase tracking-wider pl-1">Select 100% ATS-Approved Layout Theme Format:</span>
-                <div class="grid grid-cols-3 sm:grid-cols-6 gap-2 text-xs font-semibold">
-                    <button onclick="applyVisualTemplateFormat(1)" id="tplBtn-1" class="py-2 px-1 rounded bg-red-700 text-white border border-red-500 shadow-sm transition-all text-center">1. Crimson</button>
-                    <button onclick="applyVisualTemplateFormat(2)" id="tplBtn-2" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">2. Navy</button>
-                    <button onclick="applyVisualTemplateFormat(3)" id="tplBtn-3" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">3. Minimal</button>
-                    <button onclick="applyVisualTemplateFormat(4)" id="tplBtn-4" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">4. Tech</button>
-                    <button onclick="applyVisualTemplateFormat(5)" id="tplBtn-5" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">5. Retro</button>
-                    <button onclick="applyVisualTemplateFormat(6)" id="tplBtn-6" class="py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center">6. Royal</button>
+            <!-- 100% ATS-APPROVED LAYOUT ARCHITECTURES & DESIGN CUSTOMIZER -->
+            <div class="bg-slate-800 p-3.5 rounded-xl border border-slate-700 space-y-2.5 no-print shadow-sm">
+                <div class="flex items-center justify-between flex-wrap gap-2 border-b border-slate-700/60 pb-2">
+                    <div>
+                        <span class="block text-xs font-bold text-slate-200 uppercase tracking-wider">Select Recruiter-Tested Layout Architecture:</span>
+                        <span class="text-[10px] text-slate-400">8 distinct single-column layouts engineered for global ATS systems</span>
+                    </div>
+                    <!-- CUSTOMIZE RESUME DESIGN BUTTON -->
+                    <button type="button" onclick="openDesignCustomizerModal()" class="bg-gradient-to-r from-purple-600 via-indigo-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white font-bold py-1.5 px-3 rounded-lg text-xs shadow-md flex items-center gap-1.5 transition-all transform hover:scale-[1.02] active:scale-95 cursor-pointer">
+                        <span>🎨 Customize Design & Typography</span>
+                        <span class="text-[10px] bg-white/20 px-1.5 py-0.2 rounded font-extrabold">PRO</span>
+                    </button>
+                </div>
+                <!-- 8 Distinct Layout Archetype Buttons -->
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-semibold">
+                    <button onclick="applyVisualTemplateFormat(1)" id="tplBtn-1" class="py-2 px-2 rounded-lg bg-red-700 text-white border border-red-500 shadow-sm transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">🏛️</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">1. Ivy League</div>
+                            <div class="text-[9px] opacity-80 leading-tight">US Finance & EEO</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(2)" id="tplBtn-2" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">🚀</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">2. Modern Tech</div>
+                            <div class="text-[9px] opacity-80 leading-tight">Silicon Valley Bar</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(3)" id="tplBtn-3" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">🇬🇧</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">3. UK Oxford CV</div>
+                            <div class="text-[9px] opacity-80 leading-tight">British Statement</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(4)" id="tplBtn-4" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">🇦🇪</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">4. Dubai Dossier</div>
+                            <div class="text-[9px] opacity-80 leading-tight">Gulf Visa & Photo</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(5)" id="tplBtn-5" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">🇮🇳</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">5. India Corporate</div>
+                            <div class="text-[9px] opacity-80 leading-tight">Notice & Declaration</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(6)" id="tplBtn-6" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">⚡</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">6. Clean Minimal</div>
+                            <div class="text-[9px] opacity-80 leading-tight">100% Machine ATS</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(7)" id="tplBtn-7" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">📄</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">7. 1-Page Compact</div>
+                            <div class="text-[9px] opacity-80 leading-tight">Condensation Fit</div>
+                        </div>
+                    </button>
+                    <button onclick="applyVisualTemplateFormat(8)" id="tplBtn-8" class="py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5">
+                        <span class="text-sm">👑</span>
+                        <div>
+                            <div class="text-[11px] font-bold leading-tight">8. Royal Executive</div>
+                            <div class="text-[9px] opacity-80 leading-tight">Header Banner Box</div>
+                        </div>
+                    </button>
                 </div>
             </div>
 
@@ -766,6 +827,128 @@
         </div>
     </div>
 
+    <!-- MODAL 4: RESUME DESIGN & TYPOGRAPHY CUSTOMIZER -->
+    <div id="designCustomizerModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-800 border border-slate-700 max-w-xl w-full rounded-2xl p-6 shadow-2xl relative max-h-[92vh] flex flex-col">
+            <button onclick="closeDesignCustomizerModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg leading-none">✕</button>
+            
+            <div class="mb-4 border-b border-slate-700 pb-3">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-md">🎨</div>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-100">Resume Design & Typography Studio</h3>
+                        <p class="text-xs text-slate-400 mt-0.5">Customize accent colors, recruiter fonts, line density, and heading borders in real-time.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customizer Controls Body -->
+            <div class="space-y-4 overflow-y-auto pr-1 flex-1 custom-scroll text-xs">
+                
+                <!-- 1. Accent Color Palette & Picker -->
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 space-y-2.5">
+                    <div class="flex items-center justify-between">
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Accent Theme Color</label>
+                        <div class="flex items-center gap-2">
+                            <span class="text-[10px] text-slate-400 font-mono" id="customColorHexLabel">#1e3a8a</span>
+                            <input type="color" id="customizerColorInput" oninput="setCustomAccentColor(this.value)" class="w-7 h-7 rounded border border-slate-600 cursor-pointer bg-transparent">
+                        </div>
+                    </div>
+                    <!-- Quick Palettes -->
+                    <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-1">
+                        <button type="button" onclick="setCustomAccentColor('#1e3a8a')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#1e3a8a;" title="Executive Navy"></button>
+                        <button type="button" onclick="setCustomAccentColor('#b91c1c')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#b91c1c;" title="Crimson Ruby"></button>
+                        <button type="button" onclick="setCustomAccentColor('#065f46')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#065f46;" title="Emerald Green"></button>
+                        <button type="button" onclick="setCustomAccentColor('#1f2937')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#1f2937;" title="Charcoal Noir"></button>
+                        <button type="button" onclick="setCustomAccentColor('#6b21a8')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#6b21a8;" title="Royal Purple"></button>
+                        <button type="button" onclick="setCustomAccentColor('#0f766e')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#0f766e;" title="Tech Teal"></button>
+                        <button type="button" onclick="setCustomAccentColor('#92400e')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#92400e;" title="Warm Bronze"></button>
+                        <button type="button" onclick="setCustomAccentColor('#334155')" class="h-7 rounded-md border border-white/20 flex items-center justify-center text-[10px] text-white font-bold" style="background:#334155;" title="Slate Blue"></button>
+                    </div>
+                </div>
+
+                <!-- 2. Typography Font Family -->
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Recruiter-Approved Font Family</label>
+                    <select id="customizerFontSelect" onchange="updateCustomizerSetting('fontFamily', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2.5 text-xs text-slate-200 outline-none">
+                        <option value="system-ui, -apple-system, sans-serif">Modern Sans-Serif (Inter / System) — Standard Tech & Universal ATS</option>
+                        <option value="Georgia, Cambria, serif">Executive Serif (Georgia) — Ivy League, Wall Street & UK Legal</option>
+                        <option value="'Segoe UI', Calibri, Arial, sans-serif">Corporate Sans (Segoe UI / Calibri) — Fortune 500 & Indian Enterprise</option>
+                        <option value="'Courier New', Consolas, monospace">Tech Monospace (Consolas / Roboto Mono) — Developer & Data Eng</option>
+                        <option value="Garamond, 'Times New Roman', serif">Classic Garamond (Editorial Serif) — Traditional Academic & Research</option>
+                    </select>
+                </div>
+
+                <!-- 3. Content Density & Margins -->
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 space-y-2">
+                    <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Content Density & Spacing Scale</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button type="button" onclick="updateCustomizerSetting('fontSizeScale', 'compact')" id="densityBtn-compact" class="py-2 px-2 text-center rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-white transition-all">
+                            <span class="block font-bold">Compact (1-Page)</span>
+                            <span class="text-[9px] opacity-75">Tighter margins, fits 1-page</span>
+                        </button>
+                        <button type="button" onclick="updateCustomizerSetting('fontSizeScale', 'standard')" id="densityBtn-standard" class="py-2 px-2 text-center rounded-lg border border-blue-500 bg-blue-900/40 text-blue-200 font-bold transition-all">
+                            <span class="block font-bold">Balanced</span>
+                            <span class="text-[9px] opacity-75">Standard spacing</span>
+                        </button>
+                        <button type="button" onclick="updateCustomizerSetting('fontSizeScale', 'relaxed')" id="densityBtn-relaxed" class="py-2 px-2 text-center rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-white transition-all">
+                            <span class="block font-bold">Spacious</span>
+                            <span class="text-[9px] opacity-75">Generous whitespace</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 4. Header Alignment Architecture -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 space-y-2">
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Header Layout</label>
+                        <select id="customizerHeaderSelect" onchange="updateCustomizerSetting('headerStyle', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 outline-none">
+                            <option value="left">Left-Aligned (Standard ATS)</option>
+                            <option value="centered">Centered (Executive Minimal)</option>
+                            <option value="banner">Tinted Header Banner (High Contrast)</option>
+                            <option value="split">Split Grid (Compact Modern)</option>
+                        </select>
+                    </div>
+                    <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 space-y-2">
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Heading Divider Style</label>
+                        <select id="customizerHeadingSelect" onchange="updateCustomizerSetting('headingStyle', this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-2 text-xs text-slate-200 outline-none">
+                            <option value="bottom-border">Solid Colored Underline</option>
+                            <option value="left-bar">Left Vertical Accent Bar</option>
+                            <option value="pill">Filled Accent Capsule / Pill</option>
+                            <option value="centered-divider">Centered Dual Dividers</option>
+                            <option value="minimal">Minimal Dashed Border</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- 5. Skills Tags Presentation -->
+                <div class="bg-slate-900/60 p-3 rounded-xl border border-slate-700/70 flex items-center justify-between">
+                    <div>
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider">Skills Presentation</label>
+                        <span class="text-[10px] text-slate-400">Display as individual capsules or inline list</span>
+                    </div>
+                    <select id="customizerSkillsSelect" onchange="updateCustomizerSetting('skillsStyle', this.value)" class="bg-slate-900 border border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-200 outline-none">
+                        <option value="pills">Rounded Skill Pills</option>
+                        <option value="inline">Inline Bullet List</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <!-- Footer Actions -->
+            <div class="pt-3 border-t border-slate-700 flex items-center justify-between mt-3 text-xs font-bold">
+                <button type="button" onclick="resetCustomizerToDefaults()" class="text-slate-400 hover:text-slate-200 underline">
+                    Reset to Layout Defaults
+                </button>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="closeDesignCustomizerModal()" class="bg-blue-600 hover:bg-blue-500 text-white py-2 px-5 rounded-lg shadow font-extrabold transition-all">
+                        Apply & Close ✓
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 <script>
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
@@ -778,6 +961,15 @@ let engineState = {
     globalCachedProfileImageStream: "",
     selectedSubscriptionValue: 19,
     pendingExportFormat: 'pdf',
+    // Pro Customizer & Styling Architecture
+    customStyle: {
+        accentColor: "#b91c1c",
+        fontFamily: "system-ui, -apple-system, sans-serif",
+        fontSizeScale: "standard",   // "compact" | "standard" | "relaxed"
+        headerStyle: "left",         // "left" | "centered" | "banner" | "split"
+        headingStyle: "bottom-border", // "bottom-border" | "left-bar" | "pill" | "centered-divider" | "minimal"
+        skillsStyle: "pills"         // "pills" | "inline"
+    },
     personal: {
         name: "", title: "", email: "", mobile: "",
         linkedin: "", github: "", portfolio: "",
@@ -1706,9 +1898,20 @@ function executeMasterCompilationRenderPipeline() {
     calculateAndRenderAtsScoringMetrics();
     const canvas = document.getElementById('canvasDocumentRenderTree');
     if (!canvas) return;
+
+    if (!engineState.customStyle) {
+        engineState.customStyle = {
+            accentColor: "#b91c1c",
+            fontFamily: "system-ui, -apple-system, sans-serif",
+            fontSizeScale: "standard",
+            headerStyle: "left",
+            headingStyle: "bottom-border",
+            skillsStyle: "pills"
+        };
+    }
     
-    const themes = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"};
-    const hex = themes[engineState.activeLayoutTemplateID]||"#b91c1c";
+    const cs = engineState.customStyle;
+    const hex = cs.accentColor || "#1e3a8a";
     const cfg = countryConfig[engineState.targetCountry] || countryConfig.india;
 
     // Paper size handling for US Letter vs A4
@@ -1718,6 +1921,24 @@ function executeMasterCompilationRenderPipeline() {
             sandbox.classList.add('us-letter-canvas');
         } else {
             sandbox.classList.remove('us-letter-canvas');
+        }
+
+        // Apply dynamic font family
+        sandbox.style.fontFamily = cs.fontFamily || "system-ui, -apple-system, sans-serif";
+
+        // Apply dynamic density / font-size scaling
+        if (cs.fontSizeScale === 'compact') {
+            sandbox.style.fontSize = "9.5pt";
+            sandbox.style.lineHeight = "1.28";
+            sandbox.style.padding = "1.65rem";
+        } else if (cs.fontSizeScale === 'relaxed') {
+            sandbox.style.fontSize = "11.5pt";
+            sandbox.style.lineHeight = "1.52";
+            sandbox.style.padding = "2.75rem";
+        } else {
+            sandbox.style.fontSize = "10.5pt";
+            sandbox.style.lineHeight = "1.38";
+            sandbox.style.padding = "2.25rem";
         }
     }
 
@@ -1793,7 +2014,15 @@ function executeMasterCompilationRenderPipeline() {
         projItemsHTML += `<div class="space-y-0.5 mt-3"><div class="flex justify-between text-[11px] font-bold text-slate-900"><span>${esc(p.title||'Project Title')} ${p.tools ? `— <span class="font-semibold text-slate-600">[${esc(p.tools)}]</span>` : ''}</span>${p.link ? `<span class="text-blue-600 font-mono text-[10px]">${esc(p.link)}</span>` : ''}</div>${formatATSBullets(p.description)}</div>`;
     });
 
-    let skillsItemsHTML = engineState.skills.length ? `<div class="flex flex-wrap gap-x-4 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${esc(s)}</span>`).join('')}</div>` : "";
+    // Skills Presentation (Pills vs Inline)
+    let skillsItemsHTML = "";
+    if (engineState.skills.length) {
+        if (cs.skillsStyle === 'inline') {
+            skillsItemsHTML = `<p class="text-[11px] text-slate-700 leading-relaxed mt-1.5 font-medium">${engineState.skills.map(s=>`<b>&bull;</b> ${esc(s)}`).join(' &nbsp; ')}</p>`;
+        } else {
+            skillsItemsHTML = `<div class="flex flex-wrap gap-x-3 gap-y-1.5 text-[11px] text-slate-700 font-medium mt-1.5">${engineState.skills.map(s=>`<span class="bg-slate-100 border border-slate-200 rounded px-2 py-0.5">• ${esc(s)}</span>`).join('')}</div>`;
+        }
+    }
     
     let certItemsHTML = "";
     engineState.certifications.forEach(c => { if(c.name) certItemsHTML += `<div class="text-[11px] text-slate-700 mt-1">• <b class="text-slate-900">${esc(c.name)}</b>${c.issuer?` — ${esc(c.issuer)}`:''}</div>`; });
@@ -1819,17 +2048,19 @@ function executeMasterCompilationRenderPipeline() {
             </div>`;
     }
 
-    // Helper generator for section headers depending on template
+    // Helper generator for section headers depending on headingStyle
     const makeHeader = (text) => {
-        if (engineState.activeLayoutTemplateID === 1 || engineState.activeLayoutTemplateID === 3) {
-            const borderStyle = engineState.activeLayoutTemplateID === 3 ? "border-b-2 border-dashed pb-1 mb-2" : "border-b-2 pb-0.5 mb-2";
-            return `<h3 class="text-[11px] font-black tracking-wider uppercase ${borderStyle} mt-5" style="color:${hex};border-color:${engineState.activeLayoutTemplateID === 3 ? '#94a3b8' : hex};">${text}</h3>`;
-        } else if (engineState.activeLayoutTemplateID === 2 || engineState.activeLayoutTemplateID === 4) {
-            return `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-5 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${text}</h3>`;
-        } else if (engineState.activeLayoutTemplateID === 5) {
-            return `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-5 text-center" style="color:${hex};border-color:#cbd5e1;">${text}</h3>`;
+        if (cs.headingStyle === 'left-bar') {
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase border-l-4 pl-2 mb-2 mt-4 bg-slate-50 py-1" style="color:${hex};border-color:${hex};">${text}</h3>`;
+        } else if (cs.headingStyle === 'pill') {
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1 rounded mb-2 mt-4 text-white inline-block shadow-sm" style="background-color:${hex};">${text}</h3>`;
+        } else if (cs.headingStyle === 'centered-divider') {
+            return `<h3 class="text-[11px] font-black tracking-widest uppercase border-y py-1 mb-2 mt-4 text-center" style="color:${hex};border-color:#cbd5e1;">${text}</h3>`;
+        } else if (cs.headingStyle === 'minimal') {
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase border-b border-dashed pb-1 mb-2 mt-4 text-slate-700" style="color:${hex};border-color:#94a3b8;">${text}</h3>`;
         } else {
-            return `<h3 class="text-[11px] font-black tracking-wider uppercase px-3 py-1.5 rounded mb-2 mt-5 text-white" style="background-color:${hex};">${text}</h3>`;
+            // Default bottom-border
+            return `<h3 class="text-[11px] font-black tracking-wider uppercase border-b-2 pb-0.5 mb-2 mt-4" style="color:${hex};border-color:${hex};">${text}</h3>`;
         }
     };
 
@@ -1843,9 +2074,6 @@ function executeMasterCompilationRenderPipeline() {
         education: eduItemsHTML ? `<div>${makeHeader(eduTitle)}<div>${eduItemsHTML}</div></div>` : ""
     };
 
-    // SECTION ORDERING LOGIC:
-    // Experienced: Summary -> Experience -> Projects -> Skills -> Certifications -> Education
-    // Fresher: Summary -> Education -> Projects -> Skills -> Experience -> Certifications
     let orderedSectionsHTML = "";
     if (engineState.resumeMode === 'fresher') {
         orderedSectionsHTML = [
@@ -1871,26 +2099,8 @@ function executeMasterCompilationRenderPipeline() {
     const showLanguages = engineState.targetCountry !== 'usa' && cLanguages;
     const languagesHTML = showLanguages ? `<div class="mt-1 text-[10px] text-slate-500 font-medium"><b>Languages Known:</b> ${cLanguages}</div>` : '';
 
-    // Render Canvas Body based on Template Styling
-    if (engineState.activeLayoutTemplateID === 5) {
-        // Retro Centered Style
-        canvas.innerHTML = `
-            <div class="space-y-1 text-slate-800">
-                <div class="flex flex-col items-center text-center pb-4">
-                    ${imgHTML ? `<div class="mb-3">${imgHTML}</div>` : ''}
-                    <h1 class="text-3xl font-black uppercase tracking-wider" style="color:${hex};">${cName}</h1>
-                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase tracking-widest">${cTitle}</p>
-                    <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
-                        <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
-                    </div>
-                    ${countryHeaderExtrasHTML}
-                    ${languagesHTML}
-                </div>
-                ${orderedSectionsHTML}
-                ${countryFooterExtrasHTML}
-            </div>`;
-    } else if (engineState.activeLayoutTemplateID === 6) {
-        // Royal Banner Style
+    // Render Canvas Body based on Header Style Architecture
+    if (cs.headerStyle === 'banner') {
         canvas.innerHTML = `
             <div class="space-y-1 text-slate-800">
                 <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm mb-4" style="background-color: ${hex};">
@@ -1907,8 +2117,44 @@ function executeMasterCompilationRenderPipeline() {
                 ${orderedSectionsHTML}
                 ${countryFooterExtrasHTML}
             </div>`;
+    } else if (cs.headerStyle === 'centered') {
+        canvas.innerHTML = `
+            <div class="space-y-1 text-slate-800">
+                <div class="flex flex-col items-center text-center pb-4 border-b border-slate-200">
+                    ${imgHTML ? `<div class="mb-3">${imgHTML}</div>` : ''}
+                    <h1 class="text-3xl font-black uppercase tracking-wider" style="color:${hex};">${cName}</h1>
+                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase tracking-widest">${cTitle}</p>
+                    <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
+                        <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
+                    </div>
+                    ${countryHeaderExtrasHTML}
+                    ${languagesHTML}
+                </div>
+                ${orderedSectionsHTML}
+                ${countryFooterExtrasHTML}
+            </div>`;
+    } else if (cs.headerStyle === 'split') {
+        canvas.innerHTML = `
+            <div class="space-y-1 text-slate-800">
+                <div class="flex items-start justify-between border-b-2 pb-3 mb-2" style="border-color:${hex};">
+                    <div class="flex-1">
+                        <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                    </div>
+                    <div class="text-right text-[10px] text-slate-600 font-medium space-y-0.5">
+                        <div><span><b>Email:</b> ${cEmail}</span> &nbsp;|&nbsp; <span><b>Phone:</b> ${cMobile}</span></div>
+                        <div><span>${cAddress}</span></div>
+                        <div class="text-blue-600">${socialHTML}</div>
+                    </div>
+                    ${imgHTML}
+                </div>
+                ${countryHeaderExtrasHTML}
+                ${languagesHTML}
+                ${orderedSectionsHTML}
+                ${countryFooterExtrasHTML}
+            </div>`;
     } else {
-        // Clean Minimal / Crimson / Navy / Tech Single-Column Style
+        // Classic Left-Aligned
         canvas.innerHTML = `
             <div class="space-y-1 text-slate-800">
                 <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
@@ -1929,14 +2175,203 @@ function executeMasterCompilationRenderPipeline() {
     }
 }
 
-function applyVisualTemplateFormat(id) {
-    if(document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`)) document.getElementById(`tplBtn-${engineState.activeLayoutTemplateID}`).className = "py-2 px-1 rounded bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-center";
+// 8 RECRUITER-TESTED DISTINCT LAYOUT ARCHETYPES
+const templatePresets = {
+    1: {
+        name: "Ivy League",
+        cls: "bg-red-700 text-white border border-red-500",
+        bg: "#ffffff",
+        font: "Georgia, Cambria, serif",
+        accent: "#b91c1c",
+        headerStyle: "left",
+        headingStyle: "bottom-border",
+        fontSizeScale: "standard",
+        skillsStyle: "pills"
+    },
+    2: {
+        name: "Modern Tech",
+        cls: "bg-blue-900 text-white border border-blue-700",
+        bg: "#f8fafc",
+        font: "system-ui, -apple-system, sans-serif",
+        accent: "#1e3a8a",
+        headerStyle: "left",
+        headingStyle: "left-bar",
+        fontSizeScale: "standard",
+        skillsStyle: "pills"
+    },
+    3: {
+        name: "UK Oxford CV",
+        cls: "bg-slate-900 text-white border border-slate-700",
+        bg: "#ffffff",
+        font: "Georgia, Garamond, serif",
+        accent: "#1f2937",
+        headerStyle: "left",
+        headingStyle: "minimal",
+        fontSizeScale: "standard",
+        skillsStyle: "inline"
+    },
+    4: {
+        name: "Dubai Dossier",
+        cls: "bg-emerald-900 text-white border border-emerald-700",
+        bg: "#fafafa",
+        font: "ui-sans-serif, system-ui, sans-serif",
+        accent: "#065f46",
+        headerStyle: "left",
+        headingStyle: "left-bar",
+        fontSizeScale: "relaxed",
+        skillsStyle: "pills"
+    },
+    5: {
+        name: "India Corporate",
+        cls: "bg-amber-800 text-white border border-amber-600",
+        bg: "#ffffff",
+        font: "'Segoe UI', Calibri, Arial, sans-serif",
+        accent: "#92400e",
+        headerStyle: "left",
+        headingStyle: "bottom-border",
+        fontSizeScale: "standard",
+        skillsStyle: "pills"
+    },
+    6: {
+        name: "Clean Minimal",
+        cls: "bg-zinc-800 text-white border border-zinc-600",
+        bg: "#ffffff",
+        font: "system-ui, sans-serif",
+        accent: "#18181b",
+        headerStyle: "centered",
+        headingStyle: "centered-divider",
+        fontSizeScale: "standard",
+        skillsStyle: "inline"
+    },
+    7: {
+        name: "1-Page Compact",
+        cls: "bg-cyan-800 text-white border border-cyan-600",
+        bg: "#ffffff",
+        font: "'Segoe UI', Arial, sans-serif",
+        accent: "#0f766e",
+        headerStyle: "split",
+        headingStyle: "bottom-border",
+        fontSizeScale: "compact",
+        skillsStyle: "pills"
+    },
+    8: {
+        name: "Royal Executive",
+        cls: "bg-purple-900 text-white border border-purple-700",
+        bg: "#ffffff",
+        font: "system-ui, -apple-system, sans-serif",
+        accent: "#6b21a8",
+        headerStyle: "banner",
+        headingStyle: "pill",
+        fontSizeScale: "standard",
+        skillsStyle: "pills"
+    }
+};
+
+function applyVisualTemplateFormat(id, preserveCustomStyle = false) {
+    for (let t = 1; t <= 8; t++) {
+        const btn = document.getElementById(`tplBtn-${t}`);
+        if (btn) btn.className = "py-2 px-2 rounded-lg bg-slate-700 text-slate-300 border border-transparent hover:bg-slate-600 transition-all text-left flex items-center gap-1.5";
+    }
+
     engineState.activeLayoutTemplateID = id;
-    const sb = document.getElementById('printTargetSandbox'); if(!sb) return;
-    const cfg = {1:{cls:"bg-red-700 text-white border border-red-500",bg:"#ffffff",font:"system-ui,sans-serif"},2:{cls:"bg-blue-950 text-white border border-blue-900",bg:"#f8fafc",font:"Georgia,serif"},3:{cls:"bg-neutral-900 text-white border border-neutral-700",bg:"#ffffff",font:"monospace"},4:{cls:"bg-emerald-900 text-white border border-emerald-700",bg:"#fafafa",font:"ui-sans-serif,sans-serif"},5:{cls:"bg-zinc-700 text-white border border-zinc-500 shadow-sm transition-all text-center",bg:"#f4f4f5",font:"Garamond,serif"},6:{cls:"bg-purple-900 text-white border border-purple-700 shadow-sm transition-all text-center",bg:"#ffffff",font:"system-ui,sans-serif"}};
-    if(document.getElementById(`tplBtn-${id}`)) document.getElementById(`tplBtn-${id}`).className = `py-2 px-1 rounded ${cfg[id].cls} shadow-sm transition-all text-center`;
-    sb.style.backgroundColor = cfg[id].bg; sb.style.fontFamily = cfg[id].font;
+    const preset = templatePresets[id] || templatePresets[1];
+    const activeBtn = document.getElementById(`tplBtn-${id}`);
+    if (activeBtn) activeBtn.className = `py-2 px-2 rounded-lg ${preset.cls} shadow-sm transition-all text-left flex items-center gap-1.5`;
+
+    const sb = document.getElementById('printTargetSandbox');
+    if (sb) {
+        sb.style.backgroundColor = preset.bg;
+        sb.style.fontFamily = preset.font;
+    }
+
+    if (!preserveCustomStyle) {
+        engineState.customStyle = {
+            accentColor: preset.accent,
+            fontFamily: preset.font,
+            fontSizeScale: preset.fontSizeScale,
+            headerStyle: preset.headerStyle,
+            headingStyle: preset.headingStyle,
+            skillsStyle: preset.skillsStyle
+        };
+    }
+
     executeMasterCompilationRenderPipeline();
+    triggerContinuousAutoSave();
+}
+
+// ========================================================
+// DESIGN & TYPOGRAPHY CUSTOMIZER FUNCTIONS
+// ========================================================
+function openDesignCustomizerModal() {
+    const modal = document.getElementById('designCustomizerModalGate');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+
+    const cs = engineState.customStyle || {};
+    const setVal = (id, val) => { const el = document.getElementById(id); if (el && val !== undefined) el.value = val; };
+    
+    setVal('customizerColorInput', cs.accentColor || '#1e3a8a');
+    if (document.getElementById('customColorHexLabel')) {
+        document.getElementById('customColorHexLabel').innerText = cs.accentColor || '#1e3a8a';
+    }
+    setVal('customizerFontSelect', cs.fontFamily || 'system-ui, -apple-system, sans-serif');
+    setVal('customizerHeaderSelect', cs.headerStyle || 'left');
+    setVal('customizerHeadingSelect', cs.headingStyle || 'bottom-border');
+    setVal('customizerSkillsSelect', cs.skillsStyle || 'pills');
+
+    ['compact', 'standard', 'relaxed'].forEach(d => {
+        const btn = document.getElementById(`densityBtn-${d}`);
+        if (!btn) return;
+        if (d === cs.fontSizeScale) {
+            btn.className = "py-2 px-2 text-center rounded-lg border border-blue-500 bg-blue-900/40 text-blue-200 font-bold transition-all";
+        } else {
+            btn.className = "py-2 px-2 text-center rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-white transition-all";
+        }
+    });
+}
+
+function closeDesignCustomizerModal() {
+    document.getElementById('designCustomizerModalGate')?.classList.add('hidden');
+}
+
+function setCustomAccentColor(hex) {
+    if (!hex) return;
+    if (!engineState.customStyle) engineState.customStyle = {};
+    engineState.customStyle.accentColor = hex;
+    
+    const input = document.getElementById('customizerColorInput');
+    if (input) input.value = hex;
+    const label = document.getElementById('customColorHexLabel');
+    if (label) label.innerText = hex;
+
+    executeMasterCompilationRenderPipeline();
+    triggerContinuousAutoSave();
+}
+
+function updateCustomizerSetting(key, val) {
+    if (!engineState.customStyle) engineState.customStyle = {};
+    engineState.customStyle[key] = val;
+    
+    if (key === 'fontSizeScale') {
+        ['compact', 'standard', 'relaxed'].forEach(d => {
+            const btn = document.getElementById(`densityBtn-${d}`);
+            if (!btn) return;
+            if (d === val) {
+                btn.className = "py-2 px-2 text-center rounded-lg border border-blue-500 bg-blue-900/40 text-blue-200 font-bold transition-all";
+            } else {
+                btn.className = "py-2 px-2 text-center rounded-lg border border-slate-700 bg-slate-900 text-slate-300 hover:text-white transition-all";
+            }
+        });
+    }
+
+    executeMasterCompilationRenderPipeline();
+    triggerContinuousAutoSave();
+}
+
+function resetCustomizerToDefaults() {
+    const tplId = engineState.activeLayoutTemplateID || 1;
+    applyVisualTemplateFormat(tplId, false);
+    openDesignCustomizerModal();
 }
 
 function processImageUpload(event) {
@@ -2323,14 +2758,15 @@ function dpdSmartPrint() {
     const cfg = countryConfig[engineState.targetCountry] || countryConfig.india;
     
     if (engineState.pendingExportFormat === 'word') {
-        const hex = {1:"#b91c1c",2:"#1e3a8a",3:"#1f2937",4:"#065f46",5:"#27272a",6:"#6b21a8"}[engineState.activeLayoutTemplateID]||"#b91c1c";
+        const hex = (engineState.customStyle && engineState.customStyle.accentColor) ? engineState.customStyle.accentColor : "#1e3a8a";
+        const font = (engineState.customStyle && engineState.customStyle.fontFamily) ? engineState.customStyle.fontFamily : "'Segoe UI', Arial, sans-serif";
         
         let wHTML = `
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head><meta charset='utf-8'><title>Resume</title>
         <style>
             @page { margin: 1in; size: ${cfg.usLetter ? '8.5in 11in' : '210mm 297mm'}; }
-            body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 10.5pt; color: #000; }
+            body { font-family: ${font}; font-size: 10.5pt; color: #000; }
             h1 { font-size: 20pt; font-weight: bold; margin-bottom: 4pt; text-transform: uppercase; color: ${hex}; }
             h2 { font-size: 11pt; font-weight: bold; margin-bottom: 6pt; text-transform: uppercase; color: #333; }
             h3 { font-size: 11pt; font-weight: bold; border-bottom: 1px solid ${hex}; padding-bottom: 2pt; margin-top: 14pt; margin-bottom: 6pt; text-transform: uppercase; color: ${hex}; }
@@ -2604,6 +3040,7 @@ window.onload = async function() {
                 if (saved.globalCachedProfileImageStream) engineState.globalCachedProfileImageStream = saved.globalCachedProfileImageStream;
                 if (saved.activeLayoutTemplateID) engineState.activeLayoutTemplateID = saved.activeLayoutTemplateID;
                 if (saved.pendingExportFormat) engineState.pendingExportFormat = saved.pendingExportFormat;
+                if (saved.customStyle) Object.assign(engineState.customStyle, saved.customStyle);
 
                 const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
                 s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
@@ -2627,7 +3064,7 @@ window.onload = async function() {
     setResumeMode(engineState.resumeMode || 'experienced');
 
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
-    applyVisualTemplateFormat(engineState.activeLayoutTemplateID || 1);
+    applyVisualTemplateFormat(engineState.activeLayoutTemplateID || 1, formRestored);
     runMasterManualSyncAndGenerate();
 
     // Only skip cover page if actively returning from Razorpay checkout redirect
