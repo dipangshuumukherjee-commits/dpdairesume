@@ -231,6 +231,8 @@
                         </div>
                         <span>•</span>
                         <span>Used by candidates landing offers across US, UK, Gulf & India tech companies</span>
+                        <span>•</span>
+                        <button type="button" onclick="openPrivacyPolicyModal()" class="hover:text-blue-400 hover:underline cursor-pointer transition-colors duration-150">🔒 Privacy Policy</button>
                     </div>
                 </div>
 
@@ -679,10 +681,120 @@
                         <p>📧 <strong>Email:</strong> <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a></p>
                         <p>🔗 <strong>Network:</strong> <a href="https://linkedin.com/" target="_blank" class="text-blue-400 hover:underline">Connect with me on LinkedIn</a></p>
                         <p class="mt-3 italic opacity-80">For technical support, feedback, or feature requests, feel free to reach out directly!</p>
+                        <p class="mt-3 text-xs text-slate-500 border-t border-slate-700 pt-3">🔒 <strong class="text-slate-400">Your Privacy Matters:</strong> All resume data is processed locally in your browser. Data is only sent to Google Gemini API when you use AI features. We never sell your data. &nbsp;<button type="button" onclick="openPrivacyPolicyModal()" class="text-blue-400 hover:underline cursor-pointer font-semibold">Read our Privacy Policy →</button></p>
                     </div>
                 </div>
             </div>
 
+        </div>
+    </div>
+
+    <!-- PRIVACY POLICY MODAL -->
+    <div id="privacyPolicyModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-[80] no-print" onclick="handlePrivacyBackdropClick(event)">
+        <div class="bg-slate-800 border border-slate-700 max-w-2xl w-full rounded-2xl p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <!-- Close Button -->
+            <button type="button" onclick="closePrivacyPolicyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl font-bold leading-none transition-colors" title="Close">✕</button>
+
+            <!-- Header -->
+            <div class="text-center mb-6 pr-6">
+                <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-2xl mb-3">🔒</div>
+                <h2 class="text-xl font-black text-slate-100">Privacy Policy</h2>
+                <p class="text-xs text-slate-400 mt-1">DPD AI Resume Builder &nbsp;•&nbsp; Effective: October 2026</p>
+            </div>
+
+            <!-- Content -->
+            <div class="space-y-5 text-sm text-slate-300 leading-relaxed">
+
+                <div class="bg-slate-700/40 rounded-xl p-4 border border-slate-600/50">
+                    <h3 class="font-bold text-emerald-400 mb-2">✅ The Short Version</h3>
+                    <p class="text-slate-300 text-xs">Your resume data is processed <strong>locally in your browser</strong>. We never sell, rent, or share your personal information. AI features send your text to Google Gemini API only when you click "Generate". Payments are handled entirely by Razorpay — we never see your card details.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">1. Who We Are</h3>
+                    <p class="text-slate-400 text-xs">DPD AI Resume is built and operated by <strong class="text-slate-300">Dipangshu Mukherjee</strong>, a data professional based in Cooch Behar, West Bengal, India. For privacy-related queries, contact: <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a></p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">2. What Data We Collect</h3>
+                    <ul class="text-slate-400 text-xs space-y-1 list-none">
+                        <li>📄 <strong class="text-slate-300">Resume Content:</strong> Name, email, phone, work history, skills, education — typed or uploaded by you.</li>
+                        <li>📎 <strong class="text-slate-300">Uploaded Files:</strong> PDF and Word (.docx) files you upload for parsing.</li>
+                        <li>💼 <strong class="text-slate-300">Job Description:</strong> Target job description text you paste for ATS matching.</li>
+                        <li>⚙️ <strong class="text-slate-300">Preferences:</strong> Selected country style, layout, design theme — stored locally in your browser.</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">3. How Your Data Is Processed</h3>
+                    <div class="space-y-3 text-xs text-slate-400">
+                        <div class="bg-slate-700/30 rounded-lg p-3">
+                            <strong class="text-slate-200 block mb-1">📂 PDF & Word Parsing (100% Client-Side)</strong>
+                            File parsing uses <code class="text-emerald-400 bg-slate-900/50 px-1 rounded">pdf.js</code> and <code class="text-emerald-400 bg-slate-900/50 px-1 rounded">mammoth.js</code> — these libraries run entirely inside your browser. Your files are <strong>never uploaded to any server</strong>. They are read directly from your device's memory.
+                        </div>
+                        <div class="bg-slate-700/30 rounded-lg p-3">
+                            <strong class="text-slate-200 block mb-1">🤖 AI Features (Google Gemini API)</strong>
+                            When you click "⚡ AI Generate", "AI Parse Resume", or "Generate Cover Letter", your resume text and/or job description is sent to the <strong>Google Gemini API</strong> (<code class="text-emerald-400 bg-slate-900/50 px-1 rounded">/api/gemini</code>) to generate content. Per Google's Developer Terms of Service, API input data is <strong>not used to train public AI models</strong> and is not shared with third parties.
+                        </div>
+                        <div class="bg-slate-700/30 rounded-lg p-3">
+                            <strong class="text-slate-200 block mb-1">💳 Payments (Razorpay)</strong>
+                            All payment processing is handled by <strong>Razorpay</strong>, a PCI-DSS compliant payment gateway. We never receive, store, or process your card or payment details. Razorpay's privacy policy applies to payment transactions.
+                        </div>
+                        <div class="bg-slate-700/30 rounded-lg p-3">
+                            <strong class="text-slate-200 block mb-1">☁️ Auto-Save (Browser localStorage Only)</strong>
+                            Your resume draft is continuously auto-saved to your browser's <code class="text-emerald-400 bg-slate-900/50 px-1 rounded">localStorage</code>. This data <strong>never leaves your device</strong> and is never uploaded to any server unless you explicitly use an AI feature.
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">4. Data Sharing & Third Parties</h3>
+                    <p class="text-slate-400 text-xs">We <strong class="text-slate-200">do not sell, rent, or share</strong> your personal data with any third party for marketing or commercial purposes. The only external services that may receive your data are:</p>
+                    <ul class="text-slate-400 text-xs mt-2 space-y-1 list-disc pl-4">
+                        <li><strong class="text-slate-300">Google Gemini API</strong> — only when you click an AI generation button (governed by Google's Developer Terms).</li>
+                        <li><strong class="text-slate-300">Razorpay</strong> — only when you initiate a payment (governed by Razorpay's Privacy Policy).</li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">5. Cookies & Tracking</h3>
+                    <p class="text-slate-400 text-xs">This website does <strong class="text-slate-200">not use tracking cookies, analytics scripts, or third-party advertising pixels</strong>. We do not use Google Analytics, Facebook Pixel, or any similar tracking technology.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">6. Data Retention & Deletion</h3>
+                    <p class="text-slate-400 text-xs">Your resume data in <code class="text-emerald-400 bg-slate-900/50 px-1 rounded">localStorage</code> is stored only on your own device and can be cleared at any time by clearing your browser's site data. We do not retain any copy of your resume on our servers. Premium access status (subscription pass) is verified via browser storage only.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">7. Your Rights</h3>
+                    <p class="text-slate-400 text-xs">You have the right to access, correct, or request deletion of any personal data. Since we do not store your resume data server-side, there is effectively no data for us to delete. For any concerns, email us at <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a> and we will respond within 7 business days.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">8. Children's Privacy</h3>
+                    <p class="text-slate-400 text-xs">DPD AI Resume is intended for individuals aged 16 and above. We do not knowingly collect data from children under 16.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">9. Changes to This Policy</h3>
+                    <p class="text-slate-400 text-xs">We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated effective date. Continued use of DPD AI Resume after changes constitutes your acceptance of the updated policy.</p>
+                </div>
+
+                <div>
+                    <h3 class="font-semibold text-slate-100 mb-2 border-b border-slate-700 pb-1">10. Contact</h3>
+                    <p class="text-slate-400 text-xs">For any privacy-related questions, data requests, or concerns:<br>
+                    📧 <a href="mailto:dipangshu.20@gmail.com" class="text-blue-400 hover:underline">dipangshu.20@gmail.com</a><br>
+                    📍 Cooch Behar, West Bengal, India</p>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="mt-6 pt-4 border-t border-slate-700 flex items-center justify-between flex-wrap gap-3">
+                <p class="text-xs text-slate-500 italic">Last updated: October 2026 &nbsp;•&nbsp; DPD AI Resume by Dipangshu Mukherjee</p>
+                <button type="button" onclick="closePrivacyPolicyModal()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-5 py-2 rounded-lg transition-colors">Got it, Close ✓</button>
+            </div>
         </div>
     </div>
 
@@ -713,6 +825,7 @@
                     <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">39</span> on Razorpay →</button>
                 </div>
                 <button type="button" onclick="showPayScreen2()" class="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 hover:underline mt-3 block">Already paid? Click here to enter Payment ID manually →</button>
+                <p class="text-center text-[10px] text-slate-600 mt-2">By paying, you agree to our <button type="button" onclick="openPrivacyPolicyModal()" class="text-blue-500 hover:underline cursor-pointer">Privacy Policy</button></p>
             </div>
 
             <div id="payScreen2" class="hidden">
@@ -2528,6 +2641,16 @@ function displaySubscriptionGateway(format = 'pdf') {
 }
 
 function closeSubscriptionGateway() { document.getElementById('subscriptionModalGate')?.classList.add('hidden'); }
+function openPrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.remove('hidden'); }
+function closePrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.add('hidden'); }
+function handlePrivacyBackdropClick(e) { if (e && e.target && e.target.id === 'privacyPolicyModalGate') closePrivacyPolicyModal(); }
+if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape' && !document.getElementById('privacyPolicyModalGate')?.classList.contains('hidden')) {
+            closePrivacyPolicyModal();
+        }
+    });
+}
 function selectSubscriptionPlan(v) {
     engineState.selectedSubscriptionValue = v; localStorage.setItem('last_selected_plan', v.toString());
     const c39 = document.getElementById('planCard-39') || document.getElementById('planCard-19');
