@@ -686,7 +686,7 @@
         </div>
     </div>
 
-    <!-- MODAL 1: SUBSCRIPTION PAYMENT GATE (RAZORPAY ₹19 & ₹59) -->
+    <!-- MODAL 1: SUBSCRIPTION PAYMENT GATE (RAZORPAY ₹39 & ₹99) -->
     <div id="subscriptionModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
             <div id="payScreen1">
@@ -696,21 +696,21 @@
                     <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
                 </div>
                 <div class="space-y-3 mb-5">
-                    <div onclick="selectSubscriptionPlan(19)" id="planCard-19" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
-                        <div class="text-right"><span class="block text-lg font-black text-blue-400">₹19</span><span class="block text-[9px] text-slate-500">per week</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-blue-400">₹39</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
-                    <div onclick="selectSubscriptionPlan(59)" id="planCard-59" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div>
                             <span class="block text-sm font-bold text-slate-200">Monthly Unlimited <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-extrabold ml-1">POPULAR</span></span>
                             <span class="block text-xs text-slate-400">Includes AI Cover Letter + 30 days downloads</span>
                         </div>
-                        <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹59</span><span class="block text-[9px] text-slate-500">per month</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹99</span><span class="block text-[9px] text-slate-500">per month</span></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">Cancel</button>
-                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">19</span> on Razorpay →</button>
+                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">39</span> on Razorpay →</button>
                 </div>
                 <button type="button" onclick="showPayScreen2()" class="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 hover:underline mt-3 block">Already paid? Click here to enter Payment ID manually →</button>
             </div>
@@ -959,7 +959,7 @@ let engineState = {
     targetCountry: 'india',      // 'india' | 'usa' | 'uk' | 'dubai'
     resumeMode: 'experienced',   // 'experienced' | 'fresher'
     globalCachedProfileImageStream: "",
-    selectedSubscriptionValue: 19,
+    selectedSubscriptionValue: 39,
     pendingExportFormat: 'pdf',
     // Pro Customizer & Styling Architecture
     customStyle: {
@@ -2530,24 +2530,26 @@ function displaySubscriptionGateway(format = 'pdf') {
 function closeSubscriptionGateway() { document.getElementById('subscriptionModalGate')?.classList.add('hidden'); }
 function selectSubscriptionPlan(v) {
     engineState.selectedSubscriptionValue = v; localStorage.setItem('last_selected_plan', v.toString());
-    const c19 = document.getElementById('planCard-19'), c59 = document.getElementById('planCard-59');
-    if (v === 19) {
-        if(c19) { c19.style.border='2px solid #3b82f6'; c19.style.background='rgba(23,37,84,0.4)'; }
-        if(c59) { c59.style.border='2px solid #334155'; c59.style.background='rgba(15,23,42,0.4)'; }
-        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='19';
+    const c39 = document.getElementById('planCard-39') || document.getElementById('planCard-19');
+    const c99 = document.getElementById('planCard-99') || document.getElementById('planCard-59');
+    if (v === 39 || v === 19) {
+        if(c39) { c39.style.border='2px solid #3b82f6'; c39.style.background='rgba(23,37,84,0.4)'; }
+        if(c99) { c99.style.border='2px solid #334155'; c99.style.background='rgba(15,23,42,0.4)'; }
+        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='39';
     } else {
-        if(c19) { c19.style.border='2px solid #334155'; c19.style.background='rgba(15,23,42,0.4)'; }
-        if(c59) { c59.style.border='2px solid #10b981'; c59.style.background='rgba(6,78,59,0.3)'; }
-        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='59';
+        if(c39) { c39.style.border='2px solid #334155'; c39.style.background='rgba(15,23,42,0.4)'; }
+        if(c99) { c99.style.border='2px solid #10b981'; c99.style.background='rgba(6,78,59,0.3)'; }
+        if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='99';
     }
 }
 
 function executePremiumSecureCheckout() {
-    const targetCard = document.getElementById(`planCard-${engineState.selectedSubscriptionValue}`);
+    const val = engineState.selectedSubscriptionValue;
+    const targetCard = document.getElementById(`planCard-${val}`) || (val === 99 || val === 59 ? (document.getElementById('planCard-99') || document.getElementById('planCard-59')) : (document.getElementById('planCard-39') || document.getElementById('planCard-19')));
     if (!targetCard) return;
     const paymentUrl = targetCard.getAttribute('data-url');
     if (!paymentUrl) { alert("Payment link missing."); return; }
-    localStorage.setItem('dpd_last_plan', String(engineState.selectedSubscriptionValue));
+    localStorage.setItem('dpd_last_plan', String(val));
     try { localStorage.setItem('dpd_form_backup', JSON.stringify(engineState)); } catch(e) {}
     window.location.href = paymentUrl;
 }
@@ -2560,11 +2562,11 @@ async function verifyPaymentAndActivate() {
     if (!rawId) { showVerifyError('Please paste your Payment ID first.'); return; }
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
     try {
-        const plan = parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
+        const plan = parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
         const res = await fetch('/api/verify-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId: rawId, plan }) });
         const data = await res.json();
         if (data.success) {
-            const days = plan === 59 ? 30 : 7;
+            const days = (plan === 99 || plan === 59) ? 30 : 7;
             localStorage.setItem('dpd_pass_expiry', String(Date.now() + days * 24 * 60 * 60 * 1000));
             localStorage.setItem('dpd_pass_plan', String(plan));
             closeSubscriptionGateway(); renderSubscriptionStatusIndicator();
@@ -3130,8 +3132,9 @@ window.onload = async function() {
     const returningFromPayment = !!(paymentId || paidFlag === '1');
 
     if (returningFromPayment) {
-        const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '19', 10);
-        localStorage.setItem('dpd_pass_expiry', String(Date.now() + (plan === 59 ? 30 : 7) * 24 * 60 * 60 * 1000));
+        const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
+        const days = (plan === 99 || plan === 59) ? 30 : 7;
+        localStorage.setItem('dpd_pass_expiry', String(Date.now() + days * 24 * 60 * 60 * 1000));
         localStorage.setItem('dpd_pass_plan', String(plan));
         localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -3194,7 +3197,7 @@ window.onload = async function() {
     // Only skip cover page if actively returning from Razorpay checkout redirect
     if (returningFromPayment) {
         document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
-        const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '19', 10), days = plan === 59 ? 30 : 7;
+        const plan = parseInt(localStorage.getItem('dpd_pass_plan') || '39', 10), days = (plan === 99 || plan === 59) ? 30 : 7;
         const banner = document.getElementById('successBanner');
         if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days. Your resume is ready!'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 8000); }
         setTimeout(() => dpdSmartPrint(), 800);
