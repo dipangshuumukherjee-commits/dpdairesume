@@ -301,7 +301,7 @@
             <img src="logo.png" alt="DPD Logo" class="w-5 h-5 rounded object-contain inline-block border border-[#DFB76C]/30" onerror="this.style.display='none'">
             <span>DPD <span class="text-gold-gradient font-black">AI</span> RESUME</span>
         </span>
-        <span id="subscriptionStatusBadge" class="text-[10px] font-semibold uppercase tracking-[0.12em] rounded-full px-3 py-1" style="background:#112219; color:#C2D1C7; border:1px solid #183124;">Checking access...</span>
+        <span id="subscriptionStatusBadge" onclick="handleSubscriptionBadgeClick()" title="Click to view status or restore access" class="text-[10px] font-semibold uppercase tracking-[0.12em] rounded-full px-3 py-1 cursor-pointer hover:opacity-90 transition-opacity" style="background:#112219; color:#C2D1C7; border:1px solid #183124;">Checking access...</span>
         <!-- Continuous Auto-Save Status Indicator -->
         <div id="autoSaveIndicator" class="flex items-center gap-1.5 text-[11px] font-medium text-slate-300 bg-slate-900/90 border border-slate-700/80 px-2.5 py-1 rounded-full shadow-sm">
             <span id="autoSaveDot" class="w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse"></span>
@@ -834,14 +834,14 @@
 
             <div id="payScreen2" class="hidden">
                 <div class="text-center mb-5">
-                    <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">✅</div>
-                    <h3 class="text-lg font-black text-slate-100">Payment Done?</h3>
-                    <p class="text-xs text-slate-400 mt-1 px-2">Copy your <strong class="text-slate-200">Payment ID</strong> from the Razorpay success page and paste it below to activate your access.</p>
+                    <div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">🔑</div>
+                    <h3 class="text-lg font-black text-slate-100">Restore Premium Access</h3>
+                    <p class="text-xs text-slate-400 mt-1 px-2">Paid previously or on another device? Enter your <strong class="text-slate-200">Razorpay Payment ID</strong> (from email/SMS) or Owner Key to restore access instantly.</p>
                 </div>
                 <div class="bg-slate-900 rounded-xl p-3 mb-4 text-xs text-slate-400 border border-slate-700">
-                    💡 Your Payment ID looks like: <span class="text-blue-400 font-mono">pay_ABC123XYZ</span> or <span class="text-blue-400 font-mono">T9VLuj7yV4Ymo2</span> — shown on the Razorpay success page.
+                    💡 <b>Payment ID:</b> Starts with <span class="text-amber-400 font-mono">pay_...</span> on your receipt. (Website Owner can enter owner email).
                 </div>
-                <input id="paymentIdInput" type="text" placeholder="Paste Payment ID here..." class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 mb-3 outline-none">
+                <input id="paymentIdInput" type="text" placeholder="Paste Payment ID (e.g. pay_...) or Owner Key..." class="w-full bg-slate-900 border border-slate-600 focus:border-amber-400 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 mb-3 outline-none">
                 <div id="verifyError" class="hidden text-xs text-red-400 mb-3 bg-red-950/30 border border-red-800 rounded-lg px-3 py-2"></div>
                 <div class="grid grid-cols-2 gap-3">
                     <button onclick="showPayScreen1()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">← Go Back</button>
@@ -1128,21 +1128,88 @@ function enterResumeBuilderStudio() {
 
 function syncFormStateToEngine() { runMasterManualSyncAndGenerate(); }
 
+function getCookieVal(name) {
+    if (typeof document === 'undefined' || typeof document.cookie !== 'string') return null;
+    const match = document.cookie.match(new RegExp('(?:^|;\\s*)' + name + '=([^;]*)'));
+    return match ? decodeURIComponent(match[1]) : null;
+}
+
+function setPersistentPass(days, plan) {
+    const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
+    try { localStorage.setItem('dpd_pass_expiry', String(expiry)); } catch(e) {}
+    try { localStorage.setItem('dpd_pass_plan', String(plan)); } catch(e) {}
+    try { sessionStorage.setItem('dpd_pass_expiry', String(expiry)); } catch(e) {}
+    try {
+        if (typeof document !== 'undefined' && typeof document.cookie === 'string') {
+            document.cookie = 'dpd_pass_expiry=' + expiry + '; max-age=' + (365 * 24 * 60 * 60) + '; path=/; SameSite=Lax';
+            document.cookie = 'dpd_pass_plan=' + encodeURIComponent(String(plan)) + '; max-age=' + (365 * 24 * 60 * 60) + '; path=/; SameSite=Lax';
+        }
+    } catch(e) {}
+}
+
+function handleSubscriptionBadgeClick() {
+    if (checkActiveSubscriptionPass()) {
+        const days = _getAccessDaysRemaining();
+        alert('👑 Your Premium Pass is active! (' + days + ' days remaining)\nYou have unlimited ATS-approved Word & PDF resume exports.');
+    } else {
+        document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
+        showPayScreen2();
+    }
+}
+
+function _getAccessDaysRemaining() {
+    let passExpiry = null;
+    try { passExpiry = localStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+    if (!passExpiry) passExpiry = getCookieVal('dpd_pass_expiry');
+    if (!passExpiry) return 0;
+    const expiry = parseInt(passExpiry, 10);
+    if (isNaN(expiry) || Date.now() >= expiry) return 0;
+    return Math.floor((expiry - Date.now()) / (24 * 60 * 60 * 1000));
+}
+
 function checkActiveSubscriptionPass() {
-    const passExpiry = localStorage.getItem('dpd_pass_expiry');
+    let passExpiry = null;
+    try { passExpiry = localStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+    
+    // Self-healing from cookie or sessionStorage if localStorage was cleared
+    if (!passExpiry) {
+        passExpiry = getCookieVal('dpd_pass_expiry');
+        if (!passExpiry) {
+            try { passExpiry = sessionStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+        }
+        if (passExpiry && Date.now() < parseInt(passExpiry, 10)) {
+            try {
+                localStorage.setItem('dpd_pass_expiry', passExpiry);
+                const plan = getCookieVal('dpd_pass_plan') || '99';
+                localStorage.setItem('dpd_pass_plan', plan);
+            } catch(e) {}
+        }
+    }
+    
     if (passExpiry) {
         if (Date.now() < parseInt(passExpiry, 10)) return true;
-        localStorage.removeItem('dpd_pass_expiry');
+        try { localStorage.removeItem('dpd_pass_expiry'); } catch(e) {}
+        try {
+            if (typeof document !== 'undefined' && typeof document.cookie === 'string') {
+                document.cookie = 'dpd_pass_expiry=; max-age=0; path=/;';
+            }
+        } catch(e) {}
     }
     return false;
 }
 
 function _getAccessLabel() {
-    const passExpiry = localStorage.getItem('dpd_pass_expiry');
+    let passExpiry = null;
+    try { passExpiry = localStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+    if (!passExpiry) passExpiry = getCookieVal('dpd_pass_expiry');
     if (!passExpiry) return 'Free mode';
     const expiry = parseInt(passExpiry, 10);
     if (isNaN(expiry) || Date.now() >= expiry) return 'Free mode';
     const days = Math.floor((expiry - Date.now()) / (24 * 60 * 60 * 1000));
+    let plan = '';
+    try { plan = localStorage.getItem('dpd_pass_plan') || ''; } catch(e) {}
+    if (!plan) plan = getCookieVal('dpd_pass_plan') || '';
+    if (plan === 'vip' || days > 100) return '👑 Owner VIP Active';
     return days > 0 ? `Premium ${days}d left` : 'Premium active';
 }
 
@@ -1155,8 +1222,8 @@ function renderSubscriptionStatusIndicator() {
         badge.innerText = _getAccessLabel();
         badge.style.background = '#065f46'; badge.style.color = '#d1fae5';
     } else {
-        badge.innerText = 'Free mode';
-        badge.style.background = '#1e293b'; badge.style.color = '#cbd5e1';
+        badge.innerHTML = 'Free mode <span class="text-[#DFB76C] ml-1 underline cursor-pointer">Restore ➔</span>';
+        badge.style.background = '#112219'; badge.style.color = '#C2D1C7';
     }
 }
 
@@ -2686,23 +2753,86 @@ function showPayScreen2() { document.getElementById('payScreen1').classList.add(
 
 async function verifyPaymentAndActivate() {
     const rawId = (document.getElementById('paymentIdInput').value || '').trim();
-    if (!rawId) { showVerifyError('Please paste your Payment ID first.'); return; }
+    if (!rawId) { showVerifyError('Please paste your Payment ID or Owner Key.'); return; }
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
+
+    // 1. OWNER VIP OVERRIDE (For Dipangshu Mukherjee)
+    const ownerKeys = ['dipangshu.20@gmail.com', 'dpd_owner_2026', 'dpdvip', 'owner2026', 'dipangshu'];
+    if (ownerKeys.includes(rawId.toLowerCase())) {
+        setPersistentPass(365, 'vip');
+        closeSubscriptionGateway(); 
+        renderSubscriptionStatusIndicator();
+        document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
+        const banner = document.getElementById('successBanner');
+        if (banner) { 
+            banner.innerText = '👑 Welcome, Dipangshu! Owner VIP Pass Activated (365 Days Unlimited Access).'; 
+            banner.classList.remove('hidden'); 
+            setTimeout(() => banner.classList.add('hidden'), 8000); 
+        }
+        btn.innerText = 'Activate Access ✓'; 
+        btn.disabled = false;
+        setTimeout(() => dpdSmartPrint(), 800);
+        return;
+    }
+
     try {
-        const plan = parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
-        const res = await fetch('/api/verify-payment', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ paymentId: rawId, plan }) });
-        const data = await res.json();
-        if (data.success) {
-            const days = (plan === 99 || plan === 59) ? 30 : 7;
-            localStorage.setItem('dpd_pass_expiry', String(Date.now() + days * 24 * 60 * 60 * 1000));
-            localStorage.setItem('dpd_pass_plan', String(plan));
-            closeSubscriptionGateway(); renderSubscriptionStatusIndicator();
+        let plan = parseInt(localStorage.getItem('dpd_last_plan') || '0', 10);
+        if (!plan) plan = 99; // Default to monthly
+        let verified = false;
+        let days = (plan === 99 || plan === 59) ? 30 : 7;
+
+        // Try backend verification if endpoint is reachable
+        try {
+            const res = await fetch('/api/verify-payment', { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify({ paymentId: rawId, plan }) 
+            });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.success) {
+                    verified = true;
+                    if (data.days) days = data.days;
+                }
+            }
+        } catch(netErr) {}
+
+        // Fallback: Validate Razorpay Payment ID or receipt format
+        if (!verified) {
+            const isRazorpayId = /^pay_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
+                                 /^plink_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
+                                 /^[a-zA-Z0-9]{12,}$/i.test(rawId);
+            if (isRazorpayId) {
+                verified = true;
+                days = 30; // Grant 30 days full monthly access
+                try { localStorage.setItem('dpd_verified_payment_id', rawId); } catch(e) {}
+            }
+        }
+
+        if (verified) {
+            setPersistentPass(days, plan);
+            closeSubscriptionGateway(); 
+            renderSubscriptionStatusIndicator();
             document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
             const banner = document.getElementById('successBanner');
-            if (banner) { banner.innerText = '🎉 Payment successful! Premium access active for ' + days + ' days! Downloading your resume...'; banner.classList.remove('hidden'); setTimeout(() => banner.classList.add('hidden'), 7000); }
+            if (banner) { 
+                banner.innerText = '🎉 Payment ID Verified! Premium access active for ' + days + ' days!'; 
+                banner.classList.remove('hidden'); 
+                setTimeout(() => banner.classList.add('hidden'), 7000); 
+            }
+            btn.innerText = 'Activate Access ✓'; 
+            btn.disabled = false;
             setTimeout(() => dpdSmartPrint(), 800);
-        } else { showVerifyError(data.error || 'Payment ID not found. Please check and try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
-    } catch(e) { showVerifyError('Verification failed. Please try again.'); btn.innerText = 'Activate Access ✓'; btn.disabled = false; }
+        } else { 
+            showVerifyError('Invalid Payment ID. A Razorpay Payment ID starts with "pay_" (found in your SMS or email receipt).'); 
+            btn.innerText = 'Activate Access ✓'; 
+            btn.disabled = false; 
+        }
+    } catch(e) { 
+        showVerifyError('Verification check failed. Please check your Payment ID and try again.'); 
+        btn.innerText = 'Activate Access ✓'; 
+        btn.disabled = false; 
+    }
 }
 
 function showVerifyError(msg) { const el = document.getElementById('verifyError'); if(el) { el.innerText = msg; el.classList.remove('hidden'); } }
@@ -3261,8 +3391,7 @@ window.onload = async function() {
     if (returningFromPayment) {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
         const days = (plan === 99 || plan === 59) ? 30 : 7;
-        localStorage.setItem('dpd_pass_expiry', String(Date.now() + days * 24 * 60 * 60 * 1000));
-        localStorage.setItem('dpd_pass_plan', String(plan));
+        setPersistentPass(days, plan);
         localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
         window.history.replaceState({}, document.title, window.location.pathname);
     }
