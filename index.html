@@ -28,14 +28,76 @@
     console.warn = (...a) => { if(a[0] && String(a[0]).includes('cdn.tailwindcss.com')) return; _cw(...a); };
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>if(window.tailwind){tailwind.config={theme:{extend:{}}}}</script>
+    <script>
+    if(window.tailwind){
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            950: '#070D09',
+                            900: '#0A140E',
+                            850: '#0E1C14',
+                            800: '#112219',
+                            700: '#183124',
+                            600: '#234433',
+                            500: '#3D614A',
+                            400: '#8FA897',
+                            300: '#C2D1C7',
+                            200: '#DEE7E1',
+                            100: '#F2F6F3',
+                            50: '#F7FAF8',
+                        },
+                        blue: {
+                            950: '#0F1E16',
+                            900: '#15291E',
+                            800: '#1D3B2B',
+                            700: '#264F3A',
+                            600: '#C5A059',
+                            500: '#DFB76C',
+                            400: '#EBD49A',
+                            300: '#F4E8D0',
+                            200: '#FAF5EA',
+                            100: '#FDFBF7',
+                            50: '#FFFDF9',
+                        },
+                        gold: {
+                            50: '#FFFDF9',
+                            100: '#FDFBF7',
+                            200: '#FAF5EA',
+                            300: '#F4E8D0',
+                            400: '#EBD49A',
+                            500: '#DFB76C',
+                            600: '#C5A059',
+                            700: '#A88235',
+                            800: '#7E6023',
+                            900: '#523E14',
+                        },
+                        forest: {
+                            950: '#050A07',
+                            900: '#0A140E',
+                            850: '#0E1C14',
+                            800: '#12241A',
+                            700: '#193325',
+                            600: '#224431',
+                            500: '#2D5B42',
+                            400: '#3A7455',
+                            300: '#529E76',
+                        }
+                    }
+                }
+            }
+        };
+    }
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <style>
-        body { background-color: #0f172a; color: #f8fafc; font-family: system-ui, -apple-system, sans-serif; }
+        body { background-color: #070D09; color: #EDE8DE; font-family: system-ui, -apple-system, sans-serif; }
         .custom-scroll::-webkit-scrollbar { width: 6px; }
-        .custom-scroll::-webkit-scrollbar-track { background: #1e293b; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-track { background: #0A140E; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #224431; border-radius: 3px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background: #3A7455; }
         .resume-print-canvas { width: 210mm; max-width: 100%; min-height: 297mm; background: #ffffff; color: #1e293b; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); transition: all 0.2s linear; }
         .resume-print-canvas.us-letter-canvas { width: 8.5in; min-height: 11in; }
         @media print {
@@ -58,14 +120,8 @@
             50% { opacity: 0.45; transform: scale(1.08); }
         }
         @keyframes float-card {
-            0%, 100% { transform: translateY(0px) rotate(-1deg); }
-            50% { transform: translateY(-10px) rotate(0.5deg); }
-        }
-        @keyframes laser-scan {
-            0% { top: 4%; opacity: 0; }
-            15% { opacity: 1; }
-            85% { opacity: 1; }
-            100% { top: 94%; opacity: 0; }
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-8px); }
         }
         @keyframes shimmer-btn {
             0% { transform: translateX(-100%); }
@@ -73,32 +129,48 @@
         }
         .animate-pulse-slow { animation: pulse-slow 5s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
         .animate-float-card { animation: float-card 6s ease-in-out infinite; }
-        .animate-laser { animation: laser-scan 3.2s ease-in-out infinite; }
         .btn-shimmer::after {
             content: "";
             position: absolute;
             inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
             transform: translateX(-100%);
             animation: shimmer-btn 2.8s infinite;
         }
         .bg-grid-pattern {
             background-size: 40px 40px;
             background-image: 
-                linear-gradient(to right, rgba(255, 255, 255, 0.04) 1px, transparent 1px),
-                linear-gradient(to bottom, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+                linear-gradient(to right, rgba(223, 183, 108, 0.03) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(223, 183, 108, 0.03) 1px, transparent 1px);
         }
         .glass-panel {
-            background: rgba(15, 23, 42, 0.78);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(10, 18, 13, 0.82);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(223, 183, 108, 0.2);
+        }
+        .btn-gold-luxury {
+            background: linear-gradient(135deg, #DFB76C 0%, #F5E6B3 42%, #C5A059 100%);
+            color: #070D09;
+            font-weight: 900;
+            box-shadow: 0 8px 30px rgba(223, 183, 108, 0.35);
+            transition: all 0.25s ease;
+        }
+        .btn-gold-luxury:hover {
+            background: linear-gradient(135deg, #F5E6B3 0%, #DFB76C 60%, #C5A059 100%);
+            box-shadow: 0 10px 38px rgba(223, 183, 108, 0.55);
+            transform: translateY(-2px) scale(1.02);
+        }
+        .text-gold-gradient {
+            background: linear-gradient(135deg, #F5E6B3 0%, #DFB76C 50%, #C5A059 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         #dpdCoverPage {
             position: fixed;
             inset: 0;
             z-index: 60;
-            background-color: #020617;
+            background-color: #050B08;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -129,166 +201,95 @@
 
     <!-- START: GLOBAL TOP RIGHT LOGO -->
     <div class="no-print" style="position:fixed; top:16px; right:16px; z-index:70;">
-        <img src="logo.png" alt="DPD AI Resume Builder Logo" class="h-10 md:h-14 w-auto object-contain rounded shadow-lg drop-shadow-[0_0_8px_rgba(255,255,255,0.15)] transition-transform hover:scale-105" onerror="this.style.display='none'">
+        <img src="logo.png" alt="DPD AI Resume Builder Logo" class="h-10 md:h-14 w-auto object-contain rounded-xl shadow-lg border border-[#DFB76C]/30 drop-shadow-[0_4px_14px_rgba(0,0,0,0.6)] transition-transform hover:scale-105" onerror="this.style.display='none'">
     </div>
     <!-- END: GLOBAL TOP RIGHT LOGO -->
 
     <!-- START: REALISTIC HIGH-CONVERSION SAAS COVER PAGE (MANUAL CLICK REQUIRED) -->
     <div id="dpdCoverPage" class="no-print bg-grid-pattern">
         
-        <!-- Ambient Glowing Orbs -->
-        <div class="pointer-events-none fixed top-[-15%] left-[-10%] w-[520px] h-[520px] bg-blue-600/25 rounded-full blur-[130px] animate-pulse-slow"></div>
-        <div class="pointer-events-none fixed bottom-[-15%] right-[-10%] w-[480px] h-[480px] bg-emerald-500/20 rounded-full blur-[130px] animate-pulse-slow" style="animation-delay: 2s;"></div>
+        <!-- Ambient Glowing Orbs Matching Logo Palette -->
+        <div class="pointer-events-none fixed top-[-10%] left-1/2 -translate-x-1/2 w-[650px] h-[450px] bg-gradient-to-b from-[#DFB76C]/15 to-transparent rounded-full blur-[140px]"></div>
+        <div class="pointer-events-none fixed bottom-[-15%] left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-gradient-to-t from-[#10B981]/12 to-transparent rounded-full blur-[140px]"></div>
 
-        <!-- Main Hero Showcase Container -->
-        <div class="glass-panel relative z-10 w-full max-w-6xl rounded-3xl p-6 sm:p-10 md:p-12 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.85)] border-t border-white/15 my-auto">
+        <!-- Main Hero Showcase Container: Minimal, Center-Stage & Ultra-Premium -->
+        <div class="glass-panel relative z-10 w-full max-w-4xl rounded-3xl p-6 sm:p-10 md:p-12 shadow-[0_25px_80px_-15px_rgba(0,0,0,0.9),0_0_40px_-10px_rgba(223,183,108,0.15)] my-auto text-center">
             
-            <!-- Top Mini Header inside Cover -->
-            <div class="flex flex-wrap items-center justify-between gap-4 pb-6 mb-6 md:mb-8 border-b border-slate-800/80">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-black text-lg shadow-lg shadow-blue-500/30">📄</div>
-                    <div>
-                        <span class="text-lg md:text-xl dpd-brand-mark text-white tracking-tight">DPD <span class="bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-cyan-300">AI</span> RESUME</span>
-                        <span class="hidden sm:inline-block ml-2 text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded bg-slate-800 text-slate-300 border border-slate-700">v7.0 Global Multi-Country</span>
-                    </div>
-                </div>
-                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold tracking-wide">
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                    <span class="w-2 h-2 rounded-full bg-emerald-400 -ml-4"></span>
-                    US • UK • Dubai (UAE) • India ATS Engines Online
+            <!-- Logo Emblem & Prestige Category Tag -->
+            <div class="relative inline-block mb-4">
+                <img src="logo.png" alt="DPD AI Resume Logo" class="w-20 h-20 sm:w-24 sm:h-24 object-contain rounded-2xl shadow-[0_12px_30px_rgba(0,0,0,0.7),0_0_25px_rgba(223,183,108,0.3)] border border-[#DFB76C]/40 mx-auto transition-transform hover:scale-105 duration-300">
+            </div>
+
+            <div>
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#112219]/90 border border-[#DFB76C]/30 text-[#DFB76C] text-[10px] sm:text-[11px] font-bold tracking-widest uppercase mb-4 backdrop-blur-md shadow-sm">
+                    <span class="w-1.5 h-1.5 rounded-full bg-[#DFB76C] animate-ping"></span>
+                    <span>CUTTING EDGE RESUME STUDIO • GLOBAL ATS STANDARD</span>
                 </div>
             </div>
 
-            <!-- 2-Column Hero Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-                
-                <!-- Left Column: Copy, Value Props & Irresistible CTA -->
-                <div class="lg:col-span-7 text-left space-y-6">
-                    
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-blue-500/10 border border-blue-400/20 text-blue-300 text-xs font-semibold">
-                        <span>🎯 Built for USA, UK, Dubai (UAE) & India Recruiter Compliance</span>
-                    </div>
+            <!-- Master Minimal Headline -->
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.12] max-w-3xl mx-auto">
+                Craft Resumes That <span class="text-gold-gradient">Command Attention.</span>
+            </h1>
 
-                    <h1 class="text-3xl sm:text-4xl md:text-5xl font-black text-white leading-[1.12] tracking-tight">
-                        75% of Resumes Are Rejected by Bots. <span class="bg-clip-text text-transparent bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Yours Won’t Be.</span>
-                    </h1>
+            <!-- Minimal Subheadline -->
+            <p class="text-[#C2D1C7] text-sm sm:text-base md:text-lg max-w-2xl mx-auto mt-4 leading-relaxed font-normal">
+                Single-click ATS compliance for <b>🇮🇳 India, 🇺🇸 USA, 🇬🇧 UK & 🇦🇪 Dubai (UAE)</b>. Powered by continuous auto-save, deep keyword synthesis, and executive typography.
+            </p>
 
-                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed max-w-2xl">
-                        Upload your old PDF/Word resume or start fresh. Switch between <strong>🇮🇳 India, 🇺🇸 USA, 🇬🇧 UK, and 🇦🇪 Dubai (UAE)</strong> compliance rules with 1 click. Zero data loss with continuous auto-save, instant JD keyword injection, and bullet metric linters.
-                    </p>
+            <!-- 4-Country Quick Compliance Chips -->
+            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5 mt-6 mb-8">
+                <span class="px-3 py-1.5 rounded-xl bg-[#0E1C14]/90 border border-[#183124] text-xs font-semibold text-[#DEE7E1] flex items-center gap-1.5 shadow-sm"><span>🇮🇳</span> <span>India Corporate</span></span>
+                <span class="px-3 py-1.5 rounded-xl bg-[#0E1C14]/90 border border-[#183124] text-xs font-semibold text-[#DEE7E1] flex items-center gap-1.5 shadow-sm"><span>🇺🇸</span> <span>USA 1-Page Letter</span></span>
+                <span class="px-3 py-1.5 rounded-xl bg-[#0E1C14]/90 border border-[#183124] text-xs font-semibold text-[#DEE7E1] flex items-center gap-1.5 shadow-sm"><span>🇬🇧</span> <span>UK Executive CV</span></span>
+                <span class="px-3 py-1.5 rounded-xl bg-[#0E1C14]/90 border border-[#183124] text-xs font-semibold text-[#DEE7E1] flex items-center gap-1.5 shadow-sm"><span>🇦🇪</span> <span>Dubai Dossier</span></span>
+            </div>
 
-                    <!-- 4 Concrete Value Pills -->
-                    <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5 pt-1">
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
-                            <span class="text-emerald-400 text-sm mt-0.5">🌍</span>
-                            <div>
-                                <div class="text-[11px] font-bold text-white">4 Country Standards</div>
-                                <div class="text-[10px] text-slate-400">US, UK, UAE & India ATS</div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
-                            <span class="text-blue-400 text-sm mt-0.5">☁️</span>
-                            <div>
-                                <div class="text-[11px] font-bold text-white">Live Auto-Save</div>
-                                <div class="text-[10px] text-slate-400">Never lose a single keystroke</div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
-                            <span class="text-indigo-400 text-sm mt-0.5">🎯</span>
-                            <div>
-                                <div class="text-[11px] font-bold text-white">1-Click Skill Add</div>
-                                <div class="text-[10px] text-slate-400">Inject missing JD keywords</div>
-                            </div>
-                        </div>
-                        <div class="bg-slate-900/70 border border-slate-800 rounded-xl p-2.5 flex items-start gap-2">
-                            <span class="text-purple-400 text-sm mt-0.5">✉️</span>
-                            <div>
-                                <div class="text-[11px] font-bold text-white">AI Cover Letter</div>
-                                <div class="text-[10px] text-slate-400">Tailored matching letter</div>
-                            </div>
-                        </div>
-                    </div>
+            <!-- Primary Call to Action Button -->
+            <div class="flex flex-col items-center justify-center gap-3">
+                <button type="button" onclick="enterResumeBuilderStudio()" class="btn-gold-luxury relative overflow-hidden group py-4 px-10 rounded-2xl text-slate-950 font-black text-sm sm:text-base tracking-wide flex items-center justify-center gap-3 cursor-pointer">
+                    <span>⚡ Launch Resume Studio</span>
+                    <span class="group-hover:translate-x-1.5 transition-transform text-lg">➔</span>
+                </button>
+                <div class="flex items-center gap-3 text-xs text-[#8FA897] mt-1">
+                    <span>✓ 100% Free to Build</span>
+                    <span>•</span>
+                    <span>No Sign-Up Required</span>
+                    <span>•</span>
+                    <span>Live Auto-Save</span>
+                </div>
+            </div>
 
-                    <!-- Primary Call to Action Button -->
-                    <div class="pt-3 flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
-                        <button type="button" onclick="enterResumeBuilderStudio()" class="btn-shimmer relative overflow-hidden group bg-gradient-to-r from-blue-600 via-indigo-600 to-emerald-600 hover:from-blue-500 hover:via-indigo-500 hover:to-emerald-500 text-white font-black py-4 px-8 rounded-2xl shadow-[0_0_45px_-5px_rgba(59,130,246,0.75)] text-sm sm:text-base tracking-wide transition-all transform hover:scale-[1.03] active:scale-95 flex items-center justify-center gap-3 border border-white/20 cursor-pointer">
-                            <span>⚡ Enter Resume Design Studio</span>
-                            <span class="group-hover:translate-x-1.5 transition-transform text-lg">➔</span>
-                        </button>
-                        <div class="flex flex-col justify-center text-left px-1">
-                            <div class="flex items-center gap-1.5 text-xs font-bold text-emerald-400">
-                                <span>✓ No Sign-Up Required to Build</span>
-                            </div>
-                            <div class="text-[11px] text-slate-400">Select your target country & export instantly</div>
-                        </div>
-                    </div>
-
-                    <!-- Social Proof Footer -->
-                    <div class="pt-2 flex flex-wrap items-center gap-4 text-xs text-slate-400 border-t border-slate-800/70">
-                        <div class="flex items-center gap-1 text-amber-400 font-bold">
-                            <span>★★★★★</span>
-                            <span class="text-slate-200 ml-1">4.9/5 Rating</span>
-                        </div>
-                        <span>•</span>
-                        <span>Used by candidates landing offers across US, UK, Gulf & India tech companies</span>
-                        <span>•</span>
-                        <button type="button" onclick="openPrivacyPolicyModal()" class="hover:text-blue-400 hover:underline cursor-pointer transition-colors duration-150">🔒 Privacy Policy</button>
+            <!-- Minimal Interactive Live Preview Bar (Clickable) -->
+            <div onclick="enterResumeBuilderStudio()" class="mt-8 bg-[#0E1C14]/80 hover:bg-[#14281D]/90 border border-[#DFB76C]/25 hover:border-[#DFB76C]/60 rounded-2xl p-4 sm:p-5 flex flex-wrap items-center justify-between gap-4 cursor-pointer transition-all shadow-xl text-left group">
+                <div class="flex items-center gap-3">
+                    <div class="w-11 h-11 rounded-xl bg-[#070D09] border border-emerald-500/40 flex items-center justify-center text-emerald-400 font-black text-sm shadow-inner">98%</div>
+                    <div>
+                        <div class="text-xs font-bold text-white flex items-center gap-2"><span>Live ATS Match Score</span> <span class="text-[9px] uppercase tracking-wider font-extrabold px-1.5 py-0.5 rounded bg-emerald-950 text-emerald-300 border border-emerald-500/40">PASS</span></div>
+                        <div class="text-[11px] text-[#8FA897]">Tested against Workday, Taleo, Greenhouse & Lever systems</div>
                     </div>
                 </div>
-
-                <!-- Right Column: Realistic Live ATS Resume Scanner Mockup -->
-                <div class="lg:col-span-5 relative flex items-center justify-center">
-                    <div class="animate-float-card relative w-full max-w-md bg-white text-slate-800 rounded-2xl p-5 shadow-[0_25px_60px_-10px_rgba(16,185,129,0.28)] border-2 border-slate-200 overflow-hidden text-left">
-                        
-                        <!-- Animated Laser Scanline -->
-                        <div class="animate-laser pointer-events-none absolute left-0 right-0 h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent shadow-[0_0_18px_3px_rgba(16,185,129,0.85)] z-20"></div>
-
-                        <!-- Floating ATS Score Badge -->
-                        <div class="absolute top-3 right-3 bg-emerald-950 text-emerald-300 border border-emerald-500/50 rounded-xl px-3 py-1.5 shadow-lg z-10 flex items-center gap-2">
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
-                            <div>
-                                <div class="text-[9px] uppercase tracking-wider text-emerald-400 font-bold">ATS Match Score</div>
-                                <div class="text-sm font-black text-white leading-none">98 / 100 <span class="text-[10px] text-emerald-400 font-bold">PASS</span></div>
-                            </div>
-                        </div>
-
-                        <!-- Simulated Resume Header -->
-                        <div class="border-b-2 border-red-700 pb-3 pr-28">
-                            <div class="text-base font-black text-red-700 uppercase tracking-tight">RAHUL SHARMA</div>
-                            <div class="text-[10px] font-bold text-slate-600 uppercase tracking-wider">Senior Data Analyst & BI Lead</div>
-                            <div class="text-[9px] text-slate-500 mt-1">rahul.s@email.com • +91 98765 43210 • Austin, TX / Remote</div>
-                        </div>
-
-                        <!-- Simulated AI Keyword Match Pills -->
-                        <div class="mt-3">
-                            <div class="text-[9px] font-black uppercase tracking-wider text-slate-500 mb-1.5">Detected High-Impact ATS Keywords:</div>
-                            <div class="flex flex-wrap gap-1.5">
-                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ SQL & Power BI</span>
-                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ Advanced Excel</span>
-                                <span class="text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 px-2 py-0.5 rounded-md">✓ Python ETL</span>
-                                <span class="text-[10px] font-bold bg-blue-100 text-blue-800 border border-blue-300 px-2 py-0.5 rounded-md">✓ Data Modeling</span>
-                                <span class="text-[10px] font-bold bg-purple-100 text-purple-800 border border-purple-300 px-2 py-0.5 rounded-md">✓ Snowflake</span>
-                            </div>
-                        </div>
-
-                        <!-- Simulated AI Bullet Points with Metric Highlights -->
-                        <div class="mt-3 space-y-1.5 bg-slate-50 p-2.5 rounded-lg border border-slate-200">
-                            <div class="flex items-center justify-between">
-                                <span class="text-[10px] font-extrabold text-slate-800">PROFESSIONAL EXPERIENCE</span>
-                                <span class="text-[9px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">🔥 High Metric Strength</span>
-                            </div>
-                            <p class="text-[10px] text-slate-600 leading-snug">• Spearheaded automated <b>Power BI & SQL</b> dashboards tracking 50,000+ inventory SKUs, reducing reporting variance by <b>28%</b>.</p>
-                            <p class="text-[10px] text-slate-600 leading-snug">• Engineered automated Python ETL pipelines, saving <b>18 analyst hours/week</b> and boosting throughput by <b>34%</b>.</p>
-                        </div>
-
-                        <!-- Interactive Card Bottom Prompt -->
-                        <div onclick="enterResumeBuilderStudio()" class="mt-3 bg-slate-900 hover:bg-slate-800 text-white rounded-xl p-2.5 flex items-center justify-between cursor-pointer transition-colors">
-                            <span class="text-[11px] font-bold text-slate-200">👉 Click to open with your target country format</span>
-                            <span class="text-xs bg-blue-600 px-2.5 py-1 rounded-lg font-black">Open ➔</span>
-                        </div>
-                    </div>
+                <div class="hidden sm:flex items-center gap-2 text-xs">
+                    <span class="px-2.5 py-1 rounded-lg bg-[#070D09] border border-[#183124] text-[11px] font-semibold text-[#DFB76C]">☁️ Auto-Save Active</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-[#070D09] border border-[#183124] text-[11px] font-semibold text-[#DFB76C]">🎯 1-Click Skill Add</span>
+                    <span class="px-2.5 py-1 rounded-lg bg-[#070D09] border border-[#183124] text-[11px] font-semibold text-[#DFB76C]">✉️ AI Cover Letter</span>
                 </div>
+                <div class="flex items-center gap-1.5 text-xs font-bold text-[#DFB76C] group-hover:text-white transition-colors">
+                    <span>Explore 8 Layouts</span>
+                    <span class="group-hover:translate-x-1 transition-transform">➔</span>
+                </div>
+            </div>
 
+            <!-- Social Proof Footer -->
+            <div class="pt-6 mt-6 flex flex-wrap items-center justify-center gap-4 text-xs text-[#8FA897] border-t border-[#183124]">
+                <div class="flex items-center gap-1 text-[#DFB76C] font-bold">
+                    <span>★★★★★</span>
+                    <span class="text-[#DEE7E1] ml-1">4.9/5 Rating</span>
+                </div>
+                <span>•</span>
+                <span>Used by candidates landing offers across US, UK, Gulf & India tech companies</span>
+                <span>•</span>
+                <button type="button" onclick="openPrivacyPolicyModal()" class="hover:text-[#DFB76C] hover:underline cursor-pointer transition-colors duration-150">🔒 Privacy Policy</button>
             </div>
         </div>
     </div>
@@ -296,8 +297,11 @@
 
     <!-- TOP GLOBAL BAR -->
     <div class="no-print" style="position:fixed; top:14px; left:16px; z-index:40; display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
-        <span class="dpd-brand-mark text-slate-100 text-sm md:text-base">DPD <span class="text-blue-500">AI</span> RESUME</span>
-        <span id="subscriptionStatusBadge" class="text-[10px] font-semibold uppercase tracking-[0.12em] rounded-full px-3 py-1" style="background:#334155; color:#cbd5e1;">Checking access...</span>
+        <span class="dpd-brand-mark text-slate-100 text-sm md:text-base flex items-center gap-1.5">
+            <img src="logo.png" alt="DPD Logo" class="w-5 h-5 rounded object-contain inline-block border border-[#DFB76C]/30" onerror="this.style.display='none'">
+            <span>DPD <span class="text-gold-gradient font-black">AI</span> RESUME</span>
+        </span>
+        <span id="subscriptionStatusBadge" class="text-[10px] font-semibold uppercase tracking-[0.12em] rounded-full px-3 py-1" style="background:#112219; color:#C2D1C7; border:1px solid #183124;">Checking access...</span>
         <!-- Continuous Auto-Save Status Indicator -->
         <div id="autoSaveIndicator" class="flex items-center gap-1.5 text-[11px] font-medium text-slate-300 bg-slate-900/90 border border-slate-700/80 px-2.5 py-1 rounded-full shadow-sm">
             <span id="autoSaveDot" class="w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse"></span>
@@ -808,11 +812,11 @@
                     <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
                 </div>
                 <div class="space-y-3 mb-5">
-                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #3b82f6;background:rgba(23,37,84,0.3);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #DFB76C;background:rgba(45,35,14,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
-                        <div class="text-right"><span class="block text-lg font-black text-blue-400">₹39</span><span class="block text-[9px] text-slate-500">per week</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-amber-400">₹39</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
-                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #334155;background:rgba(15,23,42,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #183124;background:rgba(14,28,20,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div>
                             <span class="block text-sm font-bold text-slate-200">Monthly Unlimited <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-extrabold ml-1">POPULAR</span></span>
                             <span class="block text-xs text-slate-400">Includes AI Cover Letter + 30 days downloads</span>
@@ -2656,12 +2660,12 @@ function selectSubscriptionPlan(v) {
     const c39 = document.getElementById('planCard-39') || document.getElementById('planCard-19');
     const c99 = document.getElementById('planCard-99') || document.getElementById('planCard-59');
     if (v === 39 || v === 19) {
-        if(c39) { c39.style.border='2px solid #3b82f6'; c39.style.background='rgba(23,37,84,0.4)'; }
-        if(c99) { c99.style.border='2px solid #334155'; c99.style.background='rgba(15,23,42,0.4)'; }
+        if(c39) { c39.style.border='2px solid #DFB76C'; c39.style.background='rgba(45,35,14,0.5)'; }
+        if(c99) { c99.style.border='2px solid #183124'; c99.style.background='rgba(14,28,20,0.5)'; }
         if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='39';
     } else {
-        if(c39) { c39.style.border='2px solid #334155'; c39.style.background='rgba(15,23,42,0.4)'; }
-        if(c99) { c99.style.border='2px solid #10b981'; c99.style.background='rgba(6,78,59,0.3)'; }
+        if(c39) { c39.style.border='2px solid #183124'; c39.style.background='rgba(14,28,20,0.5)'; }
+        if(c99) { c99.style.border='2px solid #10b981'; c99.style.background='rgba(16,185,129,0.2)'; }
         if(document.getElementById('targetSelectedPrice')) document.getElementById('targetSelectedPrice').innerText='99';
     }
 }
