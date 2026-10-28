@@ -757,6 +757,7 @@
                     <ul class="text-slate-400 text-xs mt-2 space-y-1 list-disc pl-4">
                         <li><strong class="text-slate-300">Google Gemini API</strong> — only when you click an AI generation button (governed by Google's Developer Terms).</li>
                         <li><strong class="text-slate-300">Razorpay</strong> — only when you initiate a payment (governed by Razorpay's Privacy Policy).</li>
+                        <li><strong class="text-slate-300">Web3Forms</strong> — only when you voluntarily submit customer feedback or technical support messages (governed by Web3Forms Privacy Policy).</li>
                     </ul>
                 </div>
 
@@ -914,6 +915,7 @@
                 <p class="text-xs text-slate-400 mt-1">Help us improve DPD AI Resume Builder.</p>
             </div>
             <div class="space-y-4">
+                <input type="checkbox" id="feedbackBotcheckInput" name="botcheck" style="display:none;" tabindex="-1" autocomplete="off">
                 <div>
                     <label class="block text-[11px] font-semibold text-slate-400 mb-1">Rate your experience</label>
                     <select id="feedbackRatingInput" class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3 py-2.5 text-sm text-slate-200 outline-none">
@@ -1527,6 +1529,11 @@ function executeClientFileExtraction(event) {
     const file = event.target.files[0];
     const fb = document.getElementById('extractorStatusFeedback');
     if (!file) return;
+    if (file.size > 10 * 1024 * 1024) {
+        alert("File size exceeds 10MB limit. Please upload a smaller resume file.");
+        if (event.target) event.target.value = "";
+        return;
+    }
     fb.innerText = "Extracting binary stream layers..."; fb.className = "text-[10px] text-yellow-400 italic font-semibold";
     const reader = new FileReader();
 
@@ -1607,7 +1614,31 @@ function extractGeminiText(response) {
 
 function stripCodeFences(value) { return value.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim(); }
 
+let lastAiCallTimestamp = 0;
+function checkAiRateLimit() {
+    const now = Date.now();
+    if (now - lastAiCallTimestamp < 3000) {
+        alert("Please wait 3 seconds before sending another AI request.");
+        return false;
+    }
+    lastAiCallTimestamp = now;
+    return true;
+}
+
+async function sha256Hex(text) {
+    try {
+        if (typeof window !== 'undefined' && window.crypto && window.crypto.subtle && typeof TextEncoder !== 'undefined') {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(text);
+            const hash = await window.crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+    } catch(e) {}
+    return '';
+}
+
 async function smartParseAndFill(raw) {
+    raw = (raw || '').slice(0, 8000);
     const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus'), fb = document.getElementById('extractorStatusFeedback');
     if (overlay) overlay.classList.add('active');
     if (status) status.innerText = "Running deep structural semantic alignment maps...";
@@ -1976,9 +2007,10 @@ function runMasterManualSyncAndGenerate() {
 
 // ADAPTIVE COUNTRY-AWARE AI SUMMARY PROMPT
 async function executeDynamicAiSummaryGeneration() {
-    const t = document.getElementById('formTitle')?.value || "Professional";
+    if (!checkAiRateLimit()) return;
+    const t = (document.getElementById('formTitle')?.value || "Professional").slice(0, 100);
     const tone = document.getElementById('formSummaryToneSelect')?.value || "Executive";
-    const sk = document.getElementById('formSkillsList')?.value || "";
+    const sk = (document.getElementById('formSkillsList')?.value || "").slice(0, 300);
     const c = engineState.targetCountry;
 
     const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus');
@@ -2684,6 +2716,11 @@ function resetCustomizerToDefaults() {
 
 function processImageUpload(event) {
     const file = event.target.files[0]; if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+        alert("Image file size exceeds 5MB limit. Please upload a smaller profile picture.");
+        if (event.target) event.target.value = "";
+        return;
+    }
     const reader = new FileReader();
     reader.onload = e => { 
         engineState.globalCachedProfileImageStream = e.target.result; 
@@ -2757,8 +2794,10 @@ async function verifyPaymentAndActivate() {
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
 
     // 1. OWNER VIP OVERRIDE (For Dipangshu Mukherjee)
-    const ownerKeys = ['dipangshu.20@gmail.com', 'dpd_owner_2026', 'dpdvip', 'owner2026', 'dipangshu'];
-    if (ownerKeys.includes(rawId.toLowerCase())) {
+    // Protected by SHA-256 cryptographic hash — no plain-text credentials exposed
+    const OWNER_HASH = 'fea9077f56a54fce8ae69174d65be4f613a04d236e8204688e2dbb92ec11d854';
+    const inputHash = await sha256Hex(rawId.toLowerCase());
+    if (inputHash === OWNER_HASH) {
         setPersistentPass(365, 'vip');
         closeSubscriptionGateway(); 
         renderSubscriptionStatusIndicator();
@@ -2788,23 +2827,31 @@ async function verifyPaymentAndActivate() {
                 headers: { 'Content-Type': 'application/json' }, 
                 body: JSON.stringify({ paymentId: rawId, plan }) 
             });
-            if (res.ok) {
+            if (res.status === 200) {
                 const data = await res.json();
                 if (data.success) {
                     verified = true;
                     if (data.days) days = data.days;
                 }
+            } else if (res.status === 400 || res.status === 401 || res.status === 403 || res.status === 422) {
+                let errorMsg = 'Payment verification failed. Please check your Payment ID.';
+                try {
+                    const errData = await res.json();
+                    if (errData && errData.message) errorMsg = errData.message;
+                } catch(e) {}
+                showVerifyError(errorMsg);
+                btn.innerText = 'Activate Access ✓'; 
+                btn.disabled = false;
+                return;
             }
         } catch(netErr) {}
 
-        // Fallback: Validate Razorpay Payment ID or receipt format
+        // Fallback: strictly validate genuine Razorpay Payment ID format (e.g. offline preview)
         if (!verified) {
-            const isRazorpayId = /^pay_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
-                                 /^plink_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
-                                 /^[a-zA-Z0-9]{12,}$/i.test(rawId);
-            if (isRazorpayId) {
+            const isStrictRazorpayId = /^pay_[a-zA-Z0-9]{14,24}$/i.test(rawId);
+            if (isStrictRazorpayId) {
                 verified = true;
-                days = 30; // Grant 30 days full monthly access
+                days = (plan === 99 || plan === 59) ? 30 : 7;
                 try { localStorage.setItem('dpd_verified_payment_id', rawId); } catch(e) {}
             }
         }
@@ -2836,7 +2883,7 @@ async function verifyPaymentAndActivate() {
 }
 
 function showVerifyError(msg) { const el = document.getElementById('verifyError'); if(el) { el.innerText = msg; el.classList.remove('hidden'); } }
-function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function esc(s) { return (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
 
 let dpdPrintTipShownThisSession = false;
 function showPrintTipThenPrint(afterDelayMs, printFn) {
@@ -2852,8 +2899,10 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 // 6. DEEP AI ATS MATCHER & 1-CLICK MISSING SKILL ADD CHIPS
 // ========================================================
 async function executeAIAtsAnalysis() {
-    const jd = document.getElementById('jobDescriptionTarget').value.trim();
+    if (!checkAiRateLimit()) return;
+    let jd = (document.getElementById('jobDescriptionTarget')?.value || '').trim();
     if (!jd) { alert("Please paste a Job Description first."); return; }
+    jd = jd.slice(0, 3000);
 
     const btn = document.getElementById('btnAIAtsAnalyze');
     const originalText = btn.innerHTML;
@@ -2861,7 +2910,8 @@ async function executeAIAtsAnalysis() {
     btn.disabled = true;
 
     const canvas = document.getElementById('canvasDocumentRenderTree');
-    const resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
+    let resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
+    resumeText = resumeText.slice(0, 5000);
 
     try {
         const response = await fetch('/api/gemini', {
@@ -2979,7 +3029,8 @@ function closeCoverLetterModal() {
 }
 
 async function generateAiCoverLetter() {
-    const jd = document.getElementById('jobDescriptionTarget')?.value.trim() || "General analytical or technical leadership position.";
+    if (!checkAiRateLimit()) return;
+    const jd = (document.getElementById('jobDescriptionTarget')?.value || "General analytical or technical leadership position.").trim().slice(0, 3000);
     const tone = document.getElementById('coverLetterToneSelect')?.value || "Impactful & Confident";
     const btn = document.getElementById('btnRegenerateCoverLetter');
     const output = document.getElementById('coverLetterTextOutput');
@@ -2988,7 +3039,8 @@ async function generateAiCoverLetter() {
     if (output) output.value = "Drafting bespoke cover letter tailored to your profile and target country standard...";
 
     const canvas = document.getElementById('canvasDocumentRenderTree');
-    const resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
+    let resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
+    resumeText = resumeText.slice(0, 5000);
     const c = engineState.targetCountry;
 
     const countrySpellingNote = c === 'uk' ? "Use British English spelling (e.g. specialised, organised, analytical)." :
@@ -3072,10 +3124,11 @@ function printCoverLetter() {
 // 8. ADAPTIVE AI WORK EXPERIENCE REWRITING
 // ========================================================
 async function executeDynamicAiExperienceGeneration(idx) {
-    const exp = engineState.experience[idx];
-    const targetTitle = document.getElementById('formTitle')?.value || "Professional";
-    const targetSkills = document.getElementById('formSkillsList')?.value || "";
-    const currentDuties = exp.duties || "General operational duties.";
+    if (!checkAiRateLimit()) return;
+    const exp = engineState.experience[idx] || {};
+    const targetTitle = (document.getElementById('formTitle')?.value || "Professional").slice(0, 100);
+    const targetSkills = (document.getElementById('formSkillsList')?.value || "").slice(0, 300);
+    const currentDuties = (exp.duties || "General operational duties.").slice(0, 1500);
     const c = engineState.targetCountry;
     
     const overlay = document.getElementById('parsingOverlay');
@@ -3322,6 +3375,17 @@ function closeFeedbackModal() {
 }
 
 async function submitFeedbackData() {
+    const botcheck = document.getElementById('feedbackBotcheckInput');
+    if (botcheck && botcheck.checked) {
+        closeFeedbackModal();
+        return;
+    }
+    const lastFeedbackTime = parseInt(localStorage.getItem('dpd_last_feedback_time') || '0', 10);
+    if (Date.now() - lastFeedbackTime < 60000) {
+        alert("Please wait 1 minute before submitting feedback again.");
+        return;
+    }
+
     const rating = document.getElementById('feedbackRatingInput').value;
     const source = document.getElementById('feedbackSourceInput').value;
     const text = document.getElementById('feedbackTextInput').value.trim();
@@ -3332,8 +3396,8 @@ async function submitFeedbackData() {
         return;
     }
 
-    const userName = document.getElementById('formName')?.value.trim() || "Unknown User";
-    const userEmail = document.getElementById('formEmail')?.value.trim() || "No Email Provided";
+    const userName = (document.getElementById('formName')?.value.trim() || "Unknown User").slice(0, 100);
+    const userEmail = (document.getElementById('formEmail')?.value.trim() || "No Email Provided").slice(0, 100);
 
     btn.innerText = 'Submitting...';
     btn.disabled = true;
@@ -3347,19 +3411,21 @@ async function submitFeedbackData() {
             },
             body: JSON.stringify({
                 access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc", 
+                botcheck: "",
                 subject: "New Feedback for DPD AI Resume Builder",
                 from_name: "DPD Resume Bot",
                 User_Name: userName,
                 User_Email: userEmail,
                 Rating: rating + " Stars",
                 Source: source,
-                Feedback: text
+                Feedback: text.slice(0, 2000)
             })
         });
 
         const result = await response.json();
 
         if (response.status === 200) {
+            localStorage.setItem('dpd_last_feedback_time', String(Date.now()));
             btn.innerText = 'Thank you! 🎉';
             btn.classList.replace('bg-blue-600', 'bg-emerald-600');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-emerald-500');
@@ -3384,9 +3450,8 @@ async function submitFeedbackData() {
 // ========================================================
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
-    const paidFlag  = params.get('dpd_paid');
-    const returningFromPayment = !!(paymentId || paidFlag === '1');
+    const paymentId = params.get('razorpay_payment_id') || params.get('payment_id');
+    const returningFromPayment = !!(paymentId && /^pay_[a-zA-Z0-9]{10,}$/i.test(paymentId));
 
     if (returningFromPayment) {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
