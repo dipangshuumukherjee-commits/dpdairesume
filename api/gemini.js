@@ -2,27 +2,44 @@
 // File location: api/gemini.js (at repo root)
 // Set GEMINI_API_KEY in Vercel → Project → Settings → Environment Variables
 
+// Vercel Serverless Function: Secure Gemini API Gateway
 export default async function handler(req, res) {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
+  }
 
-  if (req.method === 'OPTIONS') { res.status(200).end(); return; }
-  if (req.method !== 'POST') { res.status(405).json({ error: 'Method not allowed' }); return; }
+  const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_API_KEY;
+  if (!apiKey) {
+    return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is missing on server.' });
+  }
 
-  const GEMINI_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_KEY) { res.status(500).json({ error: 'GEMINI_API_KEY not set in Vercel environment variables' }); return; }
+  const body = req.body;
+  if (!body || !body.contents) {
+    return res.status(400).json({ error: 'Missing prompt contents.' });
+  }
+
+  // Safety length validation (protect server memory and quotas)
+  const bodyJson = JSON.stringify(body);
+  if (bodyJson.length > 30000) {
+    return res.status(413).json({ error: 'Prompt payload exceeds maximum allowed size.' });
+  }
 
   try {
-    const body = req.body;
-    if (!body || !body.contents) { res.status(400).json({ error: 'Invalid request body' }); return; }
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+    const geminiRes = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: bodyJson
+    });
 
-    // FIXED: correct model name + correct API version
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+    const data = await geminiRes.json();
+    return res.status(geminiRes.status).json(data);
+  } catch (err) {
+    console.error('Gemini gateway proxy error:', err);
+    return res.status(500).json({ error: 'Internal gateway error communicating with Gemini API.' });
+  }
+}
+
         body: JSON.stringify(body)
       }
     );
