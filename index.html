@@ -120,13 +120,14 @@
                 pointer-events: none !important; 
                 z-index: 9999 !important; 
             }
+            * { -webkit-user-select: auto !important; user-select: auto !important; }
             @page { size: auto; margin: 0; }
         }
-        .protected-canvas {
-            -webkit-user-select: none !important;
-            -moz-user-select: none !important;
-            -ms-user-select: none !important;
-            user-select: none !important;
+        .protected-canvas, #printTargetSandbox {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
         }
         #parsingOverlay { display:none; }
         #parsingOverlay.active { display:flex; }
@@ -672,9 +673,9 @@
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
                     <div id="printWatermarkOverlay" class="hidden pointer-events-none select-none" style="position:absolute; inset:0; z-index:50; display:none; align-items:center; justify-content:center; overflow:hidden;">
-                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.16); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:3px dashed rgba(185,28,28,0.20); padding:18px 36px; border-radius:14px; background:transparent;">
+                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.26); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:3px dashed rgba(185,28,28,0.30); padding:18px 36px; border-radius:14px; background:transparent;">
                             DRAFT PREVIEW<br>
-                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.20);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
+                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.30);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
                         </div>
                     </div>
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
@@ -1612,7 +1613,9 @@ function clearAllFormInputStateData() {
     document.getElementById('imageAssetUploader').value = "";
     
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
-    // Hide ATS upgrade banner on clear
+    // Hide sample and ATS banners on clear
+    const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
+    if (sampleBanner) sampleBanner.style.display = 'none';
     const atsCta = document.getElementById('atsUpgradeCtaBanner');
     if (atsCta) atsCta.classList.add('hidden');
     executeMasterCompilationRenderPipeline();
@@ -2064,6 +2067,75 @@ function fixBrokenKerningSpaces(str) {
         .replace(/\s{2,}/g, ' ')
         .trim();
 }
+
+
+// 100% REALISTIC 94% ATS SCORE SAMPLE PROFILE (PRE-LOADED ON FIRST VISIT)
+const SAMPLE_PROFILE = {
+    personal: {
+        name: "Rahul Sharma",
+        title: "Senior Data & Business Analyst",
+        email: "rahul.sharma@email.com",
+        mobile: "+91 98765 43210",
+        linkedin: "linkedin.com/in/rahulsharma-data",
+        github: "github.com/rahulsharma-analytics",
+        portfolio: "rahulsharma-portfolio.com",
+        address: "Bengaluru, Karnataka, India",
+        languages: "English (Fluent), Hindi (Native), Kannada (Conversational)"
+    },
+    summary: "Results-driven Data Analyst with 5+ years of experience transforming complex enterprise datasets into actionable executive dashboards and automated workflows. Proven track record of boosting reporting efficiency by 42% and eliminating reconciliation discrepancies across high-volume supply chain operations using SQL, Python, and Power BI.",
+    experience: [
+        {
+            company: "Tata Consultancy Services (TCS) — Client: Enterprise Retail",
+            role: "Senior Data Analyst",
+            dates: "July 2022 — Present",
+            duties: "• Spearheaded end-to-end Power BI dashboard development analyzing 12M+ transactional records, reducing weekly executive reporting turnaround from 14 hours to 25 minutes.\n• Architected automated SQL ETL pipelines across PostgreSQL and Snowflake data warehouses, boosting pipeline throughput by 35%.\n• Collaborated with cross-functional supply chain leaders to identify inventory leakage, saving ₹42 Lakhs annually."
+        },
+        {
+            company: "Infosys Limited — Enterprise Analytics Practice",
+            role: "Business Intelligence Analyst",
+            dates: "June 2019 — June 2022",
+            duties: "• Developed and maintained 18+ interactive Tableau and Excel dashboards monitoring regional sales KPIs across 4 global geographies.\n• Automated monthly financial reconciliations using Python (Pandas/NumPy), eliminating 99.4% of manual spreadsheet discrepancies.\n• Facilitated sprint reviews with US and UK stakeholders, translating business requirements into technical data schemas."
+        }
+    ],
+    projects: [
+        {
+            title: "Real-Time Supply Chain Discrepancy Engine",
+            tools: "Python, SQL, PostgreSQL, Streamlit",
+            link: "github.com/rahulsharma-analytics/supply-chain-ai",
+            description: "• Built an anomaly detection pipeline flagging stock discrepancies across 8 regional distribution hubs in real-time.\n• Decreased dispatch delay SLA breaches by 28% across 45,000 monthly shipments."
+        },
+        {
+            title: "Customer Churn Prediction & Retention Dashboard",
+            tools: "Power BI, DAX, Scikit-Learn",
+            link: "github.com/rahulsharma-analytics/churn-analytics",
+            description: "• Designed predictive ML churn model achieving 89% precision, enabling targeted marketing campaigns that retained ₹18 Lakhs in MRR."
+        }
+    ],
+    skills: ["Power BI", "SQL (PostgreSQL / Snowflake)", "Python (Pandas, NumPy)", "Tableau", "Advanced Excel (VBA / DAX)", "ETL Pipelines", "Data Modeling", "Business Intelligence", "Supply Chain Analytics"],
+    education: [
+        {
+            school: "Visvesvaraya Technological University (VTU)",
+            degree: "B.Tech in Computer Science & Engineering",
+            year: "2015 — 2019"
+        }
+    ],
+    certifications: [
+        { name: "Microsoft Certified: Power BI Data Analyst Associate (PL-300)", issuer: "Microsoft" },
+        { name: "Google Advanced Data Analytics Professional Certificate", issuer: "Coursera / Google" }
+    ],
+    countryData: {
+        noticePeriod: "15 Days / Immediate",
+        includeDeclaration: true,
+        declarationText: "I hereby declare that all the information provided above is true and correct to the best of my knowledge.",
+        visaStatus: "Employment Visa",
+        nationality: "Indian",
+        drivingLicense: "Valid UAE Driving License",
+        dubaiAvailability: "Immediate Joining",
+        rightToWork: "British Citizen / Full Right to Work",
+        includeReferences: true,
+        referencesText: "References available upon request"
+    }
+};
 
 function fillStateFromParsed(p) {
     const s = p.personal || p || {};
@@ -3283,10 +3355,7 @@ function printCoverLetter() {
     const text = document.getElementById('coverLetterTextOutput')?.value || "";
     if (!text) return;
     const printWindow = window.open('', '_blank');
-    printWindow.document.write(`
-        <html><head><title>Cover Letter</title>
-        <style>body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; font-size: 11pt; } p { margin-bottom: 14pt; text-align: justify; white-space: pre-line; }</style>
-        </head><body><p>${esc(text)}</p><script>window.print();<\/script></body></html>`);
+    printWindow.document.write('<html><head><title>Cover Letter</title><style>body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; font-size: 11pt; } p { margin-bottom: 14pt; text-align: justify; white-space: pre-line; }</style></head><body><p>' + esc(text) + '</p><' + 'script>window.print();<' + '/script></body></html>');
     printWindow.document.close();
 }
 
@@ -3620,8 +3689,9 @@ async function submitFeedbackData() {
 // ========================================================
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get('razorpay_payment_id') || params.get('payment_id');
-    const returningFromPayment = !!(paymentId && /^pay_[a-zA-Z0-9]{10,}$/i.test(paymentId));
+    const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
+    const paidFlag = params.get('dpd_paid');
+    const returningFromPayment = !!((paymentId && /^pay_[a-zA-Z0-9]{8,}$/i.test(paymentId)) || paidFlag === '1');
 
     if (returningFromPayment) {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
@@ -3678,9 +3748,18 @@ window.onload = async function() {
         } catch(e) { console.warn("Could not restore saved state", e); }
     }
 
-    if (!formRestored || engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
-    if (!formRestored || engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
-    if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
+    if (!formRestored && !returningFromPayment) {
+        // Pre-load realistic 94% ATS sample profile on first visit
+        fillStateFromParsed(SAMPLE_PROFILE);
+        const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
+        if (sampleBanner) sampleBanner.style.display = 'flex';
+    } else {
+        const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
+        if (sampleBanner) sampleBanner.style.display = 'none';
+        if (engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
+        if (engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
+        if (engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
+    }
 
     // Set initial country & mode configurations
     setTargetCountry(engineState.targetCountry || 'india');
