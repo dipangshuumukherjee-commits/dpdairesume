@@ -109,7 +109,24 @@
             .resume-print-canvas, #printTargetSandbox, .print-full-width { width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 2.5rem !important; box-shadow: none !important; display: block !important; border-radius: 0 !important; background: #ffffff !important; overflow: visible !important; position: relative !important; box-sizing: border-box !important; }
             .us-letter-canvas { width: 8.5in !important; max-width: 8.5in !important; min-height: 11in !important; }
             #dpdWatermark { display: none !important; }
+            /* Watermark hidden by default in print; shown only when body.watermark-printing is set */
+            body:not(.watermark-printing) #printWatermarkOverlay { display: none !important; }
+            .watermark-printing #printWatermarkOverlay { 
+                display: flex !important; 
+                position: absolute !important; 
+                inset: 0 !important; 
+                align-items: center !important; 
+                justify-content: center !important; 
+                pointer-events: none !important; 
+                z-index: 9999 !important; 
+            }
             @page { size: auto; margin: 0; }
+        }
+        .protected-canvas {
+            -webkit-user-select: none !important;
+            -moz-user-select: none !important;
+            -ms-user-select: none !important;
+            user-select: none !important;
         }
         #parsingOverlay { display:none; }
         #parsingOverlay.active { display:flex; }
@@ -380,12 +397,25 @@
 
                 <!-- SECTION 1: PERSONAL PROFILE -->
                 <div id="sectionPanel-1" class="space-y-4">
-                    <div class="border-2 border-dashed border-blue-600/60 p-4 rounded-xl bg-slate-900/60 text-center space-y-2">
-                        <span class="block text-xs font-bold text-blue-400 uppercase tracking-wide">upload resume if any</span>
-                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" class="mx-auto block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 file:cursor-pointer">
-                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Auto-fills form inputs instantly via connected Gemini AI processing.</p>
+                    <div class="border-2 border-dashed border-emerald-500/70 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-emerald-950/40 text-center space-y-2 shadow-lg relative overflow-hidden">
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-base">📄</span>
+                            <span class="block text-xs font-black text-emerald-400 uppercase tracking-wider">Fast Track: Upload Your Existing Resume</span>
+                        </div>
+                        <p class="text-[11px] text-slate-300">Auto-fills all inputs instantly & scores against 90%+ corporate ATS filters.</p>
+                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" class="mx-auto block w-full max-w-sm text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3.5 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 file:cursor-pointer file:font-bold shadow-md">
+                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Supports PDF, DOCX, & TXT. Extracts work history, degrees & skills cleanly.</p>
                     </div>
-                    <div class="flex items-center justify-between pt-2">
+
+                    <div id="sampleProfileNoticeBanner" class="bg-blue-950/40 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-slate-300">
+                        <div class="flex items-center gap-2">
+                            <span class="text-base">💡</span>
+                            <span><b>Sample Profile Loaded:</b> Previewing 94% ATS standard. Upload your resume above or edit fields to personalize.</span>
+                        </div>
+                        <button type="button" onclick="clearAllFormInputStateData()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700">Clear</button>
+                    </div>
+
+                    <div class="flex items-center justify-between pt-1">
                         <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
                         <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
                     </div>
@@ -542,6 +572,13 @@
 
                 <!-- FEATURE B: 1-CLICK "ADD MISSING SKILL TO RESUME" CHIPS BANNER -->
                 <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-2"></div>
+
+                <!-- ATS UPGRADE CTA BANNER — shown after ATS scan for free users -->
+                <div id="atsUpgradeCtaBanner" class="hidden mt-3 bg-gradient-to-r from-amber-950/60 to-emerald-950/60 border border-amber-500/40 rounded-xl p-3 text-center">
+                    <div class="text-xs text-amber-300 font-black mb-1">🔒 Inject These Keywords & Download Clean Official PDF</div>
+                    <div class="text-[11px] text-slate-300 mb-2">Remove watermark and get recruiter-ready files instantly.</div>
+                    <button onclick="displaySubscriptionGateway('pdf')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-2 px-5 rounded-lg shadow transition-all">Unlock Clean Export — Starting ₹39 →</button>
+                </div>
             </div>
 
             <!-- 100% ATS-APPROVED LAYOUT ARCHITECTURES & DESIGN CUSTOMIZER -->
@@ -634,6 +671,12 @@
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
+                    <div id="printWatermarkOverlay" class="hidden pointer-events-none select-none" style="position:absolute; inset:0; z-index:50; display:none; align-items:center; justify-content:center; overflow:hidden;">
+                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.22); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:4px dashed rgba(185,28,28,0.25); padding:18px 36px; border-radius:14px; background:rgba(255,255,255,0.4);">
+                            DRAFT PREVIEW<br>
+                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.28);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
+                        </div>
+                    </div>
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
             </div>
@@ -808,29 +851,75 @@
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
             <div id="payScreen1">
                 <div class="text-center mb-5">
-                    <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
-                    <h3 class="text-lg font-black text-slate-100">Unlock Premium Export</h3>
-                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
+                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
+                    <h3 class="text-lg font-black text-slate-100">Unlock Official Recruiter-Ready Export</h3>
+                    <p class="text-xs text-slate-400 mt-1">Download clean, ATS-compliant PDF & Word files without watermarks</p>
                 </div>
-                <div class="space-y-3 mb-5">
-                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #DFB76C;background:rgba(45,35,14,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
-                        <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
-                        <div class="text-right"><span class="block text-lg font-black text-amber-400">₹39</span><span class="block text-[9px] text-slate-500">per week</span></div>
-                    </div>
-                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #183124;background:rgba(14,28,20,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
-                        <div>
-                            <span class="block text-sm font-bold text-slate-200">Monthly Unlimited <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-extrabold ml-1">POPULAR</span></span>
-                            <span class="block text-xs text-slate-400">Includes AI Cover Letter + 30 days downloads</span>
+                
+                <div class="space-y-3 mb-4">
+                    <!-- PLAN 2: MONTHLY CAREER PRO (PRE-SELECTED / DECOY ANCHOR) -->
+                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #10b981;background:rgba(16,185,129,0.15);padding:14px;border-radius:14px;cursor:pointer;transition:all .15s">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-black text-emerald-300">Monthly Career Pro</span>
+                                <span class="text-[9px] bg-emerald-900/90 text-emerald-200 border border-emerald-400/50 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">🔥 Best Value • Save 37%</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xl font-black text-emerald-400">₹99</span>
+                                <span class="text-[9px] text-slate-400 block -mt-1">/ 30 days</span>
+                            </div>
                         </div>
-                        <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹99</span><span class="block text-[9px] text-slate-500">per month</span></div>
+                        <ul class="text-[11px] text-slate-300 space-y-1 mt-1 pl-1">
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> <b>Unlimited Clean Official PDF & Word (.doc) Exports</b></li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> Tailor resumes for 50+ job applications on Naukri & LinkedIn</li>
+                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> Full Gemini AI Bullet Rewriter + AI Cover Letter Generator</li>
+                        </ul>
+                        <div class="mt-2 pt-2 border-t border-emerald-500/20 text-[10px] text-emerald-300/90 italic flex items-center justify-between">
+                            <span>💡 Cyber cafes charge ₹150 for just 1 static printout!</span>
+                            <span class="font-bold">₹3.30/day</span>
+                        </div>
+                    </div>
+
+                    <!-- PLAN 1: WEEKLY SPRINT PASS -->
+                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #183124;background:rgba(14,28,20,0.5);padding:14px;border-radius:14px;cursor:pointer;transition:all .15s">
+                        <div class="flex items-center justify-between mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-bold text-slate-200">Weekly Sprint Pass</span>
+                                <span class="text-[9px] bg-amber-950/80 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">⚡ Quick Apply</span>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-xl font-black text-amber-400">₹39</span>
+                                <span class="text-[9px] text-slate-400 block -mt-1">/ 7 days</span>
+                            </div>
+                        </div>
+                        <ul class="text-[11px] text-slate-300 space-y-1 mt-1 pl-1">
+                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Unlimited Clean Official PDF & Word (.doc)</li>
+                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Full AI Bullet & Summary Optimization</li>
+                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Access all 8 Global ATS Layouts (India, US, UK, Gulf)</li>
+                        </ul>
+                        <div class="mt-2 pt-2 border-t border-slate-700/60 text-[10px] text-slate-400 italic">
+                            💡 Less than ₹6/day — Price of a single cup of chai!
+                        </div>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">Cancel</button>
-                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">39</span> on Razorpay →</button>
+
+                <div class="space-y-2">
+                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3.5 px-4 rounded-xl shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
+                        <span>🔒 Proceed to Secure Pay (₹<span id="targetSelectedPrice">99</span>)</span>
+                        <span>→</span>
+                    </button>
+                    
+                    <button id="btnDownloadWatermarkedSample" type="button" onclick="executeWatermarkedDraftDownload()" class="w-full text-center text-xs font-bold text-slate-400 hover:text-slate-200 bg-slate-900 hover:bg-slate-850 border border-slate-700 py-2.5 px-3 rounded-xl transition-all">
+                        📄 Download Free Draft Preview (Watermarked)
+                    </button>
                 </div>
-                <button type="button" onclick="showPayScreen2()" class="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 hover:underline mt-3 block">Already paid? Click here to enter Payment ID manually →</button>
-                <p class="text-center text-[10px] text-slate-600 mt-2">By paying, you agree to our <button type="button" onclick="openPrivacyPolicyModal()" class="text-blue-500 hover:underline cursor-pointer">Privacy Policy</button></p>
+
+                <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-700/60 text-[11px]">
+                    <button type="button" onclick="closeSubscriptionGateway()" class="text-slate-400 hover:text-slate-200">Cancel</button>
+                    <button type="button" onclick="showPayScreen2()" class="text-blue-400 hover:text-blue-300 hover:underline">Already paid? Restore access →</button>
+                </div>
+                
+                <p class="text-center text-[10px] text-slate-500 mt-2">Instant UPI / QR / NetBanking via Razorpay • 100% Secure Checkout</p>
             </div>
 
             <div id="payScreen2" class="hidden">
@@ -840,7 +929,7 @@
                     <p class="text-xs text-slate-400 mt-1 px-2">Paid previously or on another device? Enter your <strong class="text-slate-200">Razorpay Payment ID</strong> (from email/SMS) or Owner Key to restore access instantly.</p>
                 </div>
                 <div class="bg-slate-900 rounded-xl p-3 mb-4 text-xs text-slate-400 border border-slate-700">
-                    💡 <b>Payment ID:</b> Starts with <span class="text-amber-400 font-mono">pay_...</span> on your receipt. (Website Owner can enter owner email).
+                    💡 <b>Payment ID:</b> Starts with <span class="text-amber-400 font-mono">pay_...</span> on your receipt. (Website Owner can enter owner passphrase).
                 </div>
                 <input id="paymentIdInput" type="text" placeholder="Paste Payment ID (e.g. pay_...) or Owner Key..." class="w-full bg-slate-900 border border-slate-600 focus:border-amber-400 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 mb-3 outline-none">
                 <div id="verifyError" class="hidden text-xs text-red-400 mb-3 bg-red-950/30 border border-red-800 rounded-lg px-3 py-2"></div>
@@ -1078,7 +1167,8 @@ let engineState = {
     targetCountry: 'india',      // 'india' | 'usa' | 'uk' | 'dubai'
     resumeMode: 'experienced',   // 'experienced' | 'fresher'
     globalCachedProfileImageStream: "",
-    selectedSubscriptionValue: 39,
+    selectedSubscriptionValue: 99,
+    isWatermarkedExport: false,
     pendingExportFormat: 'pdf',
     // Pro Customizer & Styling Architecture
     customStyle: {
@@ -1522,6 +1612,9 @@ function clearAllFormInputStateData() {
     document.getElementById('imageAssetUploader').value = "";
     
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
+    // Hide ATS upgrade banner on clear
+    const atsCta = document.getElementById('atsUpgradeCtaBanner');
+    if (atsCta) atsCta.classList.add('hidden');
     executeMasterCompilationRenderPipeline();
 }
 
@@ -1952,6 +2045,9 @@ function fillStateFromParsed(p) {
     setVal('formSkillsList', engineState.skills.join(', '));
 
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
+    // Hide ATS upgrade banner on clear
+    const atsCta = document.getElementById('atsUpgradeCtaBanner');
+    if (atsCta) atsCta.classList.add('hidden');
     executeMasterCompilationRenderPipeline();
 }
 
@@ -2745,10 +2841,37 @@ function removePhotoImage() {
 function displaySubscriptionGateway(format = 'pdf') {
     engineState.pendingExportFormat = format;
     if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
+    selectSubscriptionPlan(99); // Pre-select Monthly as default
     document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
 
 function closeSubscriptionGateway() { document.getElementById('subscriptionModalGate')?.classList.add('hidden'); }
+
+function executeWatermarkedDraftDownload() {
+    const overlay = document.getElementById('printWatermarkOverlay');
+    const canvas = document.getElementById('printTargetSandbox');
+    // Show watermark overlay
+    if (overlay) { overlay.style.display = 'flex'; }
+    if (canvas) { canvas.classList.add('protected-canvas'); }
+    engineState.isWatermarkedExport = true;
+    closeSubscriptionGateway();
+    // Add body class so CSS shows watermark in print
+    document.body.classList.add('watermark-printing');
+    setTimeout(function() {
+        const originalTitle = document.title;
+        const userName = (document.getElementById('formName')?.value || '').trim() || 'Resume';
+        document.title = userName.replace(/\s+/g, '_') + '_DRAFT_PREVIEW.pdf';
+        window.onafterprint = function() {
+            document.title = originalTitle;
+            document.body.classList.remove('watermark-printing');
+            if (overlay) { overlay.style.display = 'none'; }
+            if (canvas) canvas.classList.remove('protected-canvas');
+            engineState.isWatermarkedExport = false;
+            window.onafterprint = null;
+        };
+        window.print();
+    }, 350);
+}
 function openPrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.remove('hidden'); }
 function closePrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.add('hidden'); }
 function handlePrivacyBackdropClick(e) { if (e && e.target && e.target.id === 'privacyPolicyModalGate') closePrivacyPolicyModal(); }
@@ -2968,6 +3091,11 @@ async function executeAIAtsAnalysis() {
                     </div>
                     <div class="text-[11px] text-amber-300 font-semibold">Click any missing keyword to inject it directly into your resume:</div>
                     <div class="flex flex-wrap gap-2 pt-1">${chipsHTML}</div>`;
+            }
+            // Show upgrade CTA for free users after ATS scan reveals gaps
+            if (!checkActiveSubscriptionPass()) {
+                const upgradeCta = document.getElementById('atsUpgradeCtaBanner');
+                if (upgradeCta) upgradeCta.classList.remove('hidden');
             }
         } else {
             fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
@@ -3499,6 +3627,9 @@ window.onload = async function() {
                 s('formSkillsList', engineState.skills.join(', '));
                 formRestored = true;
                 if (returningFromPayment) localStorage.removeItem('dpd_form_backup');
+                // Hide sample profile notice if user has their own saved data
+                const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
+                if (sampleBanner) sampleBanner.style.display = 'none';
             }
         } catch(e) { console.warn("Could not restore saved state", e); }
     }
