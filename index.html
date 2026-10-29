@@ -672,9 +672,9 @@
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
                     <div id="printWatermarkOverlay" class="hidden pointer-events-none select-none" style="position:absolute; inset:0; z-index:50; display:none; align-items:center; justify-content:center; overflow:hidden;">
-                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.22); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:4px dashed rgba(185,28,28,0.25); padding:18px 36px; border-radius:14px; background:rgba(255,255,255,0.4);">
+                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.16); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:3px dashed rgba(185,28,28,0.20); padding:18px 36px; border-radius:14px; background:transparent;">
                             DRAFT PREVIEW<br>
-                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.28);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
+                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.20);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
                         </div>
                     </div>
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
@@ -1646,16 +1646,30 @@ function executeClientFileExtraction(event) {
                         let finalY = matchedY ? matchedY : Math.round(rawY);
                         
                         if (!lineMap[finalY]) lineMap[finalY] = [];
-                        lineMap[finalY].push({ x: item.transform[4], str: item.str });
+                        lineMap[finalY].push({
+                            x: item.transform[4],
+                            w: item.width || 0,
+                            str: item.str
+                        });
                     });
 
                     Object.keys(lineMap).map(Number).sort((a,b) => b - a).forEach(y => {
-                        const lineStr = lineMap[y]
-                            .sort((a,b) => a.x - b.x)
-                            .map(i => i.str)
-                            .join(' ')
-                            .replace(/\s{2,}/g, ' ')
-                            .trim();
+                        const sortedItems = lineMap[y].sort((a,b) => a.x - b.x);
+                        let lineStr = "";
+                        for (let idx = 0; idx < sortedItems.length; idx++) {
+                            const curr = sortedItems[idx];
+                            if (!curr.str) continue;
+                            if (idx > 0) {
+                                const prev = sortedItems[idx - 1];
+                                const gap = curr.x - (prev.x + prev.w);
+                                // Only insert a space when there is a genuine word gap (> 2.2pt)
+                                if (gap > 2.2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
+                                    lineStr += ' ';
+                                }
+                            }
+                            lineStr += curr.str;
+                        }
+                        lineStr = fixBrokenKerningSpaces(lineStr.replace(/\s{2,}/g, ' ').trim());
                         if (lineStr) text += lineStr + "\n";
                     });
                     text += "\n";
@@ -1898,21 +1912,36 @@ function parseResume(raw) {
         });
     }
 
-    // 6. WORK EXPERIENCE
+    // 6. WORK EXPERIENCE (Supports both inline dates and standalone date lines from PDF exports)
     const experience = [];
     if (sectionsData["EXPERIENCE"]) {
         let currentExp = null;
+        let pendingDate = "";
         const expLines = sectionsData["EXPERIENCE"].split('\n').map(l => l.trim()).filter(Boolean);
 
         expLines.forEach(line => {
-            const dateMatch = line.match(/(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4}\s*(?:–|—|-|to)\s*(?:Present|(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4})/i)
-                           || line.match(/\b\d{4}\s*(?:–|—|-)\s*(?:Present|\d{4})\b/i);
+            const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*');
+            const dateMatch = line.match(/(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4}\s*(?:–|—|-|to)\s*(?:Present|Current|(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4})/i)
+                           || line.match(/\b\d{4}\s*(?:–|—|-)\s*(?:Present|Current|\d{4})\b/i);
 
-            if (dateMatch && !line.startsWith('•') && !line.startsWith('-') && !line.startsWith('*')) {
+            // Standalone date line (e.g. "May 2026-Present")
+            if (dateMatch && !isBullet && line.replace(dateMatch[0], '').replace(/[|—–\-]/g, '').trim().length === 0) {
+                if (currentExp && !currentExp.dates) {
+                    currentExp.dates = dateMatch[0].trim();
+                } else {
+                    pendingDate = dateMatch[0].trim();
+                }
+                return;
+            }
+
+            const isRoleHeader = !isBullet && (dateMatch || (/\s+[—–-]\s+/.test(line) && line.length < 115 && !line.endsWith('.')));
+
+            if (isRoleHeader) {
                 if (currentExp) experience.push(currentExp);
                 
-                let dateStr = dateMatch[0].trim();
-                let remaining = line.replace(dateMatch[0], '').trim();
+                let dateStr = dateMatch ? dateMatch[0].trim() : pendingDate;
+                pendingDate = "";
+                let remaining = dateMatch ? line.replace(dateMatch[0], '').trim() : line;
                 
                 let parts = remaining.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
                 let role = "Specialist";
@@ -1929,7 +1958,7 @@ function parseResume(raw) {
             } else if (currentExp) {
                 const cleanDuty = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
                 if (cleanDuty) {
-                    if (currentExp.duties && (line.startsWith('•') || line.startsWith('-') || line.startsWith('*'))) {
+                    if (currentExp.duties && isBullet) {
                         currentExp.duties += "\n" + cleanDuty;
                     } else if (currentExp.duties) {
                         currentExp.duties += " " + cleanDuty;
@@ -2020,10 +2049,27 @@ function parseResume(raw) {
     return { name, title, email, mobile, linkedin, github, portfolio, address, languages, summary, skills, experience, projects, education, certifications };
 }
 
+function fixBrokenKerningSpaces(str) {
+    if (!str || typeof str !== 'string') return "";
+    return str
+        .replace(/\bA\s*N\s*A\s*L\s*Y\s*T\s*I\s*C\s*S\b/gi, "ANALYTICS")
+        .replace(/\bP\s*R\s*O\s*F\s*E\s*S\s*S\s*I\s*O\s*N\s*A\s*L\b/gi, "PROFESSIONAL")
+        .replace(/\bM\s*A\s*N\s*A\s*G\s*E\s*M\s*E\s*N\s*T\b/gi, "MANAGEMENT")
+        .replace(/\bI\s*N\s*V\s*E\s*N\s*T\s*O\s*R\s*Y\b/gi, "INVENTORY")
+        .replace(/\bE\s*X\s*E\s*C\s*U\s*T\s*I\s*V\s*E\b/gi, "EXECUTIVE")
+        .replace(/\bD\s*E\s*V\s*E\s*L\s*O\s*P\s*E\s*R\b/gi, "DEVELOPER")
+        .replace(/\bE\s*N\s*G\s*I\s*N\s*E\s*E\s*R\b/gi, "ENGINEER")
+        .replace(/\bS\s*P\s*E\s*C\s*I\s*A\s*L\s*I\s*S\s*T\b/gi, "SPECIALIST")
+        .replace(/\b(?:[A-Z]\s+){2,}[A-Z]\b/g, m => m.replace(/\s+/g, ''))
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
 function fillStateFromParsed(p) {
     const s = p.personal || p || {};
     engineState.personal = {
-        name: s.name || s.fullName || "", title: s.title || s.designation || "",
+        name: fixBrokenKerningSpaces(s.name || s.fullName || ""),
+        title: fixBrokenKerningSpaces(s.title || s.designation || ""),
         email: s.email || "", mobile: s.mobile || s.phone || "",
         linkedin: s.linkedin || s.linkedIn || "", github: s.github || "",
         portfolio: s.portfolio || s.website || "", address: s.address || s.location || "",
@@ -2384,8 +2430,8 @@ function executeMasterCompilationRenderPipeline() {
         imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
     }
 
-    const cName = esc(document.getElementById('formName')?.value.trim() || "YOUR NAME");
-    const cTitle = esc(document.getElementById('formTitle')?.value.trim() || "Target Designation");
+    const cName = esc(fixBrokenKerningSpaces(document.getElementById('formName')?.value.trim() || "YOUR NAME"));
+    const cTitle = esc(fixBrokenKerningSpaces(document.getElementById('formTitle')?.value.trim() || "Target Designation"));
     const cEmail = esc(document.getElementById('formEmail')?.value.trim() || "email@domain.com");
     const cMobile = esc(document.getElementById('formMobile')?.value.trim() || "Contact No");
     
@@ -2542,7 +2588,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm mb-4" style="background-color: ${hex};">
                     <div class="space-y-1 min-w-0 flex-1">
                         <h1 class="text-2xl font-black uppercase tracking-tight">${cName}</h1>
-                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
+                        <p class="text-xs font-bold uppercase opacity-90">${cTitle}</p>
                         <div class="mt-2 text-[10px] opacity-90 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
                         <div class="text-[10px] opacity-90 flex flex-wrap gap-x-3 font-medium mt-0.5">${socialHTML}</div>
                         ${countryHeaderExtrasHTML}
@@ -2559,7 +2605,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex flex-col items-center text-center pb-4 border-b border-slate-200">
                     ${imgHTML ? `<div class="mb-3">${imgHTML}</div>` : ''}
                     <h1 class="text-3xl font-black uppercase tracking-wider" style="color:${hex};">${cName}</h1>
-                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase tracking-widest">${cTitle}</p>
+                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase">${cTitle}</p>
                     <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
                         <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
                     </div>
@@ -2575,7 +2621,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex items-start justify-between border-b-2 pb-3 mb-2" style="border-color:${hex};">
                     <div class="flex-1">
                         <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase">${cTitle}</p>
                     </div>
                     <div class="text-right text-[10px] text-slate-600 font-medium space-y-0.5">
                         <div><span><b>Email:</b> ${cEmail}</span> &nbsp;|&nbsp; <span><b>Phone:</b> ${cMobile}</span></div>
@@ -2596,7 +2642,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
                     <div class="flex-1 min-w-0">
                         <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase">${cTitle}</p>
                         <div class="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-slate-600 font-medium items-center">
                             <span><b>Email:</b> ${cEmail}</span><span>• <b>Phone:</b> ${cMobile}</span><span>• <b>Location:</b> ${cAddress}</span>${socialHTML}
                         </div>
@@ -2849,13 +2895,10 @@ function closeSubscriptionGateway() { document.getElementById('subscriptionModal
 
 function executeWatermarkedDraftDownload() {
     const overlay = document.getElementById('printWatermarkOverlay');
-    const canvas = document.getElementById('printTargetSandbox');
-    // Show watermark overlay
+    // Show watermark overlay with transparent background so underlying text stays 100% vector selectable
     if (overlay) { overlay.style.display = 'flex'; }
-    if (canvas) { canvas.classList.add('protected-canvas'); }
     engineState.isWatermarkedExport = true;
     closeSubscriptionGateway();
-    // Add body class so CSS shows watermark in print
     document.body.classList.add('watermark-printing');
     setTimeout(function() {
         const originalTitle = document.title;
@@ -2865,7 +2908,6 @@ function executeWatermarkedDraftDownload() {
             document.title = originalTitle;
             document.body.classList.remove('watermark-printing');
             if (overlay) { overlay.style.display = 'none'; }
-            if (canvas) canvas.classList.remove('protected-canvas');
             engineState.isWatermarkedExport = false;
             window.onafterprint = null;
         };
@@ -3619,6 +3661,8 @@ window.onload = async function() {
                 if (saved.customStyle) Object.assign(engineState.customStyle, saved.customStyle);
 
                 const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
+                engineState.personal.name = fixBrokenKerningSpaces(engineState.personal.name);
+                engineState.personal.title = fixBrokenKerningSpaces(engineState.personal.title);
                 s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
                 s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
                 s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
