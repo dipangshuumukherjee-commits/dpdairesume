@@ -1628,122 +1628,42 @@ function extractSmartTextFromPdfPage(content) {
     const valid = content.items.filter(it => it && it.str && it.str.trim());
     if (valid.length === 0) return "";
 
-    function extractBlock(blockItems) {
-        const lineMap = {};
-        blockItems.forEach(item => {
-            const rawY = item.transform[5];
-            const matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
-            const finalY = matchedY ? matchedY : Math.round(rawY);
-            if (!lineMap[finalY]) lineMap[finalY] = [];
-            lineMap[finalY].push({
-                x: item.transform[4],
-                w: item.width || (item.str.length * 5),
-                str: item.str
-            });
+    const lineMap = {};
+    valid.forEach(item => {
+        const rawY = item.transform[5];
+        const matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
+        const finalY = matchedY ? matchedY : Math.round(rawY);
+        if (!lineMap[finalY]) lineMap[finalY] = [];
+        lineMap[finalY].push({
+            x: item.transform[4],
+            w: item.width || (item.str.length * 5),
+            str: item.str
         });
-
-        let blockText = "";
-        Object.keys(lineMap).map(Number).sort((a, b) => b - a).forEach(y => {
-            const sorted = lineMap[y].sort((a, b) => a.x - b.x);
-            let lineStr = "";
-            for (let idx = 0; idx < sorted.length; idx++) {
-                const curr = sorted[idx];
-                if (!curr.str) continue;
-                if (idx > 0) {
-                    const prev = sorted[idx - 1];
-                    const gap = curr.x - (prev.x + prev.w);
-                    if (gap > 40) {
-                        lineStr += "  ";
-                    } else if (gap > 2.2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
-                        lineStr += ' ';
-                    }
-                }
-                lineStr += curr.str;
-            }
-            lineStr = fixBrokenKerningSpaces(lineStr.replace(/[ \t]{2,}/g, ' ').trim());
-            if (lineStr) blockText += lineStr + "\n";
-        });
-        return blockText;
-    }
-
-    let minX = Infinity, maxX = -Infinity;
-    valid.forEach(it => {
-        const x = it.transform[4];
-        const w = it.width || (it.str.length * 5);
-        if (x < minX) minX = x;
-        if (x + w > maxX) maxX = x + w;
     });
 
-    const pageWidth = maxX - minX;
-
-    let bestSplitX = 0;
-    let maxSeparationScore = 0;
-
-    if (pageWidth > 200 && valid.length >= 6) {
-        for (let testX = minX + pageWidth * 0.20; testX <= minX + pageWidth * 0.65; testX += 6) {
-            let leftCount = 0, rightCount = 0, spanningCount = 0;
-
-            valid.forEach(it => {
-                const x1 = it.transform[4];
-                const x2 = x1 + (it.width || it.str.length * 5);
-                if (x1 < testX - 15 && x2 > testX + 15) {
-                    spanningCount++;
-                } else if ((x1 + x2) / 2 < testX) {
-                    leftCount++;
-                } else {
-                    rightCount++;
-                }
-            });
-
-            if (leftCount >= 4 && rightCount >= 4 && spanningCount <= 4) {
-                let maxLeftX = -Infinity, minRightX = Infinity;
-                valid.forEach(it => {
-                    const x1 = it.transform[4];
-                    const x2 = x1 + (it.width || it.str.length * 5);
-                    const mid = (x1 + x2) / 2;
-                    if (x1 < testX - 15 && x2 > testX + 15) return;
-                    if (mid < testX && x2 > maxLeftX) maxLeftX = x2;
-                    if (mid >= testX && x1 < minRightX) minRightX = x1;
-                });
-
-                const gutter = minRightX - maxLeftX;
-                const score = (gutter > 0 ? gutter * 5 : 0) + (leftCount + rightCount) - (spanningCount * 20);
-                if (score > maxSeparationScore) {
-                    maxSeparationScore = score;
-                    bestSplitX = testX;
+    let blockText = "";
+    Object.keys(lineMap).map(Number).sort((a, b) => b - a).forEach(y => {
+        const sorted = lineMap[y].sort((a, b) => a.x - b.x);
+        let lineStr = "";
+        for (let idx = 0; idx < sorted.length; idx++) {
+            const curr = sorted[idx];
+            if (!curr.str) continue;
+            if (idx > 0) {
+                const prev = sorted[idx - 1];
+                const gap = curr.x - (prev.x + prev.w);
+                if (gap > 40) {
+                    lineStr += "  ";
+                } else if (gap > 2.2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
+                    lineStr += ' ';
                 }
             }
+            lineStr += curr.str;
         }
-    }
+        lineStr = fixBrokenKerningSpaces(lineStr.replace(/[ \t]{2,}/g, ' ').trim());
+        if (lineStr) blockText += lineStr + "\n";
+    });
 
-    if (bestSplitX > 0) {
-        const headerItems = [];
-        const leftItems = [];
-        const rightItems = [];
-
-        valid.forEach(it => {
-            const x1 = it.transform[4];
-            const x2 = x1 + (it.width || it.str.length * 5);
-            if (x1 < bestSplitX - 15 && x2 > bestSplitX + 15) {
-                headerItems.push(it);
-            } else if ((x1 + x2) / 2 < bestSplitX) {
-                leftItems.push(it);
-            } else {
-                rightItems.push(it);
-            }
-        });
-
-        let out = "";
-        const header = extractBlock(headerItems);
-        if (header) out += header + "\n";
-        const left = extractBlock(leftItems);
-        if (left) out += left + "\n";
-        const right = extractBlock(rightItems);
-        if (right) out += right + "\n";
-        return out;
-    }
-
-    return extractBlock(valid);
+    return blockText;
 }
 
 function executeClientFileExtraction(event) {
@@ -2118,13 +2038,64 @@ function parseResume(raw) {
         let currentProj = null;
         const projLines = sectionsData["PROJECTS"].split('\n').map(l => l.trim()).filter(Boolean);
 
-        projLines.forEach(line => {
-            const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*');
-            const hasTechBracket = /\[(.*?)\]/.test(line);
-            const isLink = /^https?:\/\//i.test(line) || /github\.com/i.test(line);
+        for (let idx = 0; idx < projLines.length; idx++) {
+            let line = projLines[idx];
 
-            if (!isBullet && !isLink && (hasTechBracket || line.includes('—') || (line.length < 70 && !line.endsWith('.')))) {
-                if (currentProj) projects.push(currentProj);
+            // Case A: Fragment line (e.g. closing bracket from multi-line tool list like "API] commits" or "[...]")
+            if (/^[\]\)\,\.\-]|^commits\b/i.test(line) || /^\s*API\]/i.test(line)) {
+                if (currentProj) {
+                    if (/github\.com|\/commits/i.test(line)) {
+                        const urlMatch = line.match(/https?:\/\/[^\s]+|github\.com\/[^\s]+/i);
+                        if (urlMatch) currentProj.link = urlMatch[0];
+                    }
+                    if (line.includes(']')) {
+                        const bracketMatch = line.match(/^(.*?\])/);
+                        if (bracketMatch) {
+                            const toolPart = bracketMatch[1].replace(/[\[\]]/g, '').trim();
+                            currentProj.tools = currentProj.tools ? currentProj.tools + " " + toolPart : toolPart;
+                            if (currentProj.title.includes('[')) {
+                                currentProj.title = currentProj.title.split('[')[0].replace(/[—–|-]\s*$/, '').trim();
+                            }
+                        }
+                    }
+                }
+                continue;
+            }
+
+            // Case B: URL / GitHub Link
+            if (/^https?:\/\//i.test(line) || /github\.com\//i.test(line)) {
+                if (currentProj) {
+                    currentProj.link = line.trim();
+                }
+                continue;
+            }
+
+            // Case C: Single skill chip leaked into project section (e.g. "Networking", "Python", "SQL")
+            const cleanSkillCheck = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
+            const isSingleSkill = /^(?:networking|python|sql|java|c\+\+|javascript|html5?|css3?|react|node\.?js|aws|docker|kubernetes|power\s+bi|excel|git|github)$/i.test(cleanSkillCheck);
+            if (isSingleSkill) {
+                continue;
+            }
+
+            const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('►') || line.startsWith('▪') || line.startsWith('▸');
+            const hasTechBracket = /\[(.*?)\]/.test(line);
+            const hasOpenBracket = /\[[^\]]*$/.test(line);
+            const hasDashSeparator = /[—–|-]/.test(line);
+
+            const words = line.split(/\s+/).filter(Boolean);
+            const isActionVerb = /^(?:managed|developed|built|engineered|designed|created|led|implemented|worked|tested|conducted|integrated|optimized|automated|formulated|spearheaded|architected)\b/i.test(line.replace(/^[•\-*►▪▸→✓✔\s]+/, ''));
+
+            const isProjectHeader = !isBullet && !isSingleSkill && !isActionVerb && (
+                hasTechBracket ||
+                hasOpenBracket ||
+                (hasDashSeparator && line.length < 85 && !line.endsWith('.')) ||
+                (words.length >= 2 && words.length <= 8 && line.length < 65 && !line.endsWith('.'))
+            );
+
+            if (isProjectHeader) {
+                if (currentProj && currentProj.title) {
+                    projects.push(currentProj);
+                }
 
                 let title = line;
                 let tools = "";
@@ -2133,14 +2104,24 @@ function parseResume(raw) {
                 if (toolsMatch) {
                     tools = toolsMatch[1].trim();
                     title = line.replace(/\[(.*?)\]/, '').replace(/[—–|-]\s*$/, '').trim();
+                } else if (hasOpenBracket) {
+                    const openIdx = line.indexOf('[');
+                    tools = line.slice(openIdx + 1).trim();
+                    title = line.slice(0, openIdx).replace(/[—–|-]\s*$/, '').trim();
+                } else if (hasDashSeparator) {
+                    const parts = line.split(/[—–|-]/).map(p => p.trim()).filter(Boolean);
+                    if (parts.length >= 2) {
+                        title = parts[0];
+                        tools = parts.slice(1).join(', ');
+                    }
                 }
 
+                title = title.replace(/[\[\]]/g, '').trim();
+
                 currentProj = { title: title, tools: tools, link: "", description: "" };
-            } else if (isLink && currentProj) {
-                currentProj.link = line.trim();
             } else if (currentProj) {
                 const cleanDesc = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
-                if (cleanDesc) {
+                if (cleanDesc && cleanDesc.length > 3) {
                     if (currentProj.description && isBullet) {
                         currentProj.description += "\n" + cleanDesc;
                     } else if (currentProj.description) {
@@ -2150,22 +2131,70 @@ function parseResume(raw) {
                     }
                 }
             }
-        });
-        if (currentProj) projects.push(currentProj);
+        }
+        if (currentProj && currentProj.title) projects.push(currentProj);
     }
 
     // 8. EDUCATION
     const education = [];
     if (sectionsData["EDUCATION"]) {
-        sectionsData["EDUCATION"].split('\n').map(r => r.trim()).filter(Boolean).forEach(row => {
-            if (/\d{4}/.test(row) || /degree|bachelor|master|university|college|school|hs|madhyamik|wbchse|wbbse/i.test(row)) {
-                let yr = row.match(/\d{4}/)?.[0] || "";
-                let pieces = row.replace(/\b\d{4}\b/, '').split(/[—–|,]/).map(p => p.trim()).filter(Boolean);
-                let degree = pieces[0] || "Degree";
-                let school = pieces.slice(1).join(', ') || "University / Board";
-                education.push({ degree, school, year: yr });
+        const rows = sectionsData["EDUCATION"].split('\n').map(r => r.trim()).filter(Boolean);
+        const trailingYears = [];
+
+        rows.forEach(row => {
+            const yrMatch = row.match(/\b(19\d\d|20\d\d)\b/);
+            const yr = yrMatch ? yrMatch[1] : "";
+
+            const cleanRow = row.replace(/\b(19\d\d|20\d\d)\b/g, '').replace(/[|—–\-,]\s*$/g, '').trim();
+
+            if (!cleanRow || cleanRow.length < 2) {
+                if (yr) trailingYears.push(yr);
+                return;
             }
+
+            const isEduLike = /degree|bachelor|master|phd|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|ba|ma|diploma|hs|higher\s+secondary|madhyamik|secondary|matric|10th|12th|cbse|icse|wbbse|wbchse|university|college|school|board|institute|academy/i.test(cleanRow);
+
+            if (!isEduLike && !yr) return;
+
+            let pieces = cleanRow.split(/[—–|]/).map(p => p.trim()).filter(Boolean);
+            let degree = "";
+            let school = "";
+
+            if (pieces.length >= 2) {
+                degree = pieces[0];
+                school = pieces.slice(1).join(', ');
+            } else if (pieces.length === 1) {
+                const subPieces = pieces[0].split(',').map(p => p.trim()).filter(Boolean);
+                if (subPieces.length >= 2 && /school|college|university|board|institute|academy/i.test(subPieces[1])) {
+                    degree = subPieces[0];
+                    school = subPieces.slice(1).join(', ');
+                } else if (/school|college|university|board|institute|academy/i.test(pieces[0])) {
+                    school = pieces[0];
+                    degree = "Degree / Course";
+                } else {
+                    degree = pieces[0];
+                    school = "";
+                }
+            }
+
+            if (!degree && !school) return;
+            if (/^degree$/i.test(degree) && (!school || /university\s*\/\s*board/i.test(school))) return;
+
+            education.push({
+                degree: degree || "Degree",
+                school: school || "",
+                year: yr
+            });
         });
+
+        if (trailingYears.length > 0) {
+            let yrIdx = 0;
+            for (let i = 0; i < education.length && yrIdx < trailingYears.length; i++) {
+                if (!education[i].year) {
+                    education[i].year = trailingYears[yrIdx++];
+                }
+            }
+        }
     }
 
     // 9. CERTIFICATIONS
