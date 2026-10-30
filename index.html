@@ -109,25 +109,7 @@
             .resume-print-canvas, #printTargetSandbox, .print-full-width { width: 210mm !important; max-width: 210mm !important; min-height: 297mm !important; margin: 0 auto !important; padding: 2.5rem !important; box-shadow: none !important; display: block !important; border-radius: 0 !important; background: #ffffff !important; overflow: visible !important; position: relative !important; box-sizing: border-box !important; }
             .us-letter-canvas { width: 8.5in !important; max-width: 8.5in !important; min-height: 11in !important; }
             #dpdWatermark { display: none !important; }
-            /* Watermark hidden by default in print; shown only when body.watermark-printing is set */
-            body:not(.watermark-printing) #printWatermarkOverlay { display: none !important; }
-            .watermark-printing #printWatermarkOverlay { 
-                display: flex !important; 
-                position: absolute !important; 
-                inset: 0 !important; 
-                align-items: center !important; 
-                justify-content: center !important; 
-                pointer-events: none !important; 
-                z-index: 9999 !important; 
-            }
-            * { -webkit-user-select: auto !important; user-select: auto !important; }
             @page { size: auto; margin: 0; }
-        }
-        .protected-canvas, #printTargetSandbox {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
         }
         #parsingOverlay { display:none; }
         #parsingOverlay.active { display:flex; }
@@ -398,25 +380,12 @@
 
                 <!-- SECTION 1: PERSONAL PROFILE -->
                 <div id="sectionPanel-1" class="space-y-4">
-                    <div class="border-2 border-dashed border-emerald-500/70 p-4 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-slate-900/80 to-emerald-950/40 text-center space-y-2 shadow-lg relative overflow-hidden">
-                        <div class="flex items-center justify-center gap-2">
-                            <span class="text-base">📄</span>
-                            <span class="block text-xs font-black text-emerald-400 uppercase tracking-wider">Fast Track: Upload Your Existing Resume</span>
-                        </div>
-                        <p class="text-[11px] text-slate-300">Auto-fills all inputs instantly & scores against 90%+ corporate ATS filters.</p>
-                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" class="mx-auto block w-full max-w-sm text-xs text-slate-300 file:mr-3 file:py-1.5 file:px-3.5 file:rounded-lg file:border-0 file:bg-emerald-600 file:text-white hover:file:bg-emerald-500 file:cursor-pointer file:font-bold shadow-md">
-                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Supports PDF, DOCX, & TXT. Extracts work history, degrees & skills cleanly.</p>
+                    <div class="border-2 border-dashed border-blue-600/60 p-4 rounded-xl bg-slate-900/60 text-center space-y-2">
+                        <span class="block text-xs font-bold text-blue-400 uppercase tracking-wide">upload resume if any</span>
+                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" class="mx-auto block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 file:cursor-pointer">
+                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Auto-fills form inputs instantly via connected Gemini AI processing.</p>
                     </div>
-
-                    <div id="sampleProfileNoticeBanner" class="bg-blue-950/40 border border-blue-500/30 rounded-xl p-3 flex items-center justify-between text-xs text-slate-300">
-                        <div class="flex items-center gap-2">
-                            <span class="text-base">💡</span>
-                            <span><b>Sample Profile Loaded:</b> Previewing 94% ATS standard. Upload your resume above or edit fields to personalize.</span>
-                        </div>
-                        <button type="button" onclick="clearAllFormInputStateData()" class="text-[10px] bg-slate-800 hover:bg-slate-700 text-slate-300 px-2 py-1 rounded border border-slate-700">Clear</button>
-                    </div>
-
-                    <div class="flex items-center justify-between pt-1">
+                    <div class="flex items-center justify-between pt-2">
                         <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
                         <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
                     </div>
@@ -573,13 +542,6 @@
 
                 <!-- FEATURE B: 1-CLICK "ADD MISSING SKILL TO RESUME" CHIPS BANNER -->
                 <div id="aiAtsResultBanner" class="hidden text-xs bg-slate-900/90 border border-slate-700 rounded-lg p-3 text-slate-300 space-y-2"></div>
-
-                <!-- ATS UPGRADE CTA BANNER — shown after ATS scan for free users -->
-                <div id="atsUpgradeCtaBanner" class="hidden mt-3 bg-gradient-to-r from-amber-950/60 to-emerald-950/60 border border-amber-500/40 rounded-xl p-3 text-center">
-                    <div class="text-xs text-amber-300 font-black mb-1">🔒 Inject These Keywords & Download Clean Official PDF</div>
-                    <div class="text-[11px] text-slate-300 mb-2">Remove watermark and get recruiter-ready files instantly.</div>
-                    <button onclick="displaySubscriptionGateway('pdf')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-2 px-5 rounded-lg shadow transition-all">Unlock Clean Export — Starting ₹39 →</button>
-                </div>
             </div>
 
             <!-- 100% ATS-APPROVED LAYOUT ARCHITECTURES & DESIGN CUSTOMIZER -->
@@ -672,12 +634,6 @@
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
                 <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
-                    <div id="printWatermarkOverlay" class="hidden pointer-events-none select-none" style="position:absolute; inset:0; z-index:50; display:none; align-items:center; justify-content:center; overflow:hidden;">
-                        <div style="transform:rotate(-35deg); font-size:26pt; font-weight:900; color:rgba(185,28,28,0.26); text-transform:uppercase; letter-spacing:3px; text-align:center; line-height:1.4; border:3px dashed rgba(185,28,28,0.30); padding:18px 36px; border-radius:14px; background:transparent;">
-                            DRAFT PREVIEW<br>
-                            <span style="font-size:12pt; font-weight:700; color:rgba(185,28,28,0.30);">BUILT WITH DPD AI RESUME • PAY ₹39 TO REMOVE WATERMARK</span>
-                        </div>
-                    </div>
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
             </div>
@@ -852,75 +808,29 @@
         <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl">
             <div id="payScreen1">
                 <div class="text-center mb-5">
-                    <div class="w-12 h-12 bg-amber-500/20 text-amber-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
-                    <h3 class="text-lg font-black text-slate-100">Unlock Official Recruiter-Ready Export</h3>
-                    <p class="text-xs text-slate-400 mt-1">Download clean, ATS-compliant PDF & Word files without watermarks</p>
+                    <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">👑</div>
+                    <h3 class="text-lg font-black text-slate-100">Unlock Premium Export</h3>
+                    <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
                 </div>
-                
-                <div class="space-y-3 mb-4">
-                    <!-- PLAN 2: MONTHLY CAREER PRO (PRE-SELECTED / DECOY ANCHOR) -->
-                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #10b981;background:rgba(16,185,129,0.15);padding:14px;border-radius:14px;cursor:pointer;transition:all .15s">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-black text-emerald-300">Monthly Career Pro</span>
-                                <span class="text-[9px] bg-emerald-900/90 text-emerald-200 border border-emerald-400/50 px-2 py-0.5 rounded-full font-black uppercase tracking-wider">🔥 Best Value • Save 37%</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xl font-black text-emerald-400">₹99</span>
-                                <span class="text-[9px] text-slate-400 block -mt-1">/ 30 days</span>
-                            </div>
-                        </div>
-                        <ul class="text-[11px] text-slate-300 space-y-1 mt-1 pl-1">
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> <b>Unlimited Clean Official PDF & Word (.doc) Exports</b></li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> Tailor resumes for 50+ job applications on Naukri & LinkedIn</li>
-                            <li class="flex items-center gap-1.5"><span class="text-emerald-400 text-xs font-bold">✓</span> Full Gemini AI Bullet Rewriter + AI Cover Letter Generator</li>
-                        </ul>
-                        <div class="mt-2 pt-2 border-t border-emerald-500/20 text-[10px] text-emerald-300/90 italic flex items-center justify-between">
-                            <span>💡 Cyber cafes charge ₹150 for just 1 static printout!</span>
-                            <span class="font-bold">₹3.30/day</span>
-                        </div>
+                <div class="space-y-3 mb-5">
+                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #DFB76C;background:rgba(45,35,14,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                        <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
+                        <div class="text-right"><span class="block text-lg font-black text-amber-400">₹39</span><span class="block text-[9px] text-slate-500">per week</span></div>
                     </div>
-
-                    <!-- PLAN 1: WEEKLY SPRINT PASS -->
-                    <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #183124;background:rgba(14,28,20,0.5);padding:14px;border-radius:14px;cursor:pointer;transition:all .15s">
-                        <div class="flex items-center justify-between mb-1.5">
-                            <div class="flex items-center gap-2">
-                                <span class="text-sm font-bold text-slate-200">Weekly Sprint Pass</span>
-                                <span class="text-[9px] bg-amber-950/80 text-amber-300 border border-amber-500/40 px-2 py-0.5 rounded-full font-bold uppercase tracking-wider">⚡ Quick Apply</span>
-                            </div>
-                            <div class="text-right">
-                                <span class="text-xl font-black text-amber-400">₹39</span>
-                                <span class="text-[9px] text-slate-400 block -mt-1">/ 7 days</span>
-                            </div>
+                    <div onclick="selectSubscriptionPlan(99)" id="planCard-99" data-url="https://rzp.io/rzp/jgXuBBn" style="border:2px solid #183124;background:rgba(14,28,20,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
+                        <div>
+                            <span class="block text-sm font-bold text-slate-200">Monthly Unlimited <span class="text-[10px] bg-emerald-950 text-emerald-300 border border-emerald-500/40 px-1.5 py-0.2 rounded font-extrabold ml-1">POPULAR</span></span>
+                            <span class="block text-xs text-slate-400">Includes AI Cover Letter + 30 days downloads</span>
                         </div>
-                        <ul class="text-[11px] text-slate-300 space-y-1 mt-1 pl-1">
-                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Unlimited Clean Official PDF & Word (.doc)</li>
-                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Full AI Bullet & Summary Optimization</li>
-                            <li class="flex items-center gap-1.5"><span class="text-amber-400 text-xs font-bold">✓</span> Access all 8 Global ATS Layouts (India, US, UK, Gulf)</li>
-                        </ul>
-                        <div class="mt-2 pt-2 border-t border-slate-700/60 text-[10px] text-slate-400 italic">
-                            💡 Less than ₹6/day — Price of a single cup of chai!
-                        </div>
+                        <div class="text-right"><span class="block text-lg font-black text-emerald-400">₹99</span><span class="block text-[9px] text-slate-500">per month</span></div>
                     </div>
                 </div>
-
-                <div class="space-y-2">
-                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs py-3.5 px-4 rounded-xl shadow-lg transition-transform transform active:scale-95 flex items-center justify-center gap-2">
-                        <span>🔒 Proceed to Secure Pay (₹<span id="targetSelectedPrice">99</span>)</span>
-                        <span>→</span>
-                    </button>
-                    
-                    <button id="btnDownloadWatermarkedSample" type="button" onclick="executeWatermarkedDraftDownload()" class="w-full text-center text-xs font-bold text-slate-400 hover:text-slate-200 bg-slate-900 hover:bg-slate-850 border border-slate-700 py-2.5 px-3 rounded-xl transition-all">
-                        📄 Download Free Draft Preview (Watermarked)
-                    </button>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="closeSubscriptionGateway()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold text-xs py-3 px-4 rounded-lg transition-colors">Cancel</button>
+                    <button id="modalProceedPayBtn" onclick="executePremiumSecureCheckout()" class="bg-blue-600 hover:bg-blue-500 text-white font-black text-xs py-3 px-4 rounded-lg shadow">Pay ₹<span id="targetSelectedPrice">39</span> on Razorpay →</button>
                 </div>
-
-                <div class="flex items-center justify-between mt-3 pt-2 border-t border-slate-700/60 text-[11px]">
-                    <button type="button" onclick="closeSubscriptionGateway()" class="text-slate-400 hover:text-slate-200">Cancel</button>
-                    <button type="button" onclick="showPayScreen2()" class="text-blue-400 hover:text-blue-300 hover:underline">Already paid? Restore access →</button>
-                </div>
-                
-                <p class="text-center text-[10px] text-slate-500 mt-2">Instant UPI / QR / NetBanking via Razorpay • 100% Secure Checkout</p>
+                <button type="button" onclick="showPayScreen2()" class="w-full text-center text-[11px] text-blue-400 hover:text-blue-300 hover:underline mt-3 block">Already paid? Click here to enter Payment ID manually →</button>
+                <p class="text-center text-[10px] text-slate-600 mt-2">By paying, you agree to our <button type="button" onclick="openPrivacyPolicyModal()" class="text-blue-500 hover:underline cursor-pointer">Privacy Policy</button></p>
             </div>
 
             <div id="payScreen2" class="hidden">
@@ -930,7 +840,7 @@
                     <p class="text-xs text-slate-400 mt-1 px-2">Paid previously or on another device? Enter your <strong class="text-slate-200">Razorpay Payment ID</strong> (from email/SMS) or Owner Key to restore access instantly.</p>
                 </div>
                 <div class="bg-slate-900 rounded-xl p-3 mb-4 text-xs text-slate-400 border border-slate-700">
-                    💡 <b>Payment ID:</b> Starts with <span class="text-amber-400 font-mono">pay_...</span> on your receipt. (Website Owner can enter owner passphrase).
+                    💡 <b>Payment ID:</b> Starts with <span class="text-amber-400 font-mono">pay_...</span> on your receipt. (Website Owner can enter owner email).
                 </div>
                 <input id="paymentIdInput" type="text" placeholder="Paste Payment ID (e.g. pay_...) or Owner Key..." class="w-full bg-slate-900 border border-slate-600 focus:border-amber-400 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 mb-3 outline-none">
                 <div id="verifyError" class="hidden text-xs text-red-400 mb-3 bg-red-950/30 border border-red-800 rounded-lg px-3 py-2"></div>
@@ -1168,8 +1078,7 @@ let engineState = {
     targetCountry: 'india',      // 'india' | 'usa' | 'uk' | 'dubai'
     resumeMode: 'experienced',   // 'experienced' | 'fresher'
     globalCachedProfileImageStream: "",
-    selectedSubscriptionValue: 99,
-    isWatermarkedExport: false,
+    selectedSubscriptionValue: 39,
     pendingExportFormat: 'pdf',
     // Pro Customizer & Styling Architecture
     customStyle: {
@@ -1613,136 +1522,7 @@ function clearAllFormInputStateData() {
     document.getElementById('imageAssetUploader').value = "";
     
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
-    // Hide sample and ATS banners on clear
-    const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
-    if (sampleBanner) sampleBanner.style.display = 'none';
-    const atsCta = document.getElementById('atsUpgradeCtaBanner');
-    if (atsCta) atsCta.classList.add('hidden');
     executeMasterCompilationRenderPipeline();
-}
-
-function extractSmartTextFromPdfPage(content) {
-    if (!content || !content.items || content.items.length === 0) return "";
-    const valid = content.items.filter(it => it && it.str && it.str.trim());
-    if (valid.length === 0) return "";
-
-    function extractBlock(blockItems) {
-        const lineMap = {};
-        blockItems.forEach(item => {
-            const rawY = item.transform[5];
-            const matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
-            const finalY = matchedY ? matchedY : Math.round(rawY);
-            if (!lineMap[finalY]) lineMap[finalY] = [];
-            lineMap[finalY].push({
-                x: item.transform[4],
-                w: item.width || (item.str.length * 5),
-                str: item.str
-            });
-        });
-
-        let blockText = "";
-        Object.keys(lineMap).map(Number).sort((a, b) => b - a).forEach(y => {
-            const sorted = lineMap[y].sort((a, b) => a.x - b.x);
-            let lineStr = "";
-            for (let idx = 0; idx < sorted.length; idx++) {
-                const curr = sorted[idx];
-                if (!curr.str) continue;
-                if (idx > 0) {
-                    const prev = sorted[idx - 1];
-                    const gap = curr.x - (prev.x + prev.w);
-                    if (gap > 40) {
-                        lineStr += "  ";
-                    } else if (gap > 2.2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
-                        lineStr += ' ';
-                    }
-                }
-                lineStr += curr.str;
-            }
-            lineStr = fixBrokenKerningSpaces(lineStr.replace(/[ \t]{2,}/g, ' ').trim());
-            if (lineStr) blockText += lineStr + "\n";
-        });
-        return blockText;
-    }
-
-    let minX = Infinity, maxX = -Infinity;
-    valid.forEach(it => {
-        const x = it.transform[4];
-        const w = it.width || (it.str.length * 5);
-        if (x < minX) minX = x;
-        if (x + w > maxX) maxX = x + w;
-    });
-
-    const pageWidth = maxX - minX;
-
-    // Detect 2-column layout (gutter between 20% and 65% of page)
-    let bestSplitX = 0;
-    let maxSeparationScore = 0;
-
-    if (pageWidth > 200 && valid.length >= 6) {
-        for (let testX = minX + pageWidth * 0.20; testX <= minX + pageWidth * 0.65; testX += 6) {
-            let leftCount = 0, rightCount = 0, spanningCount = 0;
-
-            valid.forEach(it => {
-                const x1 = it.transform[4];
-                const x2 = x1 + (it.width || it.str.length * 5);
-                if (x1 < testX - 15 && x2 > testX + 15) {
-                    spanningCount++;
-                } else if ((x1 + x2) / 2 < testX) {
-                    leftCount++;
-                } else {
-                    rightCount++;
-                }
-            });
-
-            if (leftCount >= 4 && rightCount >= 4 && spanningCount <= 4) {
-                let maxLeftX = -Infinity, minRightX = Infinity;
-                valid.forEach(it => {
-                    const x1 = it.transform[4];
-                    const x2 = x1 + (it.width || it.str.length * 5);
-                    const mid = (x1 + x2) / 2;
-                    if (x1 < testX - 15 && x2 > testX + 15) return;
-                    if (mid < testX && x2 > maxLeftX) maxLeftX = x2;
-                    if (mid >= testX && x1 < minRightX) minRightX = x1;
-                });
-
-                const gutter = minRightX - maxLeftX;
-                const score = (gutter > 0 ? gutter * 5 : 0) + (leftCount + rightCount) - (spanningCount * 20);
-                if (score > maxSeparationScore) {
-                    maxSeparationScore = score;
-                    bestSplitX = testX;
-                }
-            }
-        }
-    }
-
-    if (bestSplitX > 0) {
-        const headerItems = [];
-        const leftItems = [];
-        const rightItems = [];
-
-        valid.forEach(it => {
-            const x1 = it.transform[4];
-            const x2 = x1 + (it.width || it.str.length * 5);
-            if (x1 < bestSplitX - 15 && x2 > bestSplitX + 15) {
-                headerItems.push(it);
-            } else if ((x1 + x2) / 2 < bestSplitX) {
-                leftItems.push(it);
-            } else {
-                rightItems.push(it);
-            }
-        });
-
-        let out = "";
-        const header = extractBlock(headerItems);
-        if (header) out += header + "\n";
-        const left = extractBlock(leftItems);
-        if (left) out += left + "\n";
-        const right = extractBlock(rightItems);
-        if (right) out += right + "\n";
-        return out;
-    }
-
-    return extractBlock(valid);
 }
 
 function executeClientFileExtraction(event) {
@@ -1764,9 +1544,28 @@ function executeClientFileExtraction(event) {
                 let text = "";
                 for (let p = 1; p <= pdf.numPages; p++) {
                     const page = await pdf.getPage(p);
-                    const pageContent = await page.getTextContent();
-                    const pageText = extractSmartTextFromPdfPage(pageContent);
-                    if (pageText) text += pageText + "\n\n";
+                    const content = await page.getTextContent();
+                    const lineMap = {};
+                    
+                    content.items.forEach(item => {
+                        let rawY = item.transform[5];
+                        let matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
+                        let finalY = matchedY ? matchedY : Math.round(rawY);
+                        
+                        if (!lineMap[finalY]) lineMap[finalY] = [];
+                        lineMap[finalY].push({ x: item.transform[4], str: item.str });
+                    });
+
+                    Object.keys(lineMap).map(Number).sort((a,b) => b - a).forEach(y => {
+                        const lineStr = lineMap[y]
+                            .sort((a,b) => a.x - b.x)
+                            .map(i => i.str)
+                            .join(' ')
+                            .replace(/\s{2,}/g, ' ')
+                            .trim();
+                        if (lineStr) text += lineStr + "\n";
+                    });
+                    text += "\n";
                 }
                 
                 document.getElementById('rawContentData').value = text.trim();
@@ -1848,7 +1647,7 @@ async function smartParseAndFill(raw) {
         const response = await fetch('/api/gemini', {
             method: 'POST', headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. CRITICAL RULES: 1. In 'personal.name', extract only the candidate's actual personal name. NEVER extract document headers like 'CURRICULUM VITAE', 'RESUME', or 'BIO DATA' as the candidate name. 2. In 'personal.address', only extract the candidate's personal home/city location from the contact header (e.g. 'Pirpainti, Bhagalpur, Bihar'). NEVER extract company names or job locations as personal.address. 3. In 'personal.title', extract the candidate's professional designation/headline; do not extract section headings. 4. In 'personal.languages', extract only languages known (e.g. 'English, Hindi, Bengali'); never extract job duties as languages. 5. In 'projects', only include projects explicitly listed under a Projects section; companies with 'Projects' in their name (e.g. Tata Projects Limited) belong strictly under 'experience'. Never invent fallback tools like 'Analytical Tools'—leave tools blank if not mentioned in the resume. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
+                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. CRITICAL RULES: 1. In 'personal.address', only extract the candidate's personal home/city location from the contact header (e.g. 'Pirpainti, Bhagalpur, Bihar'). NEVER extract company names or job locations as personal.address. 2. In 'personal.title', extract the candidate's professional designation/headline; do not extract section headings. 3. In 'projects', only include projects explicitly listed under a Projects section; companies with 'Projects' in their name (e.g. Tata Projects Limited) belong strictly under 'experience'. Never invent fallback tools like 'Analytical Tools'—leave tools blank if not mentioned in the resume. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
             })
         });
 
@@ -1898,43 +1697,6 @@ function reflowToLines(input) {
     return t.replace(/\s*([•\-*►▪▸→✓✔])\s*/g, '\n$1 ').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
 }
 
-function isDocumentHeaderTitle(str) {
-    if (!str) return false;
-    const clean = str.replace(/[^a-zA-Z\s]/g, '').trim().toLowerCase();
-    return /^(?:curriculum\s*vitae|resume|bio\s*data|biodata|personal\s*profile|profile|cv)$/i.test(clean);
-}
-
-function isSectionOrFieldHeader(str) {
-    if (!str) return false;
-    const clean = str.replace(/[^a-zA-Z\s]/g, '').trim();
-    return /^(?:summary|professional\s+summary|executive\s+summary|profile|objective|experience|professional\s+experience|work\s+experience|employment|employment\s+history|work\s+history|projects|key\s+projects|technical\s+projects|skills|technical\s+skills|core\s+competencies|key\s+skills|computer\s+literacy|academic\s+qualifications|education|certifications?|licenses?\s*&\s*certifications?|languages?\s*known|languages?|contact|details|personal\s+details|personal\s+profile|declaration|present\s+address|permanent\s+address|address|location)$/i.test(clean);
-}
-
-function isLikelyTitle(str) {
-    if (!str || str.length < 3 || str.length > 60) return false;
-    if (str.split(',').length > 2) return false;
-    if (/excel|word|tally|power\s*bi|python|sql|java|sap|oracle/i.test(str)) return false;
-    return /engineer|developer|analyst|manager|specialist|officer|assistant|lead|executive|consultant|architect|designer|scientist|administrator|accountant|cashier|coordinator|director|professional/i.test(str);
-}
-
-function cleanCompanyName(name) {
-    if (!name) return "";
-    return name
-        .replace(/^\s*(?:since|from|\(from\s*\)|at|for)\s*/i, '')
-        .replace(/\s*(?:since|from|\(from\s*\))\s*$/i, '')
-        .replace(/[—–\-]/g, ' ')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
-}
-
-function cleanRoleName(role) {
-    if (!role) return "Specialist";
-    return role
-        .replace(/^\s*(?:as|working\s+as|engaged\s+as)\s+/i, '')
-        .replace(/\s{2,}/g, ' ')
-        .trim();
-}
-
 function parseResume(raw) {
     let text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n');
     if (text.split('\n').filter(l => l.trim().length > 0).length < 10) text = reflowToLines(text);
@@ -1944,7 +1706,7 @@ function parseResume(raw) {
         { id: "SUMMARY", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|CAREER\s+OBJECTIVE|EXECUTIVE\s+PROFILE|PERSONAL\s+STATEMENT|SUMMARY|OBJECTIVE)\s*(?:\n|$)/i },
         { id: "EXPERIENCE", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+EXPERIENCE|WORK\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE)\s*(?:\n|$)/i },
         { id: "PROJECTS", regex: /(?:^|\n)\s*(?:KEY\s+TECHNICAL\s+PROJECTS|TECHNICAL\s+PROJECTS|KEY\s+PROJECTS|NOTABLE\s+PROJECTS|ACADEMIC\s+PROJECTS|PROJECTS)\s*(?:\n|$)/i },
-        { id: "SKILLS", regex: /(?:^|\n)\s*(?:SKILLS\s*&\s*CORE\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|KEY\s+SKILLS|CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|COMPUTER\s+LITERACY|SKILLS)\s*(?:\n|$)/i },
+        { id: "SKILLS", regex: /(?:^|\n)\s*(?:SKILLS\s*&\s*CORE\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|KEY\s+SKILLS|CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|SKILLS)\s*(?:\n|$)/i },
         { id: "CERTIFICATIONS", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+CERTIFICATIONS|CERTIFICATIONS?|LICENSES?\s*&\s*CERTIFICATIONS?)\s*(?:\n|$)/i },
         { id: "EDUCATION", regex: /(?:^|\n)\s*(?:ACADEMIC\s+QUALIFICATIONS|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|EDUCATION)\s*(?:\n|$)/i }
     ];
@@ -1972,25 +1734,19 @@ function parseResume(raw) {
 
     // 1. EXTRACT NAME & PROFESSIONAL TITLE
     let name = "", title = "";
-
-    // Explicit Name tag check: e.g. "Name: Dipangshu Mukherjee"
-    const explicitNameMatch = headerText.match(/(?:^|\n)\s*(?:Name|Full\s*Name)\s*[:\-–—]\s*([^\n\r]{2,60})/i);
-    if (explicitNameMatch && !isDocumentHeaderTitle(explicitNameMatch[1]) && !isSectionOrFieldHeader(explicitNameMatch[1])) {
-        name = explicitNameMatch[1].trim();
-    }
+    const invalidTitleWords = /^(?:RESUME|CURRICULUM|VITAE|CV|PROFILE|SUMMARY|EXPERIENCE|OBJECTIVE|CONTACT)$/i;
 
     for (let i = 0; i < headerLines.length; i++) {
         let l = headerLines[i].trim();
         if (/@/.test(l) || /linkedin\.com|github\.com|http/i.test(l) || /^\+?\d[\d\s\-,]{7,}/.test(l)) continue;
-        if (/^(?:mob|mobile|phone|email|present\s+address|permanent\s+address|address|languages)/i.test(l)) continue;
         if (l.length < 3 || l.length > 80) continue;
-        if (isDocumentHeaderTitle(l)) continue;
-        if (isSectionOrFieldHeader(l)) continue;
+        if (invalidTitleWords.test(l)) continue;
 
         if (!name) {
             name = l;
-        } else if (!title && isLikelyTitle(l)) {
+        } else if (!title) {
             title = l;
+            break;
         }
     }
 
@@ -2001,31 +1757,17 @@ function parseResume(raw) {
     const github = (text.match(/github\.com\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
     const portfolio = (text.match(/(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\/(?:portfolio|dashboard|[a-zA-Z0-9_\-]+)/i) || [""])[0].trim();
 
-    // 3. EXTRACT LANGUAGES & ADDRESS
-    let languages = "";
-    const langSame = text.match(/(?:^|\n)\s*(?:LANGUAGES?\s*KNOWN|LANGUAGES?|LINGUISTIC)\s*[:\-–—]\s*([^\n\r]{2,120})/i);
-    if (langSame && langSame[1].trim() && !isSectionOrFieldHeader(langSame[1])) {
-        languages = langSame[1].replace(/\s+/g, ' ').trim();
-    } else {
-        const langNext = text.match(/(?:^|\n)\s*(?:LANGUAGES?\s*KNOWN|LANGUAGES?|LINGUISTIC)\s*[:\-–—]?\s*\n\s*([^\n\r]{2,120})/i);
-        if (langNext && langNext[1].trim() && !isSectionOrFieldHeader(langNext[1])) {
-            languages = langNext[1].replace(/\s+/g, ' ').trim();
+    // 3. EXTRACT LABELS & ADDRESS (BOUNDED TO HEADER LINES)
+    function extractLabel(patterns) {
+        for (const pat of patterns) {
+            const m = text.match(new RegExp('(?:^|\n)\s*' + pat + '\s*[:\-—]\s*([^\n]{1,120})', 'i'));
+            if (m) return m[1].replace(/\s+/g, ' ').trim();
         }
-    }
-    if (languages && /^(?:ock|recording|received|issues|duties|roles)/i.test(languages)) {
-        languages = "";
+        return "";
     }
 
-    let address = "";
-    const addrBlockMatch = text.match(/(?:PRESENT\s+ADDRESS|PERMANENT\s+ADDRESS|ADDRESS|LOCATION)\s*[:\-–—]?\s*([\s\S]*?)(?=(?:\n\s*(?:PERMANENT\s+ADDRESS|PRESENT\s+ADDRESS|LANGUAGES|COMPUTER|WORK|EXPERIENCE|EDUCATION|MOB|EMAIL|PHONE|$)))/i);
-    if (addrBlockMatch && addrBlockMatch[1].trim()) {
-        const rawLines = addrBlockMatch[1].split('\n').map(l => l.trim()).filter(Boolean);
-        const cleanLines = rawLines
-            .filter(l => !/^[—–\-]?\s*S\/O\b/i.test(l))
-            .map(l => l.replace(/^[—–\-]\s*/, '').trim());
-        const combined = cleanLines.join(' ').replace(/\s{2,}/g, ' ').trim();
-        if (combined.length >= 5) address = combined;
-    }
+    const languages = extractLabel(['languages?\\s*known', 'languages?', 'linguistic']);
+    let address = extractLabel(['address', 'location']);
 
     if (!address) {
         for (const hl of headerLines) {
@@ -2034,12 +1776,11 @@ function parseResume(raw) {
                 if (/@/.test(seg)) continue;
                 if (/linkedin\.com|github\.com|http/i.test(seg)) continue;
                 if (/^\+?\d[\d\s\-,]{7,}/.test(seg)) continue;
-                if (/english|hindi|bengali|spanish|french|german/i.test(seg)) continue;
-                if (seg.length >= 5 && seg.length <= 80) {
+                if (seg.length >= 5 && seg.length <= 70) {
                     if (name && seg.toLowerCase() === name.toLowerCase()) continue;
                     if (title && seg.toLowerCase() === title.toLowerCase()) continue;
-                    if (/,/.test(seg) || /india|delhi|mumbai|bangalore|bihar|bhagalpur|pirpainti|kolkata|pune|hyderabad|dubai|uae|usa|london|uk|texas|california|new york|coochbehar|west\s+bengal/i.test(seg)) {
-                        address = seg.replace(/^[-–\s]*S\/O[^,]+,\s*/i, '').trim();
+                    if (/,/.test(seg) || /india|delhi|mumbai|bangalore|bihar|bhagalpur|pirpainti|kolkata|pune|hyderabad|dubai|uae|usa|london|uk|texas|california|new york/i.test(seg)) {
+                        address = seg;
                         break;
                     }
                 }
@@ -2057,7 +1798,7 @@ function parseResume(raw) {
         sectionsData["SKILLS"].split('\n').forEach(row => {
             row.replace(/^[•\-*►▪▸→✓✔]\s*/, '').split(/[,|•;►▪▸]/).forEach(t => {
                 const clean = t.trim();
-                if (clean.length > 1 && clean.length < 40 && !isSectionOrFieldHeader(clean)) {
+                if (clean.length > 1 && clean.length < 40 && !/^(?:SKILLS|CORE COMPETENCIES)$/i.test(clean)) {
                     skills.push(clean);
                 }
             });
@@ -2068,82 +1809,34 @@ function parseResume(raw) {
     const experience = [];
     if (sectionsData["EXPERIENCE"]) {
         let currentExp = null;
-        let pendingDate = "";
-        let pendingCompany = "";
         const expLines = sectionsData["EXPERIENCE"].split('\n').map(l => l.trim()).filter(Boolean);
 
-        for (let i = 0; i < expLines.length; i++) {
-            const line = expLines[i];
-            const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*');
+        expLines.forEach(line => {
+            const dateMatch = line.match(/(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4}\s*(?:–|—|-|to)\s*(?:Present|(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4})/i)
+                           || line.match(/\b\d{4}\s*(?:–|—|-)\s*(?:Present|\d{4})\b/i);
 
-            if (/^(?:Mob\s*:|EMAIL\s*:|PRESENT\s+ADDRESS|PERMANENT\s+ADDRESS|LANGUAGES\s+KNOWN)/i.test(line)) {
-                continue;
-            }
-
-            const isOrgLine = !isBullet && /(?:Limited|Ltd|Pvt\.?\s*Ltd|Pvt|Groups?|Corporation|Corp|Inc|Company|Bank|Hospital|School|University|Enterprises|Solutions|Technologies|Services)\b/i.test(line);
-
-            const dateMatch = line.match(/(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4}\s*(?:–|—|-|to)\s*(?:Present|Current|(?:(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\.?\s*)?\d{4})/i)
-                           || line.match(/\b\d{4}\s*(?:–|—|-)\s*(?:Present|Current|\d{4})\b/i);
-
-            if (dateMatch && !isBullet && line.replace(dateMatch[0], '').replace(/[|—–\-()]/g, '').trim().length === 0) {
-                if (currentExp && !currentExp.dates) {
-                    currentExp.dates = dateMatch[0].trim();
-                } else {
-                    pendingDate = dateMatch[0].trim();
-                }
-                continue;
-            }
-
-            if (isOrgLine && !dateMatch && line.length < 120) {
-                pendingCompany = line;
-                continue;
-            }
-
-            if (/^(?:Previous\s+Experience\s+Details|Roles\s+and\s+Responsibilities|Key\s+Responsibilities|Job\s+Profile|Job\s+Description)\s*[:\-–—]?$/i.test(line)) {
-                continue;
-            }
-
-            const isRoleHeader = !isBullet && (dateMatch || (/\s+[—–-]\s+/.test(line) && line.length < 115 && !line.endsWith('.')));
-
-            if (isRoleHeader) {
+            if (dateMatch && !line.startsWith('•') && !line.startsWith('-') && !line.startsWith('*')) {
                 if (currentExp) experience.push(currentExp);
-
-                let dateStr = dateMatch ? dateMatch[0].trim() : pendingDate;
-                pendingDate = "";
-                let remaining = dateMatch ? line.replace(dateMatch[0], '').trim() : line;
-
+                
+                let dateStr = dateMatch[0].trim();
+                let remaining = line.replace(dateMatch[0], '').trim();
+                
                 let parts = remaining.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
                 let role = "Specialist";
-                let comp = pendingCompany || "Organization";
-                pendingCompany = "";
-
+                let comp = "Organization";
+                
                 if (parts.length >= 2) {
-                    role = cleanRoleName(parts[0]);
-                    const candidateComp = cleanCompanyName(parts.slice(1).join(' — '));
-                    if (candidateComp && candidateComp.length > 2) {
-                        comp = candidateComp;
-                    }
+                    role = parts[0];
+                    comp = parts.slice(1).join(' — ');
                 } else if (parts.length === 1) {
-                    const single = parts[0];
-                    if (/assistant|manager|specialist|officer|executive|lead|developer|analyst|engineer|cashier|accountant|consultant/i.test(single)) {
-                        role = cleanRoleName(single);
-                    } else {
-                        const candidateComp = cleanCompanyName(single);
-                        if (candidateComp && candidateComp.length > 2) comp = candidateComp;
-                    }
+                    comp = parts[0];
                 }
 
                 currentExp = { company: comp, role: role, dates: dateStr, duties: "" };
             } else if (currentExp) {
-                if (isOrgLine && i < expLines.length - 1 && !isBullet) {
-                    pendingCompany = line;
-                    continue;
-                }
-
-                let cleanDuty = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
-                cleanDuty = cleanDuty.replace(/^(?:Details|Roles\s*&\s*Responsibilities|Roles\s*and\s*Responsibilities)\s*:\s*/i, '').trim();
+                const cleanDuty = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
                 if (cleanDuty) {
-                    if (currentExp.duties && isBullet) {
+                    if (currentExp.duties && (line.startsWith('•') || line.startsWith('-') || line.startsWith('*'))) {
                         currentExp.duties += "\n" + cleanDuty;
                     } else if (currentExp.duties) {
                         currentExp.duties += " " + cleanDuty;
@@ -2152,12 +1845,8 @@ function parseResume(raw) {
                     }
                 }
             }
-        }
+        });
         if (currentExp) experience.push(currentExp);
-    }
-
-    if (!title && experience.length > 0 && experience[0].role && experience[0].role !== "Specialist") {
-        title = experience[0].role;
     }
 
     // 7. KEY TECHNICAL PROJECTS
@@ -2176,7 +1865,7 @@ function parseResume(raw) {
 
                 let title = line;
                 let tools = "";
-
+                
                 const toolsMatch = line.match(/\[(.*?)\]/);
                 if (toolsMatch) {
                     tools = toolsMatch[1].trim();
@@ -2238,116 +1927,18 @@ function parseResume(raw) {
     return { name, title, email, mobile, linkedin, github, portfolio, address, languages, summary, skills, experience, projects, education, certifications };
 }
 
-function fixBrokenKerningSpaces(str) {
-    if (!str || typeof str !== 'string') return "";
-    return str
-        .replace(/\bA\s*N\s*A\s*L\s*Y\s*T\s*I\s*C\s*S\b/gi, "ANALYTICS")
-        .replace(/\bP\s*R\s*O\s*F\s*E\s*S\s*S\s*I\s*O\s*N\s*A\s*L\b/gi, "PROFESSIONAL")
-        .replace(/\bM\s*A\s*N\s*A\s*G\s*E\s*M\s*E\s*N\s*T\b/gi, "MANAGEMENT")
-        .replace(/\bI\s*N\s*V\s*E\s*N\s*T\s*O\s*R\s*Y\b/gi, "INVENTORY")
-        .replace(/\bE\s*X\s*E\s*C\s*U\s*T\s*I\s*V\s*E\b/gi, "EXECUTIVE")
-        .replace(/\bD\s*E\s*V\s*E\s*L\s*O\s*P\s*E\s*R\b/gi, "DEVELOPER")
-        .replace(/\bE\s*N\s*G\s*I\s*N\s*E\s*E\s*R\b/gi, "ENGINEER")
-        .replace(/\bS\s*P\s*E\s*C\s*I\s*A\s*L\s*I\s*S\s*T\b/gi, "SPECIALIST")
-        .replace(/\b(?:[A-Z]\s+){2,}[A-Z]\b/g, m => m.replace(/\s+/g, ''))
-        .replace(/\s{2,}/g, ' ')
-        .trim();
-}
-
-
-// 100% REALISTIC 94% ATS SCORE SAMPLE PROFILE (PRE-LOADED ON FIRST VISIT)
-const SAMPLE_PROFILE = {
-    personal: {
-        name: "Rahul Sharma",
-        title: "Senior Data & Business Analyst",
-        email: "rahul.sharma@email.com",
-        mobile: "+91 98765 43210",
-        linkedin: "linkedin.com/in/rahulsharma-data",
-        github: "github.com/rahulsharma-analytics",
-        portfolio: "rahulsharma-portfolio.com",
-        address: "Bengaluru, Karnataka, India",
-        languages: "English (Fluent), Hindi (Native), Kannada (Conversational)"
-    },
-    summary: "Results-driven Data Analyst with 5+ years of experience transforming complex enterprise datasets into actionable executive dashboards and automated workflows. Proven track record of boosting reporting efficiency by 42% and eliminating reconciliation discrepancies across high-volume supply chain operations using SQL, Python, and Power BI.",
-    experience: [
-        {
-            company: "Tata Consultancy Services (TCS) — Client: Enterprise Retail",
-            role: "Senior Data Analyst",
-            dates: "July 2022 — Present",
-            duties: "• Spearheaded end-to-end Power BI dashboard development analyzing 12M+ transactional records, reducing weekly executive reporting turnaround from 14 hours to 25 minutes.\n• Architected automated SQL ETL pipelines across PostgreSQL and Snowflake data warehouses, boosting pipeline throughput by 35%.\n• Collaborated with cross-functional supply chain leaders to identify inventory leakage, saving ₹42 Lakhs annually."
-        },
-        {
-            company: "Infosys Limited — Enterprise Analytics Practice",
-            role: "Business Intelligence Analyst",
-            dates: "June 2019 — June 2022",
-            duties: "• Developed and maintained 18+ interactive Tableau and Excel dashboards monitoring regional sales KPIs across 4 global geographies.\n• Automated monthly financial reconciliations using Python (Pandas/NumPy), eliminating 99.4% of manual spreadsheet discrepancies.\n• Facilitated sprint reviews with US and UK stakeholders, translating business requirements into technical data schemas."
-        }
-    ],
-    projects: [
-        {
-            title: "Real-Time Supply Chain Discrepancy Engine",
-            tools: "Python, SQL, PostgreSQL, Streamlit",
-            link: "github.com/rahulsharma-analytics/supply-chain-ai",
-            description: "• Built an anomaly detection pipeline flagging stock discrepancies across 8 regional distribution hubs in real-time.\n• Decreased dispatch delay SLA breaches by 28% across 45,000 monthly shipments."
-        },
-        {
-            title: "Customer Churn Prediction & Retention Dashboard",
-            tools: "Power BI, DAX, Scikit-Learn",
-            link: "github.com/rahulsharma-analytics/churn-analytics",
-            description: "• Designed predictive ML churn model achieving 89% precision, enabling targeted marketing campaigns that retained ₹18 Lakhs in MRR."
-        }
-    ],
-    skills: ["Power BI", "SQL (PostgreSQL / Snowflake)", "Python (Pandas, NumPy)", "Tableau", "Advanced Excel (VBA / DAX)", "ETL Pipelines", "Data Modeling", "Business Intelligence", "Supply Chain Analytics"],
-    education: [
-        {
-            school: "Visvesvaraya Technological University (VTU)",
-            degree: "B.Tech in Computer Science & Engineering",
-            year: "2015 — 2019"
-        }
-    ],
-    certifications: [
-        { name: "Microsoft Certified: Power BI Data Analyst Associate (PL-300)", issuer: "Microsoft" },
-        { name: "Google Advanced Data Analytics Professional Certificate", issuer: "Coursera / Google" }
-    ],
-    countryData: {
-        noticePeriod: "15 Days / Immediate",
-        includeDeclaration: true,
-        declarationText: "I hereby declare that all the information provided above is true and correct to the best of my knowledge.",
-        visaStatus: "Employment Visa",
-        nationality: "Indian",
-        drivingLicense: "Valid UAE Driving License",
-        dubaiAvailability: "Immediate Joining",
-        rightToWork: "British Citizen / Full Right to Work",
-        includeReferences: true,
-        referencesText: "References available upon request"
-    }
-};
-
 function fillStateFromParsed(p) {
     const s = p.personal || p || {};
-    let parsedName = fixBrokenKerningSpaces(s.name || s.fullName || "");
-    if (typeof isDocumentHeaderTitle === 'function' && isDocumentHeaderTitle(parsedName)) parsedName = "";
-
-    let parsedTitle = fixBrokenKerningSpaces(s.title || s.designation || "");
-    if (typeof isDocumentHeaderTitle === 'function' && (isDocumentHeaderTitle(parsedTitle) || (typeof isSectionOrFieldHeader === 'function' && isSectionOrFieldHeader(parsedTitle)))) parsedTitle = "";
-
-    let parsedLanguages = s.languages || s.languagesKnown || "";
-    if (/^(?:ock|recording|received|issues|duties|roles)/i.test(parsedLanguages)) parsedLanguages = "";
-
     engineState.personal = {
-        name: parsedName,
-        title: parsedTitle,
+        name: s.name || s.fullName || "", title: s.title || s.designation || "",
         email: s.email || "", mobile: s.mobile || s.phone || "",
         linkedin: s.linkedin || s.linkedIn || "", github: s.github || "",
         portfolio: s.portfolio || s.website || "", address: s.address || s.location || "",
-        languages: parsedLanguages
+        languages: s.languages || s.languagesKnown || ""
     };
     engineState.summary = p.summary || "";
     engineState.skills = Array.isArray(p.skills) ? p.skills : String(p.skills || "").split(',').map(v => v.trim()).filter(Boolean);
     engineState.experience = Array.isArray(p.experience) ? p.experience : [];
-    if (!engineState.personal.title && engineState.experience.length > 0 && engineState.experience[0].role && engineState.experience[0].role !== "Specialist") {
-        engineState.personal.title = engineState.experience[0].role;
-    }
     engineState.projects = Array.isArray(p.projects) ? p.projects : [];
     engineState.education = Array.isArray(p.education) ? p.education : [];
     engineState.certifications = Array.isArray(p.certifications) ? p.certifications : [];
@@ -2361,9 +1952,6 @@ function fillStateFromParsed(p) {
     setVal('formSkillsList', engineState.skills.join(', '));
 
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
-    // Hide ATS upgrade banner on clear
-    const atsCta = document.getElementById('atsUpgradeCtaBanner');
-    if (atsCta) atsCta.classList.add('hidden');
     executeMasterCompilationRenderPipeline();
 }
 
@@ -2700,8 +2288,8 @@ function executeMasterCompilationRenderPipeline() {
         imgHTML = `<div class="w-20 h-24 border rounded flex-shrink-0 overflow-hidden shadow-sm self-start ml-4" style="border-color:${hex};"><img src="${engineState.globalCachedProfileImageStream}" class="w-full h-full object-cover object-center block"></div>`;
     }
 
-    const cName = esc(fixBrokenKerningSpaces(document.getElementById('formName')?.value.trim() || "YOUR NAME"));
-    const cTitle = esc(fixBrokenKerningSpaces(document.getElementById('formTitle')?.value.trim() || "Target Designation"));
+    const cName = esc(document.getElementById('formName')?.value.trim() || "YOUR NAME");
+    const cTitle = esc(document.getElementById('formTitle')?.value.trim() || "Target Designation");
     const cEmail = esc(document.getElementById('formEmail')?.value.trim() || "email@domain.com");
     const cMobile = esc(document.getElementById('formMobile')?.value.trim() || "Contact No");
     
@@ -2858,7 +2446,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="p-5 rounded-xl flex items-center justify-between text-white shadow-sm mb-4" style="background-color: ${hex};">
                     <div class="space-y-1 min-w-0 flex-1">
                         <h1 class="text-2xl font-black uppercase tracking-tight">${cName}</h1>
-                        <p class="text-xs font-bold uppercase opacity-90">${cTitle}</p>
+                        <p class="text-xs font-bold uppercase tracking-wide opacity-90">${cTitle}</p>
                         <div class="mt-2 text-[10px] opacity-90 flex flex-wrap gap-x-3 gap-y-0.5 font-medium"><span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span></div>
                         <div class="text-[10px] opacity-90 flex flex-wrap gap-x-3 font-medium mt-0.5">${socialHTML}</div>
                         ${countryHeaderExtrasHTML}
@@ -2875,7 +2463,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex flex-col items-center text-center pb-4 border-b border-slate-200">
                     ${imgHTML ? `<div class="mb-3">${imgHTML}</div>` : ''}
                     <h1 class="text-3xl font-black uppercase tracking-wider" style="color:${hex};">${cName}</h1>
-                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase">${cTitle}</p>
+                    <p class="text-xs font-bold text-slate-700 mt-1 uppercase tracking-widest">${cTitle}</p>
                     <div class="mt-2 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] text-slate-600 font-medium">
                         <span>${cEmail}</span><span>•</span><span>${cMobile}</span><span>•</span><span>${cAddress}</span>${socialHTML}
                     </div>
@@ -2891,7 +2479,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex items-start justify-between border-b-2 pb-3 mb-2" style="border-color:${hex};">
                     <div class="flex-1">
                         <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase">${cTitle}</p>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
                     </div>
                     <div class="text-right text-[10px] text-slate-600 font-medium space-y-0.5">
                         <div><span><b>Email:</b> ${cEmail}</span> &nbsp;|&nbsp; <span><b>Phone:</b> ${cMobile}</span></div>
@@ -2912,7 +2500,7 @@ function executeMasterCompilationRenderPipeline() {
                 <div class="flex items-start justify-between border-b-2 pb-4" style="border-color:${hex};">
                     <div class="flex-1 min-w-0">
                         <h1 class="text-2xl font-black uppercase tracking-tight" style="color:${hex};">${cName}</h1>
-                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase">${cTitle}</p>
+                        <p class="text-xs font-bold text-slate-700 mt-0.5 uppercase tracking-wide">${cTitle}</p>
                         <div class="mt-2 flex flex-wrap gap-x-2 gap-y-1 text-[10px] text-slate-600 font-medium items-center">
                             <span><b>Email:</b> ${cEmail}</span><span>• <b>Phone:</b> ${cMobile}</span><span>• <b>Location:</b> ${cAddress}</span>${socialHTML}
                         </div>
@@ -3157,33 +2745,10 @@ function removePhotoImage() {
 function displaySubscriptionGateway(format = 'pdf') {
     engineState.pendingExportFormat = format;
     if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
-    selectSubscriptionPlan(99); // Pre-select Monthly as default
     document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
 
 function closeSubscriptionGateway() { document.getElementById('subscriptionModalGate')?.classList.add('hidden'); }
-
-function executeWatermarkedDraftDownload() {
-    const overlay = document.getElementById('printWatermarkOverlay');
-    // Show watermark overlay with transparent background so underlying text stays 100% vector selectable
-    if (overlay) { overlay.style.display = 'flex'; }
-    engineState.isWatermarkedExport = true;
-    closeSubscriptionGateway();
-    document.body.classList.add('watermark-printing');
-    setTimeout(function() {
-        const originalTitle = document.title;
-        const userName = (document.getElementById('formName')?.value || '').trim() || 'Resume';
-        document.title = userName.replace(/\s+/g, '_') + '_DRAFT_PREVIEW.pdf';
-        window.onafterprint = function() {
-            document.title = originalTitle;
-            document.body.classList.remove('watermark-printing');
-            if (overlay) { overlay.style.display = 'none'; }
-            engineState.isWatermarkedExport = false;
-            window.onafterprint = null;
-        };
-        window.print();
-    }, 350);
-}
 function openPrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.remove('hidden'); }
 function closePrivacyPolicyModal() { document.getElementById('privacyPolicyModalGate')?.classList.add('hidden'); }
 function handlePrivacyBackdropClick(e) { if (e && e.target && e.target.id === 'privacyPolicyModalGate') closePrivacyPolicyModal(); }
@@ -3404,11 +2969,6 @@ async function executeAIAtsAnalysis() {
                     <div class="text-[11px] text-amber-300 font-semibold">Click any missing keyword to inject it directly into your resume:</div>
                     <div class="flex flex-wrap gap-2 pt-1">${chipsHTML}</div>`;
             }
-            // Show upgrade CTA for free users after ATS scan reveals gaps
-            if (!checkActiveSubscriptionPass()) {
-                const upgradeCta = document.getElementById('atsUpgradeCtaBanner');
-                if (upgradeCta) upgradeCta.classList.remove('hidden');
-            }
         } else {
             fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
             if (aiBanner) {
@@ -3553,7 +3113,10 @@ function printCoverLetter() {
     const text = document.getElementById('coverLetterTextOutput')?.value || "";
     if (!text) return;
     const printWindow = window.open('', '_blank');
-    printWindow.document.write('<html><head><title>Cover Letter</title><style>body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; font-size: 11pt; } p { margin-bottom: 14pt; text-align: justify; white-space: pre-line; }</style></head><body><p>' + esc(text) + '</p><' + 'script>window.print();<' + '/script></body></html>');
+    printWindow.document.write(`
+        <html><head><title>Cover Letter</title>
+        <style>body { font-family: system-ui, -apple-system, sans-serif; padding: 40px; color: #1e293b; line-height: 1.5; font-size: 11pt; } p { margin-bottom: 14pt; text-align: justify; white-space: pre-line; }</style>
+        </head><body><p>${esc(text)}</p><script>window.print();<\/script></body></html>`);
     printWindow.document.close();
 }
 
@@ -3887,9 +3450,8 @@ async function submitFeedbackData() {
 // ========================================================
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
-    const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
-    const paidFlag = params.get('dpd_paid');
-    const returningFromPayment = !!((paymentId && /^pay_[a-zA-Z0-9]{8,}$/i.test(paymentId)) || paidFlag === '1');
+    const paymentId = params.get('razorpay_payment_id') || params.get('payment_id');
+    const returningFromPayment = !!(paymentId && /^pay_[a-zA-Z0-9]{10,}$/i.test(paymentId));
 
     if (returningFromPayment) {
         const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
@@ -3929,8 +3491,6 @@ window.onload = async function() {
                 if (saved.customStyle) Object.assign(engineState.customStyle, saved.customStyle);
 
                 const s = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
-                engineState.personal.name = fixBrokenKerningSpaces(engineState.personal.name);
-                engineState.personal.title = fixBrokenKerningSpaces(engineState.personal.title);
                 s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
                 s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
                 s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
@@ -3939,25 +3499,13 @@ window.onload = async function() {
                 s('formSkillsList', engineState.skills.join(', '));
                 formRestored = true;
                 if (returningFromPayment) localStorage.removeItem('dpd_form_backup');
-                // Hide sample profile notice if user has their own saved data
-                const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
-                if (sampleBanner) sampleBanner.style.display = 'none';
             }
         } catch(e) { console.warn("Could not restore saved state", e); }
     }
 
-    if (!formRestored && !returningFromPayment) {
-        // Pre-load realistic 94% ATS sample profile on first visit
-        fillStateFromParsed(SAMPLE_PROFILE);
-        const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
-        if (sampleBanner) sampleBanner.style.display = 'flex';
-    } else {
-        const sampleBanner = document.getElementById('sampleProfileNoticeBanner');
-        if (sampleBanner) sampleBanner.style.display = 'none';
-        if (engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
-        if (engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
-        if (engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
-    }
+    if (!formRestored || engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
+    if (!formRestored || engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
+    if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
 
     // Set initial country & mode configurations
     setTargetCountry(engineState.targetCountry || 'india');
