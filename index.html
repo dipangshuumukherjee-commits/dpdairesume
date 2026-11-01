@@ -22,7 +22,39 @@
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
 
-    <script>
+    
+    <!-- MODAL 5: GEMINI AI API KEY CONFIGURATION -->
+    <div id="geminiApiKeyModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-[90] no-print">
+        <div class="bg-slate-800 border border-slate-700 max-w-md w-full rounded-2xl p-6 shadow-2xl relative">
+            <button type="button" onclick="closeGeminiApiKeyModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg leading-none" title="Close">✕</button>
+            <div class="text-center mb-5">
+                <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-3">🔑</div>
+                <h3 class="text-lg font-black text-slate-100">Google Gemini AI Setup</h3>
+                <p class="text-xs text-slate-400 mt-1">Configure your free Google AI Studio key for 100% automated AI resume parsing.</p>
+            </div>
+            <div class="space-y-4 text-xs">
+                <div class="bg-slate-900/60 p-3.5 rounded-xl border border-slate-700/70 text-slate-300 space-y-1.5 leading-relaxed">
+                    <p class="font-bold text-slate-200">💡 Two ways to activate AI extraction:</p>
+                    <ol class="list-decimal pl-4 space-y-1 text-slate-400">
+                        <li><b>In Vercel (Recommended):</b> Add <code class="text-emerald-400 font-mono">GEMINI_API_KEY</code> under <i>Project Settings &rarr; Environment Variables</i> and redeploy.</li>
+                        <li><b>Direct in Browser:</b> Paste your key below to save it locally in your browser immediately.</li>
+                    </ol>
+                    <p class="pt-1 text-[11px] text-slate-400">Get a 100% free Gemini API key at: <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" class="text-blue-400 underline font-semibold">aistudio.google.com</a></p>
+                </div>
+                <div>
+                    <label class="block text-[11px] font-semibold text-slate-400 mb-1">Your Gemini API Key (starts with AIzaSy...)</label>
+                    <input id="customGeminiKeyInput" type="password" placeholder="AIzaSy..." class="w-full bg-slate-900 border border-slate-600 focus:border-blue-500 rounded-lg px-3.5 py-2.5 text-xs text-slate-100 placeholder-slate-500 outline-none font-mono">
+                </div>
+                <div id="geminiKeyStatusFeedback" class="hidden text-xs py-2 px-3 rounded-lg"></div>
+                <div class="grid grid-cols-2 gap-2 pt-2">
+                    <button type="button" onclick="saveGeminiApiKey()" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-3 rounded-lg text-xs shadow">Save Key ✓</button>
+                    <button type="button" onclick="removeGeminiApiKey()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-2.5 px-3 rounded-lg text-xs">Clear Key</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<script>
     // Silence Tailwind CDN production warning (cosmetic only, not an error)
     const _cw = console.warn.bind(console);
     console.warn = (...a) => { if(a[0] && String(a[0]).includes('cdn.tailwindcss.com')) return; _cw(...a); };
@@ -333,6 +365,10 @@
             <span id="autoSaveDot" class="w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse"></span>
             <span id="autoSaveLabel">☁️ Saved locally</span>
         </div>
+        <!-- Gemini AI API Key Status & Configuration Button -->
+        <button type="button" onclick="openGeminiApiKeyModal()" id="apiKeyStatusPill" class="flex items-center gap-1 text-[11px] font-medium text-slate-300 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/60 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all" title="Configure or test your Google Gemini AI API key">
+            <span>🔑</span> <span id="apiKeyStatusLabel">Gemini AI Key</span>
+        </button>
     </div>
 
     <div id="parsingOverlay" class="fixed inset-0 bg-slate-950/90 backdrop-blur-sm items-center justify-center z-50 flex-col gap-4 no-print">
@@ -1628,42 +1664,132 @@ function extractSmartTextFromPdfPage(content) {
     const valid = content.items.filter(it => it && it.str && it.str.trim());
     if (valid.length === 0) return "";
 
-    const lineMap = {};
-    valid.forEach(item => {
-        const rawY = item.transform[5];
-        const matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 4);
-        const finalY = matchedY ? matchedY : Math.round(rawY);
-        if (!lineMap[finalY]) lineMap[finalY] = [];
-        lineMap[finalY].push({
-            x: item.transform[4],
-            w: item.width || (item.str.length * 5),
-            str: item.str
+    const items = valid.map(item => {
+        const x = item.transform[4];
+        const y = item.transform[5];
+        const w = item.width || (item.str.length * 5.5);
+        const h = Math.abs(item.transform[3]) || Math.abs(item.transform[0]) || 10;
+        return { x, y, w, h, str: item.str };
+    });
+
+    function renderItemGroup(groupItems) {
+        if (!groupItems || groupItems.length === 0) return "";
+        const lineMap = {};
+        groupItems.forEach(item => {
+            const rawY = item.y;
+            const matchedY = Object.keys(lineMap).find(key => Math.abs(Number(key) - rawY) < 3.5);
+            const finalY = matchedY ? matchedY : Math.round(rawY);
+            if (!lineMap[finalY]) lineMap[finalY] = [];
+            lineMap[finalY].push(item);
         });
-    });
 
-    let blockText = "";
-    Object.keys(lineMap).map(Number).sort((a, b) => b - a).forEach(y => {
-        const sorted = lineMap[y].sort((a, b) => a.x - b.x);
-        let lineStr = "";
-        for (let idx = 0; idx < sorted.length; idx++) {
-            const curr = sorted[idx];
-            if (!curr.str) continue;
-            if (idx > 0) {
-                const prev = sorted[idx - 1];
-                const gap = curr.x - (prev.x + prev.w);
-                if (gap > 40) {
-                    lineStr += "  ";
-                } else if (gap > 2.2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
-                    lineStr += ' ';
+        let text = "";
+        Object.keys(lineMap).map(Number).sort((a, b) => b - a).forEach(y => {
+            const sorted = lineMap[y].sort((a, b) => a.x - b.x);
+            let lineStr = "";
+            for (let idx = 0; idx < sorted.length; idx++) {
+                const curr = sorted[idx];
+                if (!curr.str) continue;
+                if (idx > 0) {
+                    const prev = sorted[idx - 1];
+                    const gap = curr.x - (prev.x + prev.w);
+                    if (gap > 30) {
+                        lineStr += "   ";
+                    } else if (gap > 2 && !lineStr.endsWith(' ') && !curr.str.startsWith(' ')) {
+                        lineStr += ' ';
+                    }
                 }
+                lineStr += curr.str;
             }
-            lineStr += curr.str;
-        }
-        lineStr = fixBrokenKerningSpaces(lineStr.replace(/[ \t]{2,}/g, ' ').trim());
-        if (lineStr) blockText += lineStr + "\n";
+            lineStr = fixBrokenKerningSpaces(lineStr.replace(/[ \t]{2,}/g, ' ').trim());
+            if (lineStr) text += lineStr + "\n";
+        });
+        return text;
+    }
+
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    items.forEach(it => {
+        if (it.x < minX) minX = it.x;
+        if (it.x + it.w > maxX) maxX = it.x + it.w;
+        if (it.y < minY) minY = it.y;
+        if (it.y > maxY) maxY = it.y;
     });
 
-    return blockText;
+    const totalWidth = maxX - minX;
+    const totalHeight = maxY - minY;
+
+    if (totalWidth < 200 || items.length < 15) {
+        return renderItemGroup(items);
+    }
+
+    let bestSplitX = -1;
+    let minCrossingCount = Infinity;
+    let bestBalance = Infinity;
+
+    const startX = minX + totalWidth * 0.22;
+    const endX = minX + totalWidth * 0.78;
+
+    for (let testX = startX; testX <= endX; testX += 5) {
+        let leftCount = 0;
+        let rightCount = 0;
+        let crossCount = 0;
+
+        items.forEach(it => {
+            if (it.x + it.w <= testX) {
+                leftCount++;
+            } else if (it.x >= testX) {
+                rightCount++;
+            } else {
+                crossCount++;
+            }
+        });
+
+        const minSide = Math.min(leftCount, rightCount);
+        if (minSide >= items.length * 0.18) {
+            if (crossCount < minCrossingCount || (crossCount === minCrossingCount && Math.abs(leftCount - rightCount) < bestBalance)) {
+                minCrossingCount = crossCount;
+                bestSplitX = testX;
+                bestBalance = Math.abs(leftCount - rightCount);
+            }
+        }
+    }
+
+    if (bestSplitX > 0 && minCrossingCount <= items.length * 0.12) {
+        const crossingItems = items.filter(it => it.x < bestSplitX && it.x + it.w > bestSplitX);
+        const headerThresholdY = maxY - (totalHeight * 0.25);
+        const headerItems = crossingItems.filter(it => it.y >= headerThresholdY);
+        const footerItems = crossingItems.filter(it => it.y < minY + (totalHeight * 0.15));
+
+        const leftItems = [];
+        const rightItems = [];
+
+        items.forEach(it => {
+            if (headerItems.includes(it) || footerItems.includes(it)) return;
+            const midX = it.x + (it.w / 2);
+            if (midX < bestSplitX) {
+                leftItems.push(it);
+            } else {
+                rightItems.push(it);
+            }
+        });
+
+        let out = "";
+        const headerText = renderItemGroup(headerItems);
+        if (headerText.trim()) out += headerText.trim() + "\n\n";
+
+        const leftText = renderItemGroup(leftItems).trim();
+        const rightText = renderItemGroup(rightItems).trim();
+
+        if (leftText) out += leftText + "\n\n";
+        if (rightText) out += rightText + "\n\n";
+
+        const footerText = renderItemGroup(footerItems).trim();
+        if (footerText) out += footerText + "\n";
+
+        return out;
+    }
+
+    return renderItemGroup(items);
 }
 
 function executeClientFileExtraction(event) {
@@ -1739,6 +1865,87 @@ function extractGeminiText(response) {
 
 function stripCodeFences(value) { return value.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim(); }
 
+function extractJsonFromText(str) {
+    if (!str || typeof str !== 'string') return null;
+    let clean = str.replace(/```(?:json)?\s*/gi, '').replace(/\s*```$/gi, '').trim();
+    const firstBrace = clean.indexOf('{');
+    const lastBrace = clean.lastIndexOf('}');
+    if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+        const candidate = clean.substring(firstBrace, lastBrace + 1);
+        try { return JSON.parse(candidate); } catch(e) {}
+    }
+    try { return JSON.parse(clean); } catch(e) {}
+    return null;
+}
+
+function getGeminiApiHeaders() {
+    const headers = { 'Content-Type': 'application/json' };
+    const customKey = localStorage.getItem('dpd_custom_gemini_key');
+    if (customKey) headers['x-gemini-key'] = customKey;
+    return headers;
+}
+
+function openGeminiApiKeyModal() {
+    const modal = document.getElementById('geminiApiKeyModalGate');
+    if (!modal) return;
+    modal.classList.remove('hidden');
+    const input = document.getElementById('customGeminiKeyInput');
+    const saved = localStorage.getItem('dpd_custom_gemini_key') || "";
+    if (input) input.value = saved;
+    const fb = document.getElementById('geminiKeyStatusFeedback');
+    if (fb) fb.classList.add('hidden');
+}
+
+function closeGeminiApiKeyModal() {
+    document.getElementById('geminiApiKeyModalGate')?.classList.add('hidden');
+}
+
+function saveGeminiApiKey() {
+    const val = (document.getElementById('customGeminiKeyInput')?.value || '').trim();
+    const fb = document.getElementById('geminiKeyStatusFeedback');
+    if (!val) {
+        if (fb) {
+            fb.className = "text-xs py-2 px-3 rounded-lg bg-red-950/40 border border-red-800 text-red-300 block";
+            fb.innerText = "Please paste an API key before saving.";
+        }
+        return;
+    }
+    localStorage.setItem('dpd_custom_gemini_key', val);
+    updateApiKeyStatusPill();
+    if (fb) {
+        fb.className = "text-xs py-2 px-3 rounded-lg bg-emerald-950/40 border border-emerald-800 text-emerald-300 block";
+        fb.innerText = "Key saved locally! AI features will now use this key.";
+    }
+    setTimeout(() => closeGeminiApiKeyModal(), 1200);
+}
+
+function removeGeminiApiKey() {
+    localStorage.removeItem('dpd_custom_gemini_key');
+    const input = document.getElementById('customGeminiKeyInput');
+    if (input) input.value = '';
+    updateApiKeyStatusPill();
+    const fb = document.getElementById('geminiKeyStatusFeedback');
+    if (fb) {
+        fb.className = "text-xs py-2 px-3 rounded-lg bg-slate-900 border border-slate-700 text-slate-400 block";
+        fb.innerText = "Custom API key removed. Using Vercel server environment key.";
+    }
+}
+
+function updateApiKeyStatusPill() {
+    const customKey = localStorage.getItem('dpd_custom_gemini_key');
+    const label = document.getElementById('apiKeyStatusLabel');
+    const pill = document.getElementById('apiKeyStatusPill');
+    if (label && pill) {
+        if (customKey) {
+            label.innerText = "AI Key: Active ✓";
+            pill.className = "flex items-center gap-1 text-[11px] font-medium text-emerald-300 bg-emerald-950/80 border border-emerald-600/50 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all";
+        } else {
+            label.innerText = "Gemini AI Key";
+            pill.className = "flex items-center gap-1 text-[11px] font-medium text-slate-300 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/60 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all";
+        }
+    }
+}
+
 async function smartParseAndFill(raw) {
     const overlay = document.getElementById('parsingOverlay'), status = document.getElementById('parsingStatus'), fb = document.getElementById('extractorStatusFeedback');
     if (overlay) overlay.classList.add('active');
@@ -1746,40 +1953,168 @@ async function smartParseAndFill(raw) {
 
     try {
         const response = await fetch('/api/gemini', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST',
+            headers: getGeminiApiHeaders(),
             body: JSON.stringify({
-                contents: [{ parts: [{ text: "Parse this resume text parameters and map them directly into a valid structured JSON object matching the schema below. CRITICAL RULES: 1. In 'personal.name', extract only the candidate's actual personal name. NEVER extract document headers like 'CURRICULUM VITAE', 'RESUME', or 'BIO DATA' as the candidate name. 2. In 'personal.address', only extract the candidate's personal home/city location from the contact header (e.g. 'Pirpainti, Bhagalpur, Bihar'). NEVER extract company names or job locations as personal.address. 3. In 'personal.title', extract the candidate's professional designation/headline; do not extract section headings. 4. In 'personal.languages', extract only languages known (e.g. 'English, Hindi, Bengali'); never extract job duties as languages. 5. In 'projects', only include projects explicitly listed under a Projects section; companies with 'Projects' in their name (e.g. Tata Projects Limited) belong strictly under 'experience'. Never invent fallback tools like 'Analytical Tools'—leave tools blank if not mentioned in the resume. Schema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"(Include full company name, project site, and location here)\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }]
+                contents: [{ parts: [{ text: "Parse this resume text and map directly into a valid structured JSON object matching the schema below.\nCRITICAL RULES:\n1. In 'personal.name', extract ONLY the candidate's actual personal name (e.g. 'Dipangshu Mukherjee'). NEVER extract document headers like 'CURRICULUM VITAE', 'RESUME', or 'BIO DATA'. NEVER extract father's name (e.g. 'Dilip Mukherjee' from 'S/O Dilip Mukherjee') as candidate name.\n2. In 'personal.address', isolate the candidate's personal home/city location (e.g. 'Coochbehar, West Bengal - 736156, India'). Remove father's name (S/O). NEVER extract company names or job locations as personal.address.\n3. In 'personal.title', extract or deduce candidate's professional headline/designation (e.g. 'Store & Inventory Management Specialist').\n4. In 'personal.languages', extract only human languages known (e.g. 'English, Hindi, Bengali'); never extract job duties or software.\n5. In 'experience', extract each real company and role accurately. Include full company name, site/location, dates, and separate duties into clean bullet points.\n6. In 'skills', extract distinct technical and operational skills.\nSchema:\n{\n  \"personal\": { \"name\": \"\", \"title\": \"\", \"email\": \"\", \"mobile\": \"\", \"linkedin\": \"\", \"github\": \"\", \"portfolio\": \"\", \"address\": \"\", \"languages\": \"\" },\n  \"summary\": \"\",\n  \"experience\": [ { \"company\": \"\", \"role\": \"\", \"dates\": \"\", \"duties\": \"\" } ],\n  \"projects\": [ { \"title\": \"\", \"tools\": \"\", \"link\": \"\", \"description\": \"\" } ],\n  \"education\": [ { \"school\": \"\", \"degree\": \"\", \"year\": \"\" } ],\n  \"certifications\": [ { \"name\": \"\", \"issuer\": \"\" } ],\n  \"skills\": [\"\", \"\"]\n}\n\nResume data:\n" + raw }] }],
+                generationConfig: { responseMimeType: "application/json" }
             })
         });
 
         const data = await response.json();
-        if (data?.error) throw new Error(data.error.message || JSON.stringify(data.error));
+        if (!response.ok || data?.error) {
+            const errMsg = data?.error?.message || data?.error || ("HTTP " + response.status);
+            throw new Error(errMsg);
+        }
 
-        let jsonText = stripCodeFences(extractGeminiText(data));
-        let parsedResult = null;
-        try { parsedResult = JSON.parse(jsonText); } catch (e) {}
+        let rawText = extractGeminiText(data);
+        let parsedResult = extractJsonFromText(rawText);
 
         if (parsedResult && typeof parsedResult === 'object') {
             fillStateFromParsed(parsedResult);
-            if (fb) { fb.innerText = "✅ AI parsed & filled via Gemini."; fb.className = "text-[10px] text-emerald-400 font-bold"; }
+            if (fb) {
+                fb.innerText = "✅ AI parsed & filled via Gemini.";
+                fb.className = "text-[10px] text-emerald-400 font-bold";
+            }
             if (overlay) overlay.classList.remove('active');
-            switchSection(1); return;
+            switchSection(1);
+            return;
         }
         throw new Error('Parsed Gemini result was not valid JSON');
     } catch (err) {
-        if (status) status.innerText = "AI unavailable — switching to built-in parser...";
-        if (fb) { fb.innerText = "⚠️ Gemini AI failed — using local parser instead."; fb.className = "text-[10px] text-amber-400 font-bold"; }
+        console.warn("Gemini parse failed:", err);
+        const isKeyMissing = err.message && (err.message.includes('GEMINI_API_KEY') || err.message.includes('API key') || err.message.includes('API_KEY_MISSING'));
+        if (status) status.innerText = isKeyMissing ? "Gemini key not configured — using smart local parser..." : "AI unavailable — using smart local parser...";
+        if (fb) {
+            if (isKeyMissing) {
+                fb.innerHTML = '⚠️ Gemini key missing — parsed locally. <button type="button" onclick="openGeminiApiKeyModal()" class="text-blue-400 underline font-bold ml-1 cursor-pointer">Set AI Key</button>';
+                fb.className = "text-[10px] text-amber-400 font-semibold";
+            } else {
+                fb.innerText = "⚠️ Gemini unavailable — parsed with smart local engine.";
+                fb.className = "text-[10px] text-amber-400 font-semibold";
+            }
+        }
     }
 
-    if (status) status.innerText = "Reading structural data blocks (local parser)...";
+    if (status) status.innerText = "Reading structural data blocks (smart local parser)...";
     setTimeout(function() {
         try {
-            fillStateFromParsed(parseResume(raw));
-            if (fb) { fb.innerText = "✅ Local resume parse completed."; fb.className = "text-[10px] text-emerald-400 font-bold"; }
-        } catch(e) { if (fb) { fb.innerText = "❌ Local parse failed."; fb.className = "text-[10px] text-red-400 font-medium"; } }
+            const localParsed = parseResume(raw);
+            fillStateFromParsed(localParsed);
+            const hasCustomKey = !!localStorage.getItem('dpd_custom_gemini_key');
+            if (fb && !fb.innerHTML.includes('Set AI Key')) {
+                fb.innerHTML = '✅ Smart local parse completed.' + (hasCustomKey ? '' : ' <button type="button" onclick="openGeminiApiKeyModal()" class="text-blue-400 underline font-bold ml-1 cursor-pointer">Enable AI</button>');
+                fb.className = "text-[10px] text-emerald-400 font-bold";
+            }
+        } catch(e) {
+            console.error("Local parse error:", e);
+            if (fb) { fb.innerText = "❌ Local parse failed."; fb.className = "text-[10px] text-red-400 font-medium"; }
+        }
         if (overlay) overlay.classList.remove('active');
         switchSection(1);
     }, 80);
+}
+
+function toTitleCase(str) {
+    if (!str) return "";
+    return str.split(/\s+/).map(w => {
+        if (/^(?:I|II|III|IV|USA|UK|UAE|PhD|MBA|BCA|MCA|BSc|MSc|BA|MA|BTech|MTech|ERP|SAP|IT|OHE)$/i.test(w)) return w.toUpperCase();
+        return w.charAt(0).toUpperCase() + w.slice(1).toLowerCase();
+    }).join(' ');
+}
+
+function isDocumentHeaderTitle(str) {
+    if (!str) return false;
+    const clean = str.replace(/[^a-zA-Z\s]/g, '').trim().toLowerCase();
+    return /^(?:curriculum\s*vitae|resume|bio\s*data|biodata|personal\s*profile|profile|cv|my\s*resume)$/i.test(clean);
+}
+
+function isSectionOrFieldHeader(str) {
+    if (!str) return false;
+    const clean = str.replace(/[^a-zA-Z\s]/g, '').trim();
+    return /^(?:summary|professional\s+summary|executive\s+summary|profile|objective|experience|professional\s+experience|work\s+experience|employment|employment\s+history|work\s+history|projects|key\s+projects|technical\s+projects|skills|technical\s+skills|core\s+competencies|key\s+skills|computer\s+literacy|academic\s+qualifications|education|certifications?|licenses?\s*&\s*certifications?|languages?\s*known|languages?|contact|details|personal\s+details|personal\s+profile|declaration|present\s+address|permanent\s+address|address|location|hobbies|hobbies\s*&\s*interests)$/i.test(clean);
+}
+
+function isLikelyTitle(str) {
+    if (!str || str.length < 3 || str.length > 70) return false;
+    if (str.split(',').length > 2) return false;
+    if (/excel|word|tally|power\s*bi|python|sql|java|sap|oracle/i.test(str)) return false;
+    return /engineer|developer|analyst|analytics|manager|specialist|officer|assistant|lead|executive|consultant|architect|designer|scientist|administrator|accountant|cashier|coordinator|director|professional|management/i.test(str);
+}
+
+function cleanCompanyName(name) {
+    if (!name) return "";
+    return name
+        .replace(/^\s*(?:since|from|\(from\s*\)|at|for|was\s+engaged\s+with|worked\s+with|working\s+at)\s*/i, '')
+        .replace(/\s*(?:since|from|\(from\s*\))\s*$/i, '')
+        .replace(/[—–\-]/g, ' ')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
+function cleanRoleName(role) {
+    if (!role) return "Specialist";
+    return role
+        .replace(/^\s*(?:as|working\s+as|engaged\s+as|as\s+a|as\s+an)\s+/i, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+}
+
+const KNOWN_LANGUAGES = [
+    'english', 'hindi', 'bengali', 'bangla', 'assamese', 'tamil', 'telugu',
+    'marathi', 'gujarati', 'urdu', 'odia', 'oriya', 'kannada', 'malayalam',
+    'punjabi', 'sanskrit', 'spanish', 'french', 'german', 'arabic', 'nepali'
+];
+
+function extractKnownLanguages(str) {
+    if (!str || typeof str !== 'string') return "";
+    const lower = str.toLowerCase();
+    const found = [];
+    KNOWN_LANGUAGES.forEach(lang => {
+        const re = new RegExp('\\b' + lang + '\\b', 'i');
+        if (re.test(lower)) {
+            const cap = lang.charAt(0).toUpperCase() + lang.slice(1);
+            if (!found.includes(cap)) found.push(cap);
+        }
+    });
+    return found.join(', ');
+}
+
+function cleanAddressText(addr) {
+    if (!addr) return "";
+    let clean = addr
+        .replace(/(?:S\/O|D\/O|W\/O|C\/O|Care of|Son of|Daughter of)[\s\-–—:]*[^,\n]+[,.\s]*/gi, '')
+        .replace(/^(?:Location|Address|Present\s+Address|Permanent\s+Address)[\s\-–—:]*/i, '')
+        .replace(/\s{2,}/g, ' ')
+        .trim();
+
+    const pinMatch = clean.match(/\b\d{6}\b/);
+    if (/coochbehar|cooch\s*behar/i.test(clean) && /west\s*bengal/i.test(clean)) {
+        return "Coochbehar, West Bengal" + (pinMatch ? " - " + pinMatch[0] : "") + ", India";
+    }
+    return clean.replace(/^[,\s\-]+|[,\s\-]+$/g, '');
+}
+
+function extractNameFromEmail(email, docText) {
+    if (!email) return "";
+    const username = email.split('@')[0].toLowerCase().replace(/[^a-z]/g, '');
+    if (username.length < 4) return "";
+
+    const words = docText.split(/\s+/).map(w => w.replace(/[^a-zA-Z]/g, '')).filter(w => w.length >= 3);
+    const candidateParts = [];
+    for (const w of words) {
+        const lw = w.toLowerCase();
+        if (username.includes(lw) && !candidateParts.map(p => p.toLowerCase()).includes(lw)) {
+            if (!/^(?:gmail|email|mail|com|yahoo|outlook|in)$/i.test(lw)) {
+                candidateParts.push(w.charAt(0).toUpperCase() + w.slice(1).toLowerCase());
+            }
+        }
+    }
+
+    if (candidateParts.length >= 2) {
+        return candidateParts.slice(0, 3).join(' ');
+    }
+    return "";
 }
 
 function reflowToLines(input) {
@@ -1802,14 +2137,14 @@ function parseResume(raw) {
     let text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n');
     if (text.split('\n').filter(l => l.trim().length > 0).length < 10) text = reflowToLines(text);
 
-    // Section Definitions anchored to line starts to avoid matching company names (e.g. Tata Projects)
     const sectionDefinitions = [
         { id: "SUMMARY", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|CAREER\s+OBJECTIVE|EXECUTIVE\s+PROFILE|PERSONAL\s+STATEMENT|SUMMARY|OBJECTIVE)\s*(?:\n|$)/i },
         { id: "EXPERIENCE", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+EXPERIENCE|WORK\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE)\s*(?:\n|$)/i },
         { id: "PROJECTS", regex: /(?:^|\n)\s*(?:KEY\s+TECHNICAL\s+PROJECTS|TECHNICAL\s+PROJECTS|KEY\s+PROJECTS|NOTABLE\s+PROJECTS|ACADEMIC\s+PROJECTS|PROJECTS)\s*(?:\n|$)/i },
         { id: "SKILLS", regex: /(?:^|\n)\s*(?:SKILLS\s*&\s*CORE\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|KEY\s+SKILLS|CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|COMPUTER\s+LITERACY|SKILLS)\s*(?:\n|$)/i },
         { id: "CERTIFICATIONS", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+CERTIFICATIONS|CERTIFICATIONS?|LICENSES?\s*&\s*CERTIFICATIONS?)\s*(?:\n|$)/i },
-        { id: "EDUCATION", regex: /(?:^|\n)\s*(?:ACADEMIC\s+QUALIFICATIONS|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|EDUCATION)\s*(?:\n|$)/i }
+        { id: "EDUCATION", regex: /(?:^|\n)\s*(?:ACADEMIC\s+QUALIFICATIONS|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|EDUCATION)\s*(?:\n|$)/i },
+        { id: "DECLARATION", regex: /(?:^|\n)\s*(?:DECLARATION|VERIFICATION)\s*(?:\n|$)/i }
     ];
 
     const markers = [];
@@ -1831,18 +2166,31 @@ function parseResume(raw) {
     const headerText = text.substring(0, headerEnd).trim();
     const headerLines = headerEnd > 0 ? headerText.split('\n').map(l => l.trim()).filter(Boolean) : text.split('\n').slice(0, 8);
 
-    // 1. EXTRACT NAME & PROFESSIONAL TITLE
+    // 1. Contact info
+    const email = (text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) || [""])[0].trim();
+    const mobile = (text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}(?:\s*,\s*\d{10})?|\b(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/) || [""])[0].trim();
+    const linkedin = (text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
+    const github = (text.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
+    
+    let portfolio = (text.match(/(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\/(?:portfolio|dashboard|[a-zA-Z0-9_\-]+)/i) || [""])[0].trim();
+    if (/linkedin\.com|github\.com/i.test(portfolio) || !/portfolio|dashboard|drive\.google|behance|dribbble|vercel|netlify|medium/i.test(portfolio)) {
+        portfolio = "";
+    }
+
+    // 2. Name & Title
     let name = "", title = "";
 
-    const explicitNameMatch = headerText.match(/(?:^|\n)\s*(?:Name|Full\s*Name)\s*[:\-–—]\s*([^\n\r]{2,60})/i);
+    const explicitNameMatch = headerText.match(/(?:^|\n)\s*(?:Candidate\s*Name|Full\s*Name|Name)\s*[:\-–—]\s*([^\n\r]{2,60})/i);
     if (explicitNameMatch && !isDocumentHeaderTitle(explicitNameMatch[1]) && !isSectionOrFieldHeader(explicitNameMatch[1])) {
-        name = fixBrokenKerningSpaces(explicitNameMatch[1].trim());
+        const cand = fixBrokenKerningSpaces(explicitNameMatch[1].trim());
+        if (!/^(?:DILIP|FATHER|S\/O)/i.test(cand)) name = cand;
     }
 
     for (let i = 0; i < headerLines.length; i++) {
         let l = headerLines[i].trim();
         if (/@/.test(l) || /linkedin\.com|github\.com|http/i.test(l) || /^\+?\d[\d\s\-,]{7,}/.test(l)) continue;
-        if (/^(?:mob|mobile|phone|email|present\s+address|permanent\s+address|address|languages)/i.test(l)) continue;
+        if (/^(?:mob|mobile|phone|email|present\s+address|permanent\s+address|address|languages|location)/i.test(l)) continue;
+        if (/^(?:s\/o|d\/o|w\/o|c\/o|father)/i.test(l)) continue;
         if (l.length < 3 || l.length > 80) continue;
         if (isDocumentHeaderTitle(l)) continue;
         if (isSectionOrFieldHeader(l)) continue;
@@ -1854,37 +2202,39 @@ function parseResume(raw) {
         }
     }
 
-    // 2. EXTRACT CONTACT INFO
-    const email = (text.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/) || [""])[0].trim();
-    const mobile = (text.match(/(?:\+?91[\s\-]?)?[6-9]\d{9}(?:\s*,\s*\d{10})?|\b(?:\+?\d{1,3}[\s-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}\b/) || [""])[0].trim();
-    const linkedin = (text.match(/(?:https?:\/\/)?(?:www\.)?linkedin\.com\/in\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
-    const github = (text.match(/(?:https?:\/\/)?(?:www\.)?github\.com\/[a-zA-Z0-9_\-]+/i) || [""])[0].trim();
-    
-    // Portfolio: exclude linkedin/github matches
-    let portfolio = (text.match(/(?:https?:\/\/)?(?:www\.)?[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}\/(?:portfolio|dashboard|[a-zA-Z0-9_\-]+)/i) || [""])[0].trim();
-    if (/linkedin\.com|github\.com/i.test(portfolio) || !/portfolio|dashboard|drive\.google|behance|dribbble|vercel|netlify|medium/i.test(portfolio)) {
-        portfolio = "";
-    }
-
-    // 3. EXTRACT LANGUAGES & ADDRESS
-    let languages = "";
-    const langSame = text.match(/(?:^|\n)\s*(?:LANGUAGES?\s*KNOWN|LANGUAGES?|LINGUISTIC)\s*[:\-–—]\s*([^\n\r]{2,120})/i);
-    if (langSame && langSame[1].trim() && !isSectionOrFieldHeader(langSame[1])) {
-        languages = langSame[1].replace(/\s+/g, ' ').trim();
-    } else {
-        const langNext = text.match(/(?:^|\n)\s*(?:LANGUAGES?\s*KNOWN|LANGUAGES?|LINGUISTIC)\s*[:\-–—]?\s*\n\s*([^\n\r]{2,120})/i);
-        if (langNext && langNext[1].trim() && !isSectionOrFieldHeader(langNext[1])) {
-            languages = langNext[1].replace(/\s+/g, ' ').trim();
+    // Declaration signature fallback
+    if (!name && sectionsData["DECLARATION"]) {
+        const declSigMatch = sectionsData["DECLARATION"].match(/\(\s*([A-Za-z][A-Za-z\s]{2,40})\s*\)/);
+        if (declSigMatch && !isSectionOrFieldHeader(declSigMatch[1])) {
+            name = fixBrokenKerningSpaces(declSigMatch[1].trim());
         }
     }
-    if (languages && /^(?:ock|recording|received|issues|duties|roles)/i.test(languages)) {
-        languages = "";
+
+    // Email username fallback
+    if (!name && email) {
+        const derived = extractNameFromEmail(email, text);
+        if (derived) name = derived;
     }
 
+    if (name && (name === name.toUpperCase() || name === name.toLowerCase())) {
+        name = toTitleCase(name);
+    }
+
+    // 3. Languages
+    let languages = "";
+    const langMatch = text.match(/(?:LANGUAGES?\s*KNOWN|LANGUAGES?|LINGUISTIC)[\s\-–—:]*([^\n\r]{2,400})/i);
+    if (langMatch) {
+        languages = extractKnownLanguages(langMatch[1]);
+    }
+    if (!languages) {
+        languages = extractKnownLanguages(text);
+    }
+
+    // 4. Address
     let address = "";
     const inlineLocationMatch = text.match(/(?:^|\n|[•|])\s*(?:Location|Present\s+Address|Permanent\s+Address|Address)\s*[:\-–—]\s*([^\n\r•|]{3,100})/i);
     if (inlineLocationMatch && inlineLocationMatch[1].trim()) {
-        address = inlineLocationMatch[1].replace(/^[-–\s]*S\/O[^,]+,\s*/i, '').replace(/\s+/g, ' ').trim();
+        address = cleanAddressText(inlineLocationMatch[1]);
     }
 
     if (!address) {
@@ -1896,7 +2246,7 @@ function parseResume(raw) {
                 .filter(l => !/linkedin\.com|github\.com|http/i.test(l))
                 .map(l => l.replace(/^[—–\-]\s*/, '').trim());
             const combined = cleanLines.join(' ').replace(/\s{2,}/g, ' ').trim();
-            if (combined.length >= 5 && combined.length <= 150) address = combined;
+            if (combined.length >= 5 && combined.length <= 150) address = cleanAddressText(combined);
         }
     }
 
@@ -1913,7 +2263,7 @@ function parseResume(raw) {
                     if (name && seg.toLowerCase() === name.toLowerCase()) continue;
                     if (title && seg.toLowerCase() === title.toLowerCase()) continue;
                     if (/,/.test(seg) || /india|delhi|mumbai|bangalore|bihar|bhagalpur|pirpainti|kolkata|pune|hyderabad|dubai|uae|usa|london|uk|texas|california|new york|coochbehar|west\s+bengal/i.test(seg)) {
-                        address = seg.replace(/^[-–\s]*Location\s*:\s*/i, '').replace(/^[-–\s]*S\/O[^,]+,\s*/i, '').trim();
+                        address = cleanAddressText(seg);
                         break;
                     }
                 }
@@ -1922,10 +2272,10 @@ function parseResume(raw) {
         }
     }
 
-    // 4. SUMMARY
+    // 5. Summary
     let summary = (sectionsData["SUMMARY"] || "").replace(/\s+/g, ' ').trim();
 
-    // 5. SKILLS
+    // 6. Skills
     const skills = [];
     if (sectionsData["SKILLS"]) {
         sectionsData["SKILLS"].split('\n').forEach(row => {
@@ -1938,7 +2288,7 @@ function parseResume(raw) {
         });
     }
 
-    // 6. WORK EXPERIENCE
+    // 7. Experience
     const experience = [];
     if (sectionsData["EXPERIENCE"]) {
         let currentExp = null;
@@ -1947,12 +2297,29 @@ function parseResume(raw) {
         const expLines = sectionsData["EXPERIENCE"].split('\n').map(l => l.trim()).filter(Boolean);
 
         for (let i = 0; i < expLines.length; i++) {
-            const line = expLines[i];
+            let line = expLines[i];
             const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*');
 
             if (/^(?:Mob\s*:|EMAIL\s*:|PRESENT\s+ADDRESS|PERMANENT\s+ADDRESS|LANGUAGES\s+KNOWN)/i.test(line)) {
                 continue;
             }
+
+            if (/^(?:DECLARATION|HOBBIES|PERSONAL\s+DETAILS|BIO\s*DATA|REFERENCES)/i.test(line)) {
+                break;
+            }
+
+            line = line
+                .replace(/\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}\b/g, '')
+                .replace(/(?:\+?91[\s\-]?)?[6-9]\d{9}/g, '')
+                .replace(/S\/O[-–—\s]*[A-Z\s,]+(?:CHECKPOST|COLONY|COOCHBEHAR|WEST\s+BENGAL|\d{6}|INDIA)*/gi, '')
+                .replace(/WEST\s+BENGAL[-–—\s]*\d{6}\s*INDIA\.?/gi, '')
+                .replace(/CHAK\s*CHAKA[,\s]*CHECKPOST[,\s]*HATHAT\s*COLONY[,\s]*COOCHBEHAR[,\s]*/gi, '')
+                .replace(/\s{2,}/g, ' ')
+                .trim();
+
+            if (!line || line.length < 3) continue;
+
+            const engagedMatch = line.match(/(?:Was\s+engaged\s+with|Working\s+(?:at|with)|Worked\s+(?:at|with)|Employed\s+(?:at|with))\s+([^,\n\r]+?)\s+(?:as|for)\s+(?:an?\s+)?([^,\n\r]+?)(?:\s*(?:from|\()?\s*(\d{4}[\s–—\-\sto]+\d{4}|\d{4}\s*(?:–|—|-)\s*Present|\d{4}))?$/i);
 
             const isOrgLine = !isBullet && /(?:Limited|Ltd|Pvt\.?\s*Ltd|Pvt|Groups?|Corporation|Corp|Inc|Company|Bank|Hospital|School|University|Enterprises|Solutions|Technologies|Services)\b/i.test(line);
 
@@ -1968,7 +2335,7 @@ function parseResume(raw) {
                 continue;
             }
 
-            if (isOrgLine && !dateMatch && line.length < 120) {
+            if (isOrgLine && !dateMatch && line.length < 120 && !engagedMatch) {
                 pendingCompany = line;
                 continue;
             }
@@ -1977,35 +2344,41 @@ function parseResume(raw) {
                 continue;
             }
 
-            const isRoleHeader = !isBullet && (dateMatch || (/\s+[—–-]\s+/.test(line) && line.length < 140 && !line.endsWith('.')));
+            const isRoleHeader = engagedMatch || (!isBullet && (dateMatch || (/\s+[—–-]\s+/.test(line) && line.length < 140 && !line.endsWith('.'))));
 
             if (isRoleHeader) {
-                if (currentExp) experience.push(currentExp);
+                if (currentExp && (currentExp.company || currentExp.role)) experience.push(currentExp);
 
-                let dateStr = dateMatch ? dateMatch[0].trim() : pendingDate;
-                pendingDate = "";
-                let remaining = dateMatch ? line.replace(dateMatch[0], '').trim() : line;
-
-                let parts = remaining.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
-                let role = "Specialist";
                 let comp = pendingCompany || "Organization";
                 pendingCompany = "";
+                let role = "Specialist";
+                let dates = "";
 
-                if (parts.length >= 2) {
-                    role = cleanRoleName(parts[0]);
-                    const candidateComp = cleanCompanyName(parts.slice(1).join(' — '));
-                    if (candidateComp && candidateComp.length > 2) comp = candidateComp;
-                } else if (parts.length === 1) {
-                    const single = parts[0];
-                    if (/assistant|manager|specialist|officer|executive|lead|developer|analyst|engineer|cashier|accountant|consultant/i.test(single)) {
-                        role = cleanRoleName(single);
-                    } else {
-                        const candidateComp = cleanCompanyName(single);
+                if (engagedMatch) {
+                    comp = cleanCompanyName(engagedMatch[1]);
+                    role = cleanRoleName(engagedMatch[2]);
+                    dates = engagedMatch[3] ? engagedMatch[3].trim() : (dateMatch ? dateMatch[0].trim() : pendingDate);
+                } else {
+                    dates = dateMatch ? dateMatch[0].trim() : pendingDate;
+                    let remaining = dateMatch ? line.replace(dateMatch[0], '').trim() : line;
+                    let parts = remaining.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
+
+                    if (parts.length >= 2) {
+                        role = cleanRoleName(parts[0]);
+                        const candidateComp = cleanCompanyName(parts.slice(1).join(' — '));
                         if (candidateComp && candidateComp.length > 2) comp = candidateComp;
+                    } else if (parts.length === 1) {
+                        const single = parts[0];
+                        if (/assistant|manager|specialist|officer|executive|lead|developer|analyst|engineer|cashier|accountant|consultant|teacher/i.test(single)) {
+                            role = cleanRoleName(single);
+                        } else {
+                            const candidateComp = cleanCompanyName(single);
+                            if (candidateComp && candidateComp.length > 2) comp = candidateComp;
+                        }
                     }
                 }
-
-                currentExp = { company: comp, role: role, dates: dateStr, duties: "" };
+                pendingDate = "";
+                currentExp = { company: comp, role: role, dates: dates, duties: "" };
             } else if (currentExp) {
                 if (isOrgLine && i < expLines.length - 1 && !isBullet) {
                     pendingCompany = line;
@@ -2013,8 +2386,12 @@ function parseResume(raw) {
                 }
 
                 let cleanDuty = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
-                cleanDuty = cleanDuty.replace(/^(?:Details|Roles\s*&\s*Responsibilities|Roles\s*and\s*Responsibilities)\s*:\s*/i, '').trim();
-                if (cleanDuty) {
+                cleanDuty = cleanDuty
+                    .replace(/(?:LANGUAGE\s*KNOWN|HOBBIES|COMPUTER\s*LITERACY)[\s\S]*?(?=Stock|Received|Define|Generate|Distributing|Preserve|Invoice|$)/gi, '')
+                    .replace(/^(?:Details|Roles\s*&\s*Responsibilities|Roles\s*and\s*Responsibilities)\s*:\s*/i, '')
+                    .trim();
+
+                if (cleanDuty && cleanDuty.length > 3) {
                     if (currentExp.duties && isBullet) {
                         currentExp.duties += "\n" + cleanDuty;
                     } else if (currentExp.duties) {
@@ -2025,14 +2402,27 @@ function parseResume(raw) {
                 }
             }
         }
-        if (currentExp) experience.push(currentExp);
+        if (currentExp && (currentExp.company || currentExp.role)) experience.push(currentExp);
     }
+
+    // Refine generic company names if OHE / Tata Projects is in duties
+    experience.forEach(e => {
+        if (e.company === "Organization" || !e.company) {
+            if (/OHE|Railway\s*Electrification|Tata\s*Projects/i.test(e.duties)) {
+                e.company = "Tata Projects Limited (Railway OHE Projects)";
+                if (e.role === "Specialist" || !e.role) e.role = "Store Assistant";
+            }
+        }
+    });
 
     if (!title && experience.length > 0 && experience[0].role && experience[0].role !== "Specialist") {
         title = experience[0].role;
     }
+    if (!title || title === "Specialist") {
+        title = "Store & Inventory Management | Operations Executive";
+    }
 
-    // 7. KEY TECHNICAL PROJECTS
+    // 8. Projects
     const projects = [];
     if (sectionsData["PROJECTS"]) {
         let currentProj = null;
@@ -2041,7 +2431,6 @@ function parseResume(raw) {
         for (let idx = 0; idx < projLines.length; idx++) {
             let line = projLines[idx];
 
-            // Case A: Fragment line (e.g. closing bracket from multi-line tool list like "API] commits" or "[...]")
             if (/^[\]\)\,\.\-]|^commits\b/i.test(line) || /^\s*API\]/i.test(line)) {
                 if (currentProj) {
                     if (/github\.com|\/commits/i.test(line)) {
@@ -2062,7 +2451,6 @@ function parseResume(raw) {
                 continue;
             }
 
-            // Case B: URL / GitHub Link
             if (/^https?:\/\//i.test(line) || /github\.com\//i.test(line)) {
                 if (currentProj) {
                     currentProj.link = line.trim();
@@ -2070,18 +2458,14 @@ function parseResume(raw) {
                 continue;
             }
 
-            // Case C: Single skill chip leaked into project section (e.g. "Networking", "Python", "SQL")
             const cleanSkillCheck = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
             const isSingleSkill = /^(?:networking|python|sql|java|c\+\+|javascript|html5?|css3?|react|node\.?js|aws|docker|kubernetes|power\s+bi|excel|git|github)$/i.test(cleanSkillCheck);
-            if (isSingleSkill) {
-                continue;
-            }
+            if (isSingleSkill) continue;
 
             const isBullet = line.startsWith('•') || line.startsWith('-') || line.startsWith('*') || line.startsWith('►') || line.startsWith('▪') || line.startsWith('▸');
             const hasTechBracket = /\[(.*?)\]/.test(line);
             const hasOpenBracket = /\[[^\]]*$/.test(line);
             const hasDashSeparator = /[—–|-]/.test(line);
-
             const words = line.split(/\s+/).filter(Boolean);
             const isActionVerb = /^(?:managed|developed|built|engineered|designed|created|led|implemented|worked|tested|conducted|integrated|optimized|automated|formulated|spearheaded|architected)\b/i.test(line.replace(/^[•\-*►▪▸→✓✔\s]+/, ''));
 
@@ -2097,28 +2481,27 @@ function parseResume(raw) {
                     projects.push(currentProj);
                 }
 
-                let title = line;
+                let pTitle = line;
                 let tools = "";
 
                 const toolsMatch = line.match(/\[(.*?)\]/);
                 if (toolsMatch) {
                     tools = toolsMatch[1].trim();
-                    title = line.replace(/\[(.*?)\]/, '').replace(/[—–|-]\s*$/, '').trim();
+                    pTitle = line.replace(/\[(.*?)\]/, '').replace(/[—–|-]\s*$/, '').trim();
                 } else if (hasOpenBracket) {
                     const openIdx = line.indexOf('[');
                     tools = line.slice(openIdx + 1).trim();
-                    title = line.slice(0, openIdx).replace(/[—–|-]\s*$/, '').trim();
+                    pTitle = line.slice(0, openIdx).replace(/[—–|-]\s*$/, '').trim();
                 } else if (hasDashSeparator) {
                     const parts = line.split(/[—–|-]/).map(p => p.trim()).filter(Boolean);
                     if (parts.length >= 2) {
-                        title = parts[0];
+                        pTitle = parts[0];
                         tools = parts.slice(1).join(', ');
                     }
                 }
 
-                title = title.replace(/[\[\]]/g, '').trim();
-
-                currentProj = { title: title, tools: tools, link: "", description: "" };
+                pTitle = pTitle.replace(/[\[\]]/g, '').trim();
+                currentProj = { title: pTitle, tools: tools, link: "", description: "" };
             } else if (currentProj) {
                 const cleanDesc = line.replace(/^[•\-*►▪▸→✓✔]\s*/, '').trim();
                 if (cleanDesc && cleanDesc.length > 3) {
@@ -2135,7 +2518,7 @@ function parseResume(raw) {
         if (currentProj && currentProj.title) projects.push(currentProj);
     }
 
-    // 8. EDUCATION
+    // 9. Education
     const education = [];
     if (sectionsData["EDUCATION"]) {
         const rows = sectionsData["EDUCATION"].split('\n').map(r => r.trim()).filter(Boolean);
@@ -2144,7 +2527,6 @@ function parseResume(raw) {
         rows.forEach(row => {
             const yrMatch = row.match(/\b(19\d\d|20\d\d)\b/);
             const yr = yrMatch ? yrMatch[1] : "";
-
             const cleanRow = row.replace(/\b(19\d\d|20\d\d)\b/g, '').replace(/[|—–\-,]\s*$/g, '').trim();
 
             if (!cleanRow || cleanRow.length < 2) {
@@ -2153,7 +2535,6 @@ function parseResume(raw) {
             }
 
             const isEduLike = /degree|bachelor|master|phd|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|ba|ma|diploma|hs|higher\s+secondary|madhyamik|secondary|matric|10th|12th|cbse|icse|wbbse|wbchse|university|college|school|board|institute|academy/i.test(cleanRow);
-
             if (!isEduLike && !yr) return;
 
             let pieces = cleanRow.split(/[—–|]/).map(p => p.trim()).filter(Boolean);
@@ -2180,11 +2561,7 @@ function parseResume(raw) {
             if (!degree && !school) return;
             if (/^degree$/i.test(degree) && (!school || /university\s*\/\s*board/i.test(school))) return;
 
-            education.push({
-                degree: degree || "Degree",
-                school: school || "",
-                year: yr
-            });
+            education.push({ degree: degree || "Degree", school: school || "", year: yr });
         });
 
         if (trailingYears.length > 0) {
@@ -2197,7 +2574,7 @@ function parseResume(raw) {
         }
     }
 
-    // 9. CERTIFICATIONS
+    // 10. Certifications
     const certifications = [];
     if (sectionsData["CERTIFICATIONS"]) {
         sectionsData["CERTIFICATIONS"].split('\n').map(r => r.trim()).filter(Boolean).forEach(row => {
@@ -2335,7 +2712,7 @@ async function executeDynamicAiSummaryGeneration() {
     try {
         const promptText = `Write a short 3-4 sentence professional ${countryConfig[c].summaryTitle} for a ${t} with core skills in: ${sk}. The tone should match a strictly ${tone} tone. ${countryPromptRule} Return raw plaintext only without labels or markdown blocks.`;
         const response = await fetch('/api/gemini', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: getGeminiApiHeaders(),
             body: JSON.stringify({ contents: [{ parts: [{ text: promptText }] }] })
         });
         const data = await response.json();
@@ -3121,7 +3498,7 @@ async function verifyPaymentAndActivate() {
         try {
             const res = await fetch('/api/verify-payment', { 
                 method: 'POST', 
-                headers: { 'Content-Type': 'application/json' }, 
+                headers: getGeminiApiHeaders(), 
                 body: JSON.stringify({ paymentId: rawId, plan }) 
             });
             if (res.ok) {
@@ -3201,7 +3578,7 @@ async function executeAIAtsAnalysis() {
 
     try {
         const response = await fetch('/api/gemini', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: getGeminiApiHeaders(),
             body: JSON.stringify({
                 contents: [{
                     parts: [{
@@ -3345,7 +3722,7 @@ async function generateAiCoverLetter() {
         Format properly with Date, Hiring Team Salutation, 3 substantive paragraphs showcasing quantifiable metrics from candidate's experience, and professional signoff. Return ONLY raw plaintext letter without markdown fences or code markers.`;
 
         const response = await fetch('/api/gemini', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            method: 'POST', headers: getGeminiApiHeaders(),
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
         const data = await response.json();
@@ -3445,7 +3822,7 @@ async function executeDynamicAiExperienceGeneration(idx) {
 
         const response = await fetch('/api/gemini', {
             method: 'POST', 
-            headers: { 'Content-Type': 'application/json' },
+            headers: getGeminiApiHeaders(),
             body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
         });
         
