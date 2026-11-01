@@ -1,16 +1,21 @@
-// Vercel Serverless Function — Gemini AI Proxy
-// File location: api/gemini.js (at repo root)
-// Set GEMINI_API_KEY in Vercel → Project → Settings → Environment Variables
-
 // Vercel Serverless Function: Secure Gemini API Gateway
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  const apiKey = process.env.GEMINI_API_KEY || process.env.GEMINI_KEY || process.env.GOOGLE_API_KEY;
+  // Support environment keys, custom client key header, or request body key
+  const apiKey = process.env.GEMINI_API_KEY ||
+                 process.env.GEMINI_KEY ||
+                 process.env.GOOGLE_API_KEY ||
+                 req.headers['x-gemini-key'] ||
+                 req.body?.customApiKey;
+
   if (!apiKey) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY environment variable is missing on server.' });
+    return res.status(400).json({
+      error: 'GEMINI_API_KEY environment variable is missing on server. Add GEMINI_API_KEY to your Vercel Project Environment Variables, or provide your Gemini API key in the website settings.',
+      code: 'API_KEY_MISSING'
+    });
   }
 
   const body = req.body;
@@ -18,41 +23,63 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Missing prompt contents.' });
   }
 
-  // Safety length validation (protect server memory and quotas)
-  const bodyJson = JSON.stringify(body);
-  if (bodyJson.length > 30000) {
+  // Clean customApiKey so Google API does not reject with 400 Unknown field
+  const cleanBody = { ...body };
+  delete cleanBody.customApiKey;
+
+  const bodyJson = JSON.stringify(cleanBody);
+  if (bodyJson.length > 250000) {
     return res.status(413).json({ error: 'Prompt payload exceeds maximum allowed size.' });
   }
 
-  try {
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
-    const geminiRes = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: bodyJson
-    });
+  // Robust candidate models in order of performance and availability
+  const candidateModels = [
+    'gemini-2.0-flash',
+    'gemini-1.5-flash',
+    'gemini-1.5-flash-latest',
+    'gemini-1.5-pro'
+  ];
 
-    const data = await geminiRes.json();
-    return res.status(geminiRes.status).json(data);
-  } catch (err) {
-    console.error('Gemini gateway proxy error:', err);
-    return res.status(500).json({ error: 'Internal gateway error communicating with Gemini API.' });
-  }
-}
+  let lastError = null;
+  let lastStatus = 500;
 
-        body: JSON.stringify(body)
+  for (const model of candidateModels) {
+    try {
+      const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
+      const geminiRes = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-goog-api-key': apiKey.trim()
+        },
+        body: bodyJson
+      });
+
+      const data = await geminiRes.json();
+
+      if (geminiRes.ok) {
+        return res.status(200).json(data);
       }
-    );
 
-    const data = await response.json();
-    if (!response.ok) {
-      res.status(response.status).json({ error: data?.error?.message || 'Gemini API error' });
-      return;
+      lastStatus = geminiRes.status;
+      lastError = data?.error?.message || JSON.stringify(data);
+      console.warn(`Gemini model ${model} failed with status ${geminiRes.status}:`, lastError);
+
+      // If invalid API key (400 or 403), stop retrying other models
+      if (geminiRes.status === 400 && lastError.toLowerCase().includes('api key')) {
+        return res.status(400).json({
+          error: 'Invalid Google Gemini API Key provided. Please verify your API key in Google AI Studio.',
+          details: lastError
+        });
+      }
+    } catch (err) {
+      lastError = err.message || String(err);
+      console.error(`Gemini fetch error on model ${model}:`, err);
     }
-
-    res.status(200).json(data);
-  } catch (err) {
-    console.error('Gemini proxy error:', err);
-    res.status(500).json({ error: 'Internal server error: ' + err.message });
   }
+
+  return res.status(lastStatus || 500).json({
+    error: 'All Gemini API endpoints failed.',
+    details: lastError
+  });
 }
