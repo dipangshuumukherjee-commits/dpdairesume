@@ -442,10 +442,14 @@
 
                 <!-- SECTION 1: PERSONAL PROFILE -->
                 <div id="sectionPanel-1" class="space-y-4">
-                    <div class="border-2 border-dashed border-blue-600/60 p-4 rounded-xl bg-slate-900/60 text-center space-y-2">
-                        <span class="block text-xs font-bold text-blue-400 uppercase tracking-wide">upload resume if any</span>
-                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" class="mx-auto block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-slate-700 file:text-white hover:file:bg-slate-600 file:cursor-pointer">
-                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Auto-fills form inputs instantly via connected Gemini AI processing.</p>
+                    <div class="border-2 border-dashed border-blue-500/70 p-4 rounded-xl bg-gradient-to-r from-blue-950/40 via-slate-900/60 to-indigo-950/40 text-center space-y-2 shadow-inner hover:border-blue-400 transition-all cursor-pointer" onclick="document.getElementById('docSourceExtractor').click()">
+                        <div class="flex items-center justify-center gap-2">
+                            <span class="text-xl">📄</span>
+                            <span class="text-xs font-extrabold text-blue-300 uppercase tracking-wider">Upload Existing Resume (.PDF, .DOCX, .TXT)</span>
+                            <span class="text-[10px] bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-1.5 py-0.5 rounded font-bold">⚡ 1-Click Auto-Fill</span>
+                        </div>
+                        <input type="file" id="docSourceExtractor" accept=".docx,.pdf,.txt" onchange="executeClientFileExtraction(event)" onclick="event.stopPropagation()" class="mx-auto block w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded file:border-0 file:bg-blue-600 file:text-white hover:file:bg-blue-500 file:cursor-pointer file:font-semibold">
+                        <p id="extractorStatusFeedback" class="text-[10px] text-slate-400 italic">Auto-fills all sections and computes your live ATS Score in seconds.</p>
                     </div>
                     <div class="flex items-center justify-between pt-2">
                         <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
@@ -686,15 +690,24 @@
                     <span>Active Standard:</span>
                     <strong id="activeStandardLabel" class="text-slate-200">🇮🇳 India (A4 Portrait)</strong>
                 </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="displaySubscriptionGateway('word')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">📝 Download as Word (.doc)</button>
-                    <button onclick="displaySubscriptionGateway('pdf')" class="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">💾 Download as PDF</button>
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" onclick="downloadFreeWatermarkedPreview()" class="bg-slate-800 hover:bg-slate-700 text-amber-300 border border-amber-500/40 font-semibold py-2 px-3 rounded shadow text-xs flex items-center gap-1.5 transition-transform transform active:scale-95">
+                        <span>👁️ Free Watermarked PDF</span>
+                    </button>
+                    <button type="button" onclick="displaySubscriptionGateway('word')" class="bg-indigo-700 hover:bg-indigo-600 text-white font-bold py-2 px-3.5 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95">📝 Download Word (.doc)</button>
+                    <button type="button" onclick="displaySubscriptionGateway('pdf')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-3.5 rounded shadow text-xs flex items-center gap-1 transition-transform transform active:scale-95 shadow-emerald-900/40">⭐ Download Clean PDF (Weekly ₹39 / Monthly ₹99)</button>
                 </div>
             </div>
 
             <!-- LIVE RESUME PREVIEW CANVAS -->
             <div id="dpdPrintRoot" class="w-full overflow-x-auto rounded-xl custom-scroll print:overflow-visible print:w-full">
-                <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width" style="position:relative;">
+                <div id="printTargetSandbox" class="resume-print-canvas p-10 mx-auto print-full-width select-none" style="position:relative;">
+                    <div id="dpdDiagonalWatermark" style="display:none; position:absolute; inset:0; pointer-events:none; z-index:90; align-items:center; justify-content:center; overflow:hidden;">
+                        <div style="transform: rotate(-32deg); font-size: 24px; font-weight: 900; color: rgba(180, 83, 9, 0.22); text-transform: uppercase; letter-spacing: 3px; text-align: center; border: 3px dashed rgba(180, 83, 9, 0.35); padding: 18px 24px; border-radius: 10px; background: rgba(254, 243, 199, 0.08);">
+                            SAMPLE PREVIEW • DPD AI RESUME<br>
+                            <span style="font-size:13px; font-weight:700; letter-spacing:1.5px; color:rgba(180,83,9,0.30);">UPGRADE TO UNLOCK OFFICIAL ATS RESUME</span>
+                        </div>
+                    </div>
                     <div id="canvasDocumentRenderTree" class="space-y-5"></div>
                     <a id="dpdWatermark" href="https://dpdai-resume.vercel.app" target="_blank" rel="noopener" style="position:absolute; bottom:6px; left:10px; font-size:7px; color:#94a3b8; text-decoration:none; font-family:system-ui,sans-serif; letter-spacing:.2px;">DPD AI RESUME</a>
                 </div>
@@ -3975,6 +3988,109 @@ async function executeDynamicAiExperienceGeneration(idx) {
 // ========================================================
 // 9. NATIVE MS WORD & PDF EXPORTS (COUNTRY & ORDER AWARE)
 // ========================================================
+
+function loadSampleDemoData(shouldSync = true) {
+    engineState.personal = {
+        name: "Rahul Sharma",
+        title: "Senior Operations & Data Analytics Executive",
+        email: "rahul.sharma@example.com",
+        mobile: "+91 98765 43210",
+        linkedin: "linkedin.com/in/rahul-sharma-data",
+        github: "github.com/rahul-analytics",
+        portfolio: "",
+        address: "Bengaluru, Karnataka, India",
+        languages: "English, Hindi"
+    };
+    engineState.summary = "Results-driven Operations & Analytics Professional with 6+ years of experience optimizing enterprise supply chains, data pipelines, and ERP workflows. Proven track record in reducing operational costs by 18% and delivering high-impact executive dashboards using Power BI and Advanced Excel.";
+    engineState.experience = [
+        {
+            company: "Tata Enterprises (Infrastructure & Power Division)",
+            role: "Operations & Analytics Lead",
+            dates: "2021 – Present",
+            duties: "• Spearheaded end-to-end material inventory tracking across 12 major projects, improving stock accuracy by 24%.\n• Built automated Power BI reporting dashboards for senior directors, cutting monthly reporting cycle from 5 days to 2 hours.\n• Implemented ERP procurement checkpoints that saved over ₹42 Lakhs in duplicate purchase orders."
+        },
+        {
+            company: "Apex Logistics & Supply Solutions",
+            role: "Supply Chain Specialist",
+            dates: "2018 – 2021",
+            duties: "• Managed vendor coordination and procurement for 400+ SKUs with 99.2% on-time delivery rate.\n• Streamlined warehouse FIFO protocols, reducing perishable stock write-offs by 15%."
+        }
+    ];
+    engineState.projects = [
+        {
+            title: "Automated Supply Chain KPI Tracker",
+            tools: "Power BI, Advanced Excel, SQL, Python",
+            link: "https://github.com/example/kpi-tracker",
+            description: "Developed interactive multi-site inventory monitoring tool tracking 50+ logistics KPIs in real time."
+        }
+    ];
+    engineState.education = [
+        {
+            school: "University of Delhi",
+            degree: "Bachelor of Science (B.Sc.) in Statistics",
+            year: "2018"
+        }
+    ];
+    engineState.certifications = [
+        {
+            name: "Certified Data & Supply Chain Analyst",
+            issuer: "Microsoft & Coding Ninjas"
+        }
+    ];
+    engineState.skills = [
+        "Power BI", "Advanced Excel", "SQL", "ERP (SAP & Oracle)", "Data Visualization",
+        "Inventory Management", "Supply Chain Optimization", "KPI Dashboards",
+        "Vendor Coordination", "Python", "Process Automation"
+    ];
+
+    const s = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+    s('formName', engineState.personal.name); s('formTitle', engineState.personal.title);
+    s('formEmail', engineState.personal.email); s('formMobile', engineState.personal.mobile);
+    s('formLinkedIn', engineState.personal.linkedin); s('formGitHub', engineState.personal.github);
+    s('formPortfolio', engineState.personal.portfolio); s('formAddress', engineState.personal.address);
+    s('formLanguages', engineState.personal.languages); s('formSummary', engineState.summary);
+    s('formSkillsList', engineState.skills.join(', '));
+
+    renderExperienceFormInputs();
+    renderProjectFormInputs();
+    renderEducationFormInputs();
+    renderCertificationFormInputs();
+
+    if (shouldSync) {
+        runMasterManualSyncAndGenerate();
+    }
+}
+
+function downloadFreeWatermarkedPreview() {
+    const wm = document.getElementById('dpdDiagonalWatermark');
+    if (wm) wm.style.display = 'flex';
+    engineState.pendingExportFormat = 'pdf';
+
+    const originalTitle = document.title;
+    const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
+    document.title = (userName ? (userName.replace(/\s+/g, '_') + "_Preview_Resume") : "Sample_Preview_Resume") + ".pdf";
+
+    window.onafterprint = function() {
+        document.title = originalTitle;
+        if (wm) wm.style.display = 'none';
+        window.onafterprint = null;
+        setTimeout(() => {
+            if (!checkActiveSubscriptionPass()) {
+                const banner = document.getElementById('successBanner');
+                if (banner) {
+                    banner.innerHTML = '💡 <strong>Preview Downloaded!</strong> Loved the layout? <button type="button" onclick="displaySubscriptionGateway(\'pdf\')" class="underline font-bold text-amber-300 ml-1">Unlock Clean Official PDF with Weekly Pass (₹39) or Monthly Pass (₹99) ➔</button>';
+                    banner.classList.remove('hidden');
+                    setTimeout(() => banner.classList.add('hidden'), 10000);
+                }
+            }
+        }, 600);
+    };
+
+    showPrintTipThenPrint(400, () => {
+        window.print();
+    });
+}
+
 function dpdSmartPrint() { 
     const originalTitle = document.title;
     const userName = document.getElementById('formName') ? document.getElementById('formName').value.trim() : "";
@@ -4280,9 +4396,13 @@ window.onload = async function() {
         } catch(e) { console.warn("Could not restore saved state", e); }
     }
 
-    if (!formRestored || engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
-    if (!formRestored || engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
-    if (!formRestored || engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
+    if (!formRestored) {
+        loadSampleDemoData(false);
+    } else {
+        if (engineState.experience.length === 0) engineState.experience = [{company:"",role:"",dates:"",duties:""}];
+        if (engineState.projects.length === 0) engineState.projects = [{title:"",tools:"",link:"",description:""}];
+        if (engineState.education.length === 0) engineState.education = [{school:"",degree:"",year:""}];
+    }
 
     // Set initial country & mode configurations
     setTargetCountry(engineState.targetCountry || 'india');
