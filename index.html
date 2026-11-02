@@ -2488,22 +2488,76 @@ function parseEducation(eduText) {
 
 function parseProjects(projText) {
     if (!projText) return [];
-    const lines = projText.split('\n').map(l => l.trim()).filter(Boolean);
+    let lines = projText.split('\n').map(l => l.trim()).filter(Boolean);
     const projects = [];
     let currentProj = null;
+    let unclosedTools = false;
 
     for (let idx = 0; idx < lines.length; idx++) {
         let line = lines[idx];
 
-        if (/^https?:\/\//i.test(line) || /github\.com\//i.test(line)) {
-            if (currentProj) currentProj.link = line.trim();
+        // 1. Standalone URL line (e.g. "https://github.com/..." without title separators)
+        if (/^\s*(?:https?:\/\/|github\.com\/)/i.test(line) && !line.includes('—') && !line.includes('–') && !line.includes('[')) {
+            if (currentProj) {
+                currentProj.link = line.trim();
+                // Check if next line is a wrapped URL slug (e.g. "commits")
+                if (lines[idx + 1] && /^[a-zA-Z0-9_\-]+$/.test(lines[idx + 1]) && lines[idx + 1].length < 25 && !/^(?:project|technologies|tools)/i.test(lines[idx + 1])) {
+                    if (currentProj.link.endsWith('-') || currentProj.link.endsWith('/')) {
+                        currentProj.link += lines[idx + 1];
+                    } else {
+                        currentProj.link += '-' + lines[idx + 1];
+                    }
+                    idx++; // consumed wrapped slug
+                }
+            }
             continue;
+        }
+
+        // Check if inline URL exists on line (e.g. "DPD AI RESUME BUILDER — [Tools] https://github.com/...")
+        let extractedInlineUrl = "";
+        const inlineUrlMatch = line.match(/(https?:\/\/[^\s]+|github\.com\/[^\s]+)/i);
+        if (inlineUrlMatch) {
+            extractedInlineUrl = inlineUrlMatch[1].trim();
+            line = line.replace(inlineUrlMatch[0], '').trim();
+        }
+
+        // 2. Multi-line bracket continuation for tools (e.g. line 1 ends with "[HTML5...", line 2 starts with "API] commits")
+        if (currentProj && (unclosedTools || (!line.includes('[') && /^[a-zA-Z0-9_\s,.\-+*\/]+\]/i.test(line))) && line.includes(']')) {
+            const closingIdx = line.indexOf(']');
+            const toolsContinuation = line.substring(0, closingIdx).trim();
+            if (toolsContinuation) {
+                currentProj.tools = (currentProj.tools ? currentProj.tools + (currentProj.tools.endsWith(',') ? ' ' : (currentProj.tools.endsWith(' ') ? '' : ' ')) : '') + toolsContinuation;
+                currentProj.tools = currentProj.tools.replace(/^[\s,]+|[\s,]+$/g, '');
+            }
+            unclosedTools = false;
+            line = line.substring(closingIdx + 1).trim();
+
+            // If remainder of line contains wrapped URL slug like "commits", attach to link
+            if (line && /^[a-zA-Z0-9_\-]+$/.test(line) && line.length < 35) {
+                if (currentProj.link) {
+                    if (currentProj.link.endsWith('-') || currentProj.link.endsWith('/')) {
+                        currentProj.link += line;
+                    } else {
+                        currentProj.link += '-' + line;
+                    }
+                }
+                line = "";
+            }
+            if (!line) continue;
         }
 
         const isBullet = /^[•\-*►▪▸→✓✔]/.test(line);
         const hasTechBracket = /\[(.*?)\]/.test(line);
         const hasSeparator = /\s*[—–|]\s*|\s+-\s+/.test(line);
-        const isHeader = !isBullet && (hasTechBracket || (hasSeparator && line.length < 90 && !line.endsWith('.')) || (line.length < 60 && !line.endsWith('.') && !/^(?:technologies|tools|stack|skills|duties):/i.test(line)));
+
+        // Disqualify invalid project titles: lone closing bracket without opening, url fragments, short garbage
+        const isFragment = /^[\s\]\)\,\.\-]+/.test(line) || (!line.includes('[') && line.includes(']')) || /^commits?\b/i.test(line) || line.length < 4;
+
+        const isHeader = !isBullet && !isFragment && (
+            hasTechBracket ||
+            (hasSeparator && line.length < 100 && !line.endsWith('.')) ||
+            (line.length < 60 && !line.endsWith('.') && !/^(?:technologies|tools|stack|skills|duties|managed|developed|built|engineered|spearheaded):/i.test(line) && !/^(?:engineering|spearheading|developing|building|architecting)\b/i.test(line))
+        );
 
         if (isHeader) {
             if (currentProj && currentProj.title) projects.push(currentProj);
@@ -2515,15 +2569,34 @@ function parseProjects(projText) {
             if (toolsMatch) {
                 tools = toolsMatch[1].trim();
                 pTitle = line.replace(/\[(.*?)\]/, '').replace(/[—–|-]\s*$/, '').trim();
+                unclosedTools = false;
             } else if (hasSeparator) {
                 const parts = line.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
                 if (parts.length >= 2) {
                     pTitle = parts[0];
                     tools = parts.slice(1).join(', ');
                 }
+                if (tools.includes('[') && !tools.includes(']')) {
+                    unclosedTools = true;
+                    tools = tools.replace(/\[/g, '');
+                } else {
+                    unclosedTools = false;
+                }
+            } else if (line.includes('[') && !line.includes(']')) {
+                const bracketIdx = line.indexOf('[');
+                tools = line.substring(bracketIdx + 1).trim();
+                pTitle = line.substring(0, bracketIdx).replace(/[—–|-]\s*$/, '').trim();
+                unclosedTools = true;
+            } else {
+                unclosedTools = false;
             }
 
-            currentProj = { title: pTitle, tools: tools, link: "", description: "" };
+            currentProj = {
+                title: pTitle,
+                tools: tools.replace(/[\[\]]/g, '').trim(),
+                link: extractedInlineUrl,
+                description: ""
+            };
         } else if (currentProj) {
             const cleanDesc = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
             if (cleanDesc) {
@@ -2540,7 +2613,10 @@ function parseProjects(projText) {
             }
         }
     }
-    if (currentProj && currentProj.title) projects.push(currentProj);
+    if (currentProj && currentProj.title) {
+        currentProj.tools = currentProj.tools.replace(/[\[\]]/g, '').trim();
+        projects.push(currentProj);
+    }
     return projects;
 }
 
@@ -2699,6 +2775,8 @@ function fillStateFromParsed(p) {
     const rawProj = Array.isArray(p.projects) ? p.projects : (Array.isArray(p.technicalProjects) ? p.technicalProjects : (Array.isArray(p.keyProjects) ? p.keyProjects : []));
     engineState.projects = rawProj.map(pr => {
         if (!pr || typeof pr !== 'object') return null;
+        let pTitle = (pr.title || pr.name || pr.projectName || "Project").trim();
+        if ((/\]|\bcommits?\b/i.test(pTitle) && pTitle.length < 25) || pTitle === "API") return null;
         let desc = pr.description || pr.details || pr.outcomes || pr.summary || "";
         if (Array.isArray(desc)) {
             desc = desc.map(d => typeof d === 'string' ? d.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim() : JSON.stringify(d)).filter(Boolean).map(d => '• ' + d).join('\n');
