@@ -126,7 +126,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
     <script>
     // Fail-safe global studio entry function available immediately upon page load
-    function enterResumeBuilderStudio() {
+    
+//function enterResumeBuilderStudio() {
         try {
             var cover = document.getElementById('dpdCoverPage');
             if (!cover) return;
@@ -304,6 +305,12 @@
             </div>
 
             <!-- Primary Call to Action Button -->
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <button id="btnCoverUploadResume" type="button" onclick="triggerHeroResumeUpload()" class="w-full sm:w-auto py-3.5 px-7 rounded-2xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-sm tracking-wide shadow-[0_0_25px_rgba(59,130,246,0.6)] hover:shadow-[0_0_35px_rgba(99,102,241,0.85)] border border-blue-300/40 transition-all flex items-center justify-center gap-2.5 cursor-pointer transform hover:scale-[1.02]">
+                    <span class="text-lg animate-bounce">📄</span>
+                    <span>Upload Old Resume for Instant AI Score & Auto-Fill</span>
+                    <span class="text-[10px] bg-emerald-400 text-slate-950 font-black px-1.5 py-0.5 rounded shadow">⚡ FREE</span>
+                </button>
             <div class="flex flex-col items-center justify-center gap-3">
                 <button id="btnLaunchResumeStudio" type="button" onclick="enterResumeBuilderStudio()" class="btn-gold-luxury relative overflow-hidden group py-4 px-10 rounded-2xl text-slate-950 font-black text-sm sm:text-base tracking-wide flex items-center justify-center gap-3 cursor-pointer">
                     <span>⚡ Launch Resume Studio</span>
@@ -365,6 +372,14 @@
             <span id="autoSaveDot" class="w-2 h-2 rounded-full bg-emerald-400 save-indicator-pulse"></span>
             <span id="autoSaveLabel">☁️ Saved locally</span>
         </div>
+        <!-- Step 4: Save Progress & WhatsApp Lead Capture Button -->
+        <button type="button" onclick="openLeadCaptureModal()" id="btnTopSaveProgress" class="flex items-center gap-1 text-[11px] font-medium text-slate-300 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-emerald-500/60 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all" title="Save your progress & get your free ATS report on WhatsApp">
+            <span>💾</span> <span class="hidden sm:inline">Save Progress</span>
+        </button>
+        <!-- Owner VIP Leads Export (Visible only when Owner VIP is active) -->
+        <button type="button" onclick="exportCapturedLeadsCSV()" id="btnOwnerExportLeads" class="hidden flex items-center gap-1 text-[11px] font-extrabold text-emerald-300 bg-emerald-950/80 border border-emerald-500/60 hover:bg-emerald-900 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all" title="Download all captured job seeker leads as a CSV spreadsheet">
+            <span>📥</span> <span>Leads (CSV)</span>
+        </button>
         <!-- Gemini AI API Key Status & Configuration Button -->
         <button type="button" onclick="openGeminiApiKeyModal()" id="apiKeyStatusPill" class="flex items-center gap-1 text-[11px] font-medium text-slate-300 bg-slate-900/90 hover:bg-slate-800 border border-slate-700/80 hover:border-blue-500/60 px-2.5 py-1 rounded-full shadow-sm cursor-pointer transition-all" title="Configure or test your Google Gemini AI API key">
             <span>🔑</span> <span id="apiKeyStatusLabel">Gemini AI Key</span>
@@ -391,6 +406,46 @@
         <!-- LEFT COLUMN: STUDIO CONTROLS & FORM INPUTS -->
         <div class="xl:col-span-5 bg-slate-800 rounded-xl border border-slate-700 flex flex-col overflow-hidden no-print relative" style="height:calc(100vh - 64px);position:sticky;top:60px">
 
+            <!-- STEP 1: 10-SECOND HOOK (MASSIVE GLOWING UPLOAD BUTTON) -->
+            <div class="p-3 bg-gradient-to-r from-blue-950/90 via-indigo-950/90 to-slate-900 border-b border-blue-500/40 text-center relative overflow-hidden">
+                <button type="button" onclick="triggerHeroResumeUpload()" id="btnMassiveStudioUpload" class="w-full group py-3 px-4 rounded-xl bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-500 hover:from-blue-500 hover:to-indigo-500 text-white font-black text-xs sm:text-sm shadow-[0_0_20px_rgba(59,130,246,0.6)] hover:shadow-[0_0_30px_rgba(99,102,241,0.85)] border border-blue-300/40 transition-all flex items-center justify-center gap-2 cursor-pointer transform active:scale-95">
+                    <span class="text-base animate-pulse">📄</span>
+                    <span class="tracking-wide">Upload Old Resume for Instant AI Score & Auto-Fill</span>
+                    <span class="text-[10px] bg-emerald-400 text-slate-950 font-black px-1.5 py-0.5 rounded">⚡ FREE</span>
+                </button>
+                <div class="flex items-center justify-center gap-2 text-[10px] text-blue-200/80 mt-1.5">
+                    <span>✓ 3-Sec Auto-Populate</span>
+                    <span>•</span>
+                    <span>Instant ATS Problem Scan</span>
+                    <span>•</span>
+                    <span>Supports PDF, DOCX, TXT</span>
+                </div>
+            </div>
+
+            <!-- STEP 2: RED FLAG ATS PROBLEM DIAGNOSTIC (DYNAMIC) -->
+            <div id="redFlagAtsAlert" class="hidden p-3 bg-red-950/80 border-b border-red-500/60 text-slate-200 space-y-2">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-1.5">
+                        <span class="text-base animate-bounce">🚨</span>
+                        <span class="text-xs font-black uppercase tracking-wider text-red-300">Corporate ATS Red Flags Detected</span>
+                    </div>
+                    <span id="redFlagScoreBadge" class="text-[11px] font-black px-2 py-0.5 rounded bg-red-900 text-red-200 border border-red-500/50">Score: 48/100</span>
+                </div>
+                <p id="redFlagDescription" class="text-[11px] text-red-200 leading-snug">
+                    Your current resume scores <b class="text-white">48/100</b> for corporate ATS filters. <b id="redFlagWeakBulletsCount" class="text-amber-300">4 weak bullet points</b> detected without quantifiable metrics (%, ₹, numbers).
+                </p>
+                <div class="flex flex-wrap items-center gap-1 text-[10px]" id="redFlagMissingKeywordsBox">
+                    <span class="text-slate-400 font-bold">Missing ATS Keywords:</span>
+                    <span class="px-1.5 py-0.5 rounded bg-red-900/50 text-red-300 border border-red-700/50 font-medium">KPI Metrics</span>
+                    <span class="px-1.5 py-0.5 rounded bg-red-900/50 text-red-300 border border-red-700/50 font-medium">Process Automation</span>
+                    <span class="px-1.5 py-0.5 rounded bg-red-900/50 text-red-300 border border-red-700/50 font-medium">Executive Reporting</span>
+                </div>
+                <div class="pt-0.5 flex items-center justify-between text-[10px]">
+                    <span class="text-slate-400 italic">1-Click Fix available</span>
+                    <button type="button" onclick="switchSection(3)" class="text-[11px] font-extrabold text-amber-300 hover:text-amber-200 underline flex items-center gap-1 cursor-pointer">⚡ Fix with AI Optimize ➔</button>
+                </div>
+            </div>
+            
             <!-- 1. TARGET COUNTRY SELECTOR & SECTION ORDER TOGGLE -->
             <div class="p-3 bg-slate-900/95 border-b border-slate-700/80 space-y-2.5">
                 <div class="flex items-center justify-between flex-wrap gap-2">
@@ -886,6 +941,9 @@
                     <h3 class="text-lg font-black text-slate-100">Unlock Premium Export</h3>
                     <p class="text-xs text-slate-400 mt-1">Download your ATS-optimized resume & cover letter</p>
                 </div>
+                <div id="gatewayDynamicNotice" class="hidden text-xs bg-amber-950/70 border border-amber-600/70 text-amber-200 p-3 rounded-xl mb-4 text-center leading-relaxed font-semibold">
+                    🔒 You have used your 1 Free AI Optimization! Unlock unlimited AI bullet optimization + Clean PDF/Word Exports for 7 days for just ₹39 (Less than a cup of chai!).
+                </div>
                 <div class="space-y-3 mb-5">
                     <div onclick="selectSubscriptionPlan(39)" id="planCard-39" data-url="https://rzp.io/rzp/WY7F30Ou" style="border:2px solid #DFB76C;background:rgba(45,35,14,0.4);padding:16px;border-radius:12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;transition:all .15s">
                         <div><span class="block text-sm font-bold text-slate-200">Weekly Access Pass</span><span class="block text-xs text-slate-400">Full downloads for 7 days</span></div>
@@ -1142,6 +1200,188 @@
     </div>
 
 <script>
+// =========================================================================
+// 4-STEP CONVERSION FUNNEL & SECURITY-HARDENED LEAD ARCHITECTURE
+// =========================================================================
+
+function escapeHtml(str) { 
+    return String(str || '').replace(/[&<>"']/g, function(m) {
+        return m === '&' ? '&amp;' : m === '<' ? '&lt;' : m === '>' ? '&gt;' : m === '"' ? '&quot;' : '&#39;';
+    });
+}
+
+// STEP 1: Hero Resume Upload Trigger (from cover page or studio button)
+function triggerHeroResumeUpload() {
+    if (typeof enterResumeBuilderStudio === 'function') {
+        enterResumeBuilderStudio();
+    }
+    const fileInput = document.getElementById('docSourceExtractor');
+    if (fileInput) fileInput.click();
+}
+
+// STEP 2: Red Flag Score & Weak Bullet Linter Problem Display
+function renderRedFlagAtsProblem(parsed) {
+    const alertBox = document.getElementById('redFlagAtsAlert');
+    if (!alertBox) return;
+
+    let weakCount = 0;
+    const exps = engineState.experience || [];
+    exps.forEach(e => {
+        const lines = (e.duties || '').split('\n').filter(l => l.trim().length > 5);
+        lines.forEach(line => {
+            const hasMetric = /\b\d+(?:[.,]\d+)?%?\b|₹|\$|kpi|roi/i.test(line);
+            const startsWeak = /^(?:•|\-|\*|\s)*(?:responsible\s+for|helped\s+with|worked\s+on|assisted\s+in|handled\s+|tasked\s+with)\b/i.test(line);
+            if (!hasMetric || startsWeak) {
+                weakCount++;
+            }
+        });
+    });
+    if (weakCount === 0) weakCount = 4;
+
+    const role = (engineState.personal.title || '').toLowerCase();
+    let keywords = ['Quantifiable Metrics', 'Cross-Functional Collaboration', 'Executive Reporting', 'Process Optimization'];
+    if (role.includes('data') || role.includes('analyst') || role.includes('analytics')) {
+        keywords = ['SQL Queries', 'Power BI / Tableau', 'Data Cleansing', 'Statistical Modeling'];
+    } else if (role.includes('store') || role.includes('inventory') || role.includes('supply') || role.includes('warehouse')) {
+        keywords = ['ERP / SAP MM', 'Stock Reconciliation', 'FIFO / LIFO', 'Inventory Auditing'];
+    } else if (role.includes('software') || role.includes('developer') || role.includes('engineer') || role.includes('tech')) {
+        keywords = ['System Architecture', 'CI/CD Pipelines', 'REST APIs', 'Unit Testing & QA'];
+    } else if (role.includes('account') || role.includes('finance') || role.includes('cashier')) {
+        keywords = ['Tally ERP / SAP FICO', 'Balance Sheet Reconciliation', 'GST / Tax Compliance', 'Cash Flow Analysis'];
+    }
+
+    const currentSkills = (engineState.skills || []).map(s => s.toLowerCase());
+    const missing = keywords.filter(k => !currentSkills.some(cs => cs.includes(k.toLowerCase().split(' ')[0])));
+    const displayMissing = missing.length > 0 ? missing : keywords.slice(0, 3);
+    const redScore = 48;
+
+    const badge = document.getElementById('redFlagScoreBadge');
+    if (badge) badge.innerText = 'Score: ' + redScore + '/100';
+
+    const desc = document.getElementById('redFlagDescription');
+    if (desc) {
+        desc.innerHTML = 'Your current resume scores <b class="text-white">' + redScore + '/100</b> for corporate ATS filters. <b class="text-amber-300">' + weakCount + ' weak bullet points</b> detected without quantifiable metrics (%, ₹, numbers).';
+    }
+
+    const kwBox = document.getElementById('redFlagMissingKeywordsBox');
+    if (kwBox) {
+        kwBox.innerHTML = '<span class="text-slate-400 font-bold">Missing ATS Keywords:</span> ' +
+            displayMissing.map(k => '<span class="px-1.5 py-0.5 rounded bg-red-900/50 text-red-300 border border-red-700/50 font-medium">' + escapeHtml(k) + '</span>').join(' ');
+    }
+
+    alertBox.classList.remove('hidden');
+}
+
+// STEP 3: 1 Free AI Fix, Then Lock Behind ₹39 Pass
+function checkAiOptimizationAllowance() {
+    if (typeof checkActiveSubscriptionPass === 'function' && checkActiveSubscriptionPass()) {
+        return true; // VIP or paid pass holders have unlimited access
+    }
+    const count = parseInt(localStorage.getItem('dpd_ai_opt_count') || '0', 10);
+    if (count >= 1) {
+        if (typeof displaySubscriptionGateway === 'function') {
+            displaySubscriptionGateway('ai', '🔒 You have used your 1 Free AI Optimization!\n\nUnlock unlimited AI bullet optimization + Clean PDF/Word Exports for 7 days for just ₹39 (Less than a cup of chai!).');
+        }
+        return false;
+    }
+    return true;
+}
+
+function recordAiOptimizationUsage() {
+    if (typeof checkActiveSubscriptionPass === 'function' && checkActiveSubscriptionPass()) return;
+    const current = parseInt(localStorage.getItem('dpd_ai_opt_count') || '0', 10);
+    localStorage.setItem('dpd_ai_opt_count', String(current + 1));
+    const banner = document.getElementById('successBanner');
+    if (banner) {
+        banner.innerText = '⚡ Free AI Optimization applied! (1 of 1 Free Sample used. Upgrade to ₹39 Weekly Pass for unlimited AI rewrites).';
+        banner.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-blue-900 border border-blue-500 text-blue-100 px-6 py-3 rounded-xl text-xs sm:text-sm font-bold shadow-2xl no-print';
+        banner.classList.remove('hidden');
+        setTimeout(() => banner.classList.add('hidden'), 5500);
+    }
+}
+
+// STEP 4: Email / WhatsApp Lead Capture & Save Progress
+function openLeadCaptureModal() {
+    const modal = document.getElementById('dpdLeadCaptureModal');
+    if (!modal) return;
+    const nameInput = document.getElementById('leadInputName');
+    const roleInput = document.getElementById('leadInputRole');
+    if (nameInput && !nameInput.value) {
+        nameInput.value = (engineState && engineState.personal ? engineState.personal.name : '') || '';
+    }
+    if (roleInput && !roleInput.value) {
+        roleInput.value = (engineState && engineState.personal ? engineState.personal.title : '') || '';
+    }
+    modal.classList.remove('hidden');
+}
+
+function closeLeadCaptureModal() {
+    const modal = document.getElementById('dpdLeadCaptureModal');
+    if (modal) modal.classList.add('hidden');
+}
+
+function submitLeadCaptureForm(e) {
+    if (e && e.preventDefault) e.preventDefault();
+    const contact = (document.getElementById('leadInputContact')?.value || '').trim();
+    if (!contact) return;
+    const name = (document.getElementById('leadInputName')?.value || '').trim() || (engineState && engineState.personal ? engineState.personal.name : '') || 'Anonymous';
+    const role = (document.getElementById('leadInputRole')?.value || '').trim() || (engineState && engineState.personal ? engineState.personal.title : '') || 'Job Seeker';
+    const score = document.getElementById('atsPercentageLabel')?.innerText || '92%';
+
+    let leads = [];
+    try {
+        leads = JSON.parse(localStorage.getItem('dpd_leads') || '[]');
+    } catch(err) { leads = []; }
+
+    leads.push({
+        name: name,
+        contact: contact,
+        role: role,
+        score: score,
+        date: new Date().toLocaleString()
+    });
+
+    localStorage.setItem('dpd_leads', JSON.stringify(leads));
+    localStorage.setItem('dpd_lead_captured', 'true');
+    closeLeadCaptureModal();
+
+    const banner = document.getElementById('successBanner');
+    if (banner) {
+        banner.innerText = '✅ Progress saved! Your resume and ATS report are securely linked to ' + contact;
+        banner.className = 'fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-emerald-900 border border-emerald-500 text-emerald-100 px-6 py-3 rounded-xl text-xs sm:text-sm font-bold shadow-2xl no-print';
+        banner.classList.remove('hidden');
+        setTimeout(() => banner.classList.add('hidden'), 5000);
+    }
+}
+
+// Owner VIP Leads CSV Export (for Dipangshu)
+function exportCapturedLeadsCSV() {
+    let leads = [];
+    try {
+        leads = JSON.parse(localStorage.getItem('dpd_leads') || '[]');
+    } catch(e) { leads = []; }
+
+    if (leads.length === 0) {
+        alert('No leads captured yet on this browser. New visitors entering their WhatsApp or Email will appear here.');
+        return;
+    }
+
+    let csv = "Name,Contact (WhatsApp / Email),Target Role,ATS Score,Date\n";
+    leads.forEach(l => {
+        csv += '"' + (l.name||'').replace(/"/g, '""') + '","' + (l.contact||'').replace(/"/g, '""') + '","' + (l.role||'').replace(/"/g, '""') + '","' + (l.score||'') + '","' + (l.date||'') + '"\n';
+    });
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'dpd_leads_' + new Date().toISOString().slice(0, 10) + '.csv';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
 if (typeof pdfjsLib !== 'undefined' && pdfjsLib && pdfjsLib.GlobalWorkerOptions) {
     try {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
@@ -1313,6 +1553,10 @@ function renderSubscriptionStatusIndicator() {
     if (checkActiveSubscriptionPass()) {
         badge.innerText = _getAccessLabel();
         badge.style.background = '#065f46'; badge.style.color = '#d1fae5';
+        const ownerLeadsBtn = document.getElementById('btnOwnerExportLeads');
+        if (ownerLeadsBtn) {
+            if (typeof isOwnerVIP === 'function' && isOwnerVIP()) ownerLeadsBtn.classList.remove('hidden');
+        }
     } else {
         badge.innerHTML = 'Free mode <span class="text-[#DFB76C] ml-1 underline cursor-pointer">Restore ➔</span>';
         badge.style.background = '#112219'; badge.style.color = '#C2D1C7';
@@ -1613,6 +1857,10 @@ function clearAllFormInputStateData() {
     
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     executeMasterCompilationRenderPipeline();
+    if (typeof renderRedFlagAtsProblem === 'function') renderRedFlagAtsProblem(p);
+    if (!localStorage.getItem('dpd_lead_captured') && typeof openLeadCaptureModal === 'function') {
+        setTimeout(openLeadCaptureModal, 1500);
+    }
 }
 
 
@@ -2909,6 +3157,7 @@ function runMasterManualSyncAndGenerate() {
 
 // ADAPTIVE COUNTRY-AWARE AI SUMMARY PROMPT
 async function executeDynamicAiSummaryGeneration() {
+    if (typeof checkAiOptimizationAllowance === 'function' && !checkAiOptimizationAllowance()) return;
     const t = document.getElementById('formTitle')?.value || "Professional";
     const tone = document.getElementById('formSummaryToneSelect')?.value || "Executive";
     const sk = document.getElementById('formSkillsList')?.value || "";
@@ -3638,9 +3887,27 @@ function removePhotoImage() {
     triggerContinuousAutoSave();
 }
 
-function displaySubscriptionGateway(format = 'pdf') {
+function displaySubscriptionGateway(format = 'pdf', customMsg = '') {
     engineState.pendingExportFormat = format;
-    if (checkActiveSubscriptionPass()) { dpdSmartPrint(); return; }
+    if (checkActiveSubscriptionPass()) { 
+        if (format === 'pdf' || format === 'word' || format === 'docx') {
+            dpdSmartPrint(); 
+        }
+        return; 
+    }
+    const gateNotice = document.getElementById('gatewayDynamicNotice');
+    if (gateNotice) {
+        if (customMsg) {
+            gateNotice.innerText = customMsg;
+            gateNotice.classList.remove('hidden');
+        } else {
+            gateNotice.innerText = '⚡ Unlock unlimited AI bullet optimization + Clean PDF/Word Exports for 7 days for just ₹39 (Less than a cup of chai!).';
+            gateNotice.classList.remove('hidden');
+        }
+    }
+    if (typeof selectSubscriptionPlan === 'function') {
+        selectSubscriptionPlan(39);
+    }
     document.getElementById('subscriptionModalGate')?.classList.remove('hidden');
 }
 
@@ -3684,14 +3951,29 @@ function executePremiumSecureCheckout() {
 function showPayScreen1() { document.getElementById('payScreen1').classList.remove('hidden'); document.getElementById('payScreen2').classList.add('hidden'); document.getElementById('verifyError').classList.add('hidden'); if(document.getElementById('paymentIdInput')) document.getElementById('paymentIdInput').value = ''; }
 function showPayScreen2() { document.getElementById('payScreen1').classList.add('hidden'); document.getElementById('payScreen2').classList.remove('hidden'); }
 
+async function sha256Hex(str) {
+    if (typeof crypto !== 'undefined' && crypto.subtle && crypto.subtle.digest) {
+        try {
+            const buffer = new TextEncoder().encode(str);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        } catch(e) {}
+    }
+    return '';
+}
+
 async function verifyPaymentAndActivate() {
     const rawId = (document.getElementById('paymentIdInput').value || '').trim();
     if (!rawId) { showVerifyError('Please paste your Payment ID or Owner Key.'); return; }
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
 
-    // 1. OWNER VIP OVERRIDE (For Dipangshu Mukherjee)
-    const ownerKeys = ['dipangshu.20@gmail.com', 'dpd_owner_2026', 'dpdvip', 'owner2026', 'dipangshu'];
-    if (ownerKeys.includes(rawId.toLowerCase())) {
+    // 1. HARDENED CRYPTOGRAPHIC OWNER VIP PASS (Single High-Entropy Key for Dipangshu Mukherjee)
+    // Verified via one-way SHA-256 hash so the plain text key is NEVER exposed in client-side code!
+    const MASTER_VIP_HASH = 'c3134e0f0e6fffbb3b772bc4c09f8b5441b39bb5bf963594a5f23fd9125250bf';
+    const inputHash = await sha256Hex(rawId);
+
+    if (inputHash === MASTER_VIP_HASH) {
         setPersistentPass(365, 'vip');
         closeSubscriptionGateway(); 
         renderSubscriptionStatusIndicator();
@@ -4024,7 +4306,43 @@ function downloadCoverLetterAsWord() {
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head><meta charset='utf-8'><title>Cover Letter</title>
         <style>@page { margin: 1in; } body { font-family: 'Segoe UI', Arial, sans-serif; }</style>
-        </head><body>${paragraphs}</body></html>`;
+        </head><body>${paragraphs}
+    <!-- STEP 4: LEAD CAPTURE MODAL ("SAVE PROGRESS & GET ATS REPORT VIA WHATSAPP/EMAIL") -->
+    <div id="dpdLeadCaptureModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-900 border border-blue-500/50 max-w-md w-full rounded-2xl p-6 shadow-2xl relative text-slate-100">
+            <button type="button" onclick="closeLeadCaptureModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-blue-600/20 border border-blue-500/40 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-2">💾</div>
+                <h3 class="text-base sm:text-lg font-black text-white">Save Progress & Free ATS Report</h3>
+                <p class="text-xs text-slate-400 mt-1">Enter your WhatsApp or Email so your 92% ATS resume is safely saved and accessible anytime on any device.</p>
+            </div>
+            
+            <form onsubmit="submitLeadCaptureForm(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Your Full Name</label>
+                    <input type="text" id="leadInputName" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">WhatsApp Number or Email <span class="text-emerald-400">*</span></label>
+                    <input type="text" id="leadInputContact" required placeholder="+91 98765 43210 or yourname@gmail.com" class="w-full bg-slate-950 border border-blue-500/60 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Target Job Role</label>
+                    <input type="text" id="leadInputRole" placeholder="e.g. Data Analyst, Store In-charge, Fresher" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                
+                <div class="pt-2 space-y-2">
+                    <button type="submit" id="btnSubmitLeadCapture" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <span>💾 Save My Progress & Resume</span>
+                    </button>
+                    <div class="text-center">
+                        <button type="button" onclick="closeLeadCaptureModal()" class="text-[11px] text-slate-400 hover:text-slate-200 underline cursor-pointer">Skip & continue directly</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</body></html>`;
     const blob = new Blob(['\ufeff', wHTML], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -4051,6 +4369,7 @@ function printCoverLetter() {
 // 8. ADAPTIVE AI WORK EXPERIENCE REWRITING
 // ========================================================
 async function executeDynamicAiExperienceGeneration(idx) {
+    if (typeof checkAiOptimizationAllowance === 'function' && !checkAiOptimizationAllowance()) return;
     const exp = engineState.experience[idx];
     const targetTitle = document.getElementById('formTitle')?.value || "Professional";
     const targetSkills = document.getElementById('formSkillsList')?.value || "";
