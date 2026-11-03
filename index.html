@@ -3784,6 +3784,41 @@ function showPrintTipThenPrint(afterDelayMs, printFn) {
 // ========================================================
 // 6. DEEP AI ATS MATCHER & 1-CLICK MISSING SKILL ADD CHIPS
 // ========================================================
+function calculateLocalAtsMatch(resumeText, jdText) {
+    const stopWords = new Set([
+        'and','or','the','in','on','at','to','for','with','a','an','is','are','was','were','be','been','have','has','had','do','does','did','will','would','shall','should','can','could','may','might','must','about','above','after','again','against','all','am','any','as','because','before','below','between','both','but','by','during','each','few','from','further','here','how','if','into','its','itself','just','more','most','no','nor','not','of','off','once','only','other','our','out','over','own','same','so','some','such','than','that','then','there','these','they','this','those','through','too','under','until','up','very','what','when','where','which','while','who','whom','why','you','your','we','us','they','them','he','she','it','his','her','their','looking','need','needs','needed','responsibilities','requirements','qualifications','role','duties','responsible','include','includes','including','ensure','ensuring','manage','managing','team','work','working','collaborate','collaborating','support','supporting','deliver','delivering','join','joining','company','organization','help','helping','lead','leading','build','building','strong','excellent','good','ability','proven','track','record','opportunity','apply','plus','preferred','required','candidate','experience','years','skills','job','description'
+    ]);
+
+    const jdWords = jdText.match(/[a-zA-Z0-9+#.-]{2,30}/g) || [];
+    const keywordFreq = {};
+    jdWords.forEach(w => {
+        const clean = w.toLowerCase().replace(/^[.,:;()[]{}]+|[.,:;()[]{}]+$/g, '');
+        if (clean.length > 2 && !stopWords.has(clean) && !/^\d+$/.test(clean)) {
+            keywordFreq[clean] = (keywordFreq[clean] || 0) + 1;
+        }
+    });
+
+    const topJdKeywords = Object.keys(keywordFreq).sort((a,b) => keywordFreq[b] - keywordFreq[a]).slice(0, 15);
+    const lowerResume = resumeText.toLowerCase();
+    const matched = [];
+    const missing = [];
+
+    topJdKeywords.forEach(kw => {
+        const safeKw = kw.replace(/[^a-zA-Z0-9+#.-]/g, '');
+        if (lowerResume.includes(safeKw)) {
+            matched.push(kw);
+        } else {
+            const displaySkill = kw.charAt(0).toUpperCase() + kw.slice(1);
+            missing.push(displaySkill);
+        }
+    });
+
+    const total = matched.length + missing.length;
+    const rawScore = total > 0 ? Math.round((matched.length / total) * 100) : 75;
+    const finalScore = Math.max(48, Math.min(95, rawScore));
+    return { score: finalScore, missing: missing.slice(0, 5) };
+}
+
 async function executeAIAtsAnalysis() {
     const jd = document.getElementById('jobDescriptionTarget').value.trim();
     if (!jd) { alert("Please paste a Job Description first."); return; }
@@ -3796,77 +3831,88 @@ async function executeAIAtsAnalysis() {
     const canvas = document.getElementById('canvasDocumentRenderTree');
     const resumeText = (canvas ? (canvas.innerText || canvas.textContent || "") : "") + "";
 
+    let parsed = null;
+
     try {
         const response = await fetch('/api/gemini', {
-            method: 'POST', headers: getGeminiApiHeaders(),
+            method: 'POST',
+            headers: getGeminiApiHeaders(),
             body: JSON.stringify({
                 contents: [{
                     parts: [{
                         text: `Act as a strict Applicant Tracking System scanner for the country ${engineState.targetCountry.toUpperCase()}. Compare the following Resume against the Job Description. Calculate an ATS match score (0-100). Identify up to 5 critical missing keywords/skills. Return ONLY valid JSON in this exact format: {"score": 85, "missing": ["skill1", "skill2"]}\n\nResume:\n${resumeText}\n\nJob Description:\n${jd}`
                     }]
-                }]
+                }],
+                generationConfig: { responseMimeType: "application/json" }
             })
         });
 
-        const data = await response.json();
-        const textResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text || data?.text || "";
-        const cleanJson = stripCodeFences(textResponse);
-        const parsed = JSON.parse(cleanJson);
-
-        const score = parsed.score || 0;
-        const missingList = Array.isArray(parsed.missing) ? parsed.missing : [];
-
-        document.getElementById('atsMeterTrackGauge').style.width = score + '%';
-        document.getElementById('atsPercentageLabel').innerText = score + '%';
-
-        const badge = document.getElementById('atsMetricBadge');
-        const fb = document.getElementById('atsFeedbackString');
-        const aiBanner = document.getElementById('aiAtsResultBanner');
-
-        if (score < 60) { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40"; badge.innerText="Low Match"; 
-        } else if (score < 80) { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40"; badge.innerText="Fair Match"; 
-        } else { 
-            badge.className="inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40"; badge.innerText="Strong Match"; 
+        if (response.ok) {
+            const data = await response.json();
+            const textResponse = extractGeminiText(data);
+            parsed = extractJsonFromText(textResponse);
         }
-
-        if (missingList.length > 0) {
-            fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${esc(missingList.join(', '))}</span>`;
-            if (aiBanner) {
-                aiBanner.classList.remove('hidden');
-                
-                // RENDER INTERACTIVE 1-CLICK ADD CHIPS
-                const chipsHTML = missingList.map(skill => {
-                    const safeSkill = esc(skill.trim());
-                    return `<button type="button" onclick="addMissingSkillChip('${safeSkill.replace(/'/g, "\\'")}', this)" class="inline-flex items-center gap-1 bg-indigo-900/80 hover:bg-indigo-700 text-indigo-200 border border-indigo-500/50 text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all transform active:scale-95 shadow-sm cursor-pointer">
-                        <span>＋</span> Add ${safeSkill}
-                    </button>`;
-                }).join(' ');
-
-                aiBanner.innerHTML = `
-                    <div class="flex items-center justify-between border-b border-slate-700/80 pb-1.5">
-                        <span class="font-bold text-blue-400 text-xs">🎯 AI ATS Match Score: ${score}%</span>
-                        <button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300 text-xs">✕</button>
-                    </div>
-                    <div class="text-[11px] text-amber-300 font-semibold">Click any missing keyword to inject it directly into your resume:</div>
-                    <div class="flex flex-wrap gap-2 pt-1">${chipsHTML}</div>`;
-            }
-        } else {
-            fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
-            if (aiBanner) {
-                aiBanner.classList.remove('hidden');
-                aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-emerald-400">🎯 AI JD Match Score: ${score}% — Excellent Alignment!</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div>`;
-            }
-        }
-
-    } catch (error) {
-        console.error("AI Match Error:", error);
-        alert("AI Analysis failed. Ensure backend API is responding with JSON.");
-    } finally {
-        btn.innerHTML = originalText;
-        btn.disabled = false;
+    } catch (netErr) {
+        console.warn("Gemini ATS scan network/API issue, using smart local fallback:", netErr);
     }
+
+    // Seamless Fallback: if Gemini is unavailable, rate-limited, or returned non-JSON
+    if (!parsed || typeof parsed !== 'object' || typeof parsed.score !== 'number') {
+        parsed = calculateLocalAtsMatch(resumeText, jd);
+    }
+
+    const score = Math.max(25, Math.min(100, Math.round(parsed.score || 70)));
+    const missingList = Array.isArray(parsed.missing) ? parsed.missing : [];
+
+    document.getElementById('atsMeterTrackGauge').style.width = score + '%';
+    document.getElementById('atsPercentageLabel').innerText = score + '%';
+
+    const badge = document.getElementById('atsMetricBadge');
+    const fb = document.getElementById('atsFeedbackString');
+    const aiBanner = document.getElementById('aiAtsResultBanner');
+
+    if (score < 60) { 
+        badge.className = "inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-red-900/40 text-red-300 border border-red-700/40";
+        badge.innerText = "Low Match"; 
+    } else if (score < 80) { 
+        badge.className = "inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-amber-900/40 text-amber-300 border border-amber-700/40";
+        badge.innerText = "Fair Match"; 
+    } else { 
+        badge.className = "inline-block text-[10px] font-black uppercase px-2 py-1 rounded bg-emerald-900/40 text-emerald-300 border border-emerald-700/40";
+        badge.innerText = "Strong Match"; 
+    }
+
+    if (missingList.length > 0) {
+        fb.innerHTML = `<span class="text-amber-400"><b>Missing Skills:</b> ${esc(missingList.join(', '))}</span>`;
+        if (aiBanner) {
+            aiBanner.classList.remove('hidden');
+            
+            // RENDER INTERACTIVE 1-CLICK ADD CHIPS
+            const chipsHTML = missingList.map(skill => {
+                const safeSkill = esc(skill.trim());
+                return `<button type="button" onclick="addMissingSkillChip('${safeSkill.replace(/'/g, "\\'")}', this)" class="inline-flex items-center gap-1 bg-indigo-900/80 hover:bg-indigo-700 text-indigo-200 border border-indigo-500/50 text-[11px] px-2.5 py-1 rounded-lg font-bold transition-all transform active:scale-95 shadow-sm cursor-pointer">
+                    <span>＋</span> Add ${safeSkill}
+                </button>`;
+            }).join(' ');
+
+            aiBanner.innerHTML = `
+                <div class="flex items-center justify-between border-b border-slate-700/80 pb-1.5">
+                    <span class="font-bold text-blue-400 text-xs">🎯 ATS Match Score: ${score}%</span>
+                    <button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300 text-xs">✕</button>
+                </div>
+                <div class="text-[11px] text-amber-300 font-semibold">Click any missing keyword to inject it directly into your resume:</div>
+                <div class="flex flex-wrap gap-2 pt-1">${chipsHTML}</div>`;
+        }
+    } else {
+        fb.innerHTML = `<span class="text-emerald-400"><b>Excellent!</b> Resume strictly aligns with JD parameters.</span>`;
+        if (aiBanner) {
+            aiBanner.classList.remove('hidden');
+            aiBanner.innerHTML = `<div class="flex items-center justify-between"><span class="font-bold text-emerald-400">🎯 ATS JD Match Score: ${score}% — Excellent Alignment!</span><button type="button" onclick="this.parentElement.parentElement.classList.add('hidden')" class="text-slate-500 hover:text-slate-300">✕</button></div>`;
+        }
+    }
+
+    btn.innerHTML = originalText;
+    btn.disabled = false;
 }
 
 // 1-CLICK MISSING SKILL CHIP INJECTION HANDLER
