@@ -37,14 +37,11 @@ export default async function handler(req, res) {
       return res.status(200).json({ success: true, days, amount: amountInRupees });
     }
 
-    // Format check fallback
-    const isValidIdFormat = /^pay_[a-zA-Z0-9]{14,24}$/.test(cleanPaymentId);
-    if (!isValidIdFormat) {
-      return res.status(400).json({ success: false, message: 'Invalid Razorpay Payment ID format.' });
-    }
-
-    const days = (plan === 99 || plan === 59) ? 30 : 7;
-    return res.status(200).json({ success: true, days });
+    // Reject unverified payment IDs if server keys are not configured
+    return res.status(503).json({
+      success: false,
+      message: 'Payment verification service configuration pending. Please configure RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in Vercel Project Settings, or contact dipangshu.20@gmail.com with your receipt.'
+    });
   } catch (error) {
     console.error('Payment verification error:', error);
     return res.status(500).json({ success: false, message: 'Verification server error.' });
