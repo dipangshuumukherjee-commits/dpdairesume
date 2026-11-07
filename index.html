@@ -615,7 +615,10 @@
                     </div>
                     <div class="flex items-center justify-between pt-2">
                         <h3 class="text-base font-bold text-slate-200 flex items-center gap-2">👤 Personal & Contact Profile</h3>
-                        <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
+                        <div class="flex items-center gap-1.5">
+                            <button type="button" onclick="clearAllFormInputStateData()" class="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-2 py-1 rounded transition-all">🧹 Clear Form</button>
+                            <button type="button" onclick="wipeAllDeviceData()" title="Wipe personal data & draft from this computer (recommended for cyber cafes/shared PCs)" class="text-xs bg-red-950/70 hover:bg-red-900 border border-red-700/60 text-red-300 px-2 py-1 rounded transition-all">🛡️ Wipe Device Data</button>
+                        </div>
                     </div>
 
                     <!-- AVATAR PHOTO CONTAINER (WITH DYNAMIC COMPLIANCE ADAPTATION) -->
@@ -1306,6 +1309,42 @@
         </div>
     </div>
 
+    <!-- MODAL 6: LEAD CAPTURE ("SAVE PROGRESS & GET ATS REPORT VIA WHATSAPP/EMAIL") -->
+    <div id="dpdLeadCaptureModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
+        <div class="bg-slate-900 border border-blue-500/50 max-w-md w-full rounded-2xl p-6 shadow-2xl relative text-slate-100">
+            <button type="button" onclick="closeLeadCaptureModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 bg-blue-600/20 border border-blue-500/40 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-2">💾</div>
+                <h3 class="text-base sm:text-lg font-black text-white">Save Progress & Free ATS Report</h3>
+                <p class="text-xs text-slate-400 mt-1">Enter your WhatsApp or Email so your 92% ATS resume is safely saved and accessible anytime on any device.</p>
+            </div>
+            
+            <form onsubmit="submitLeadCaptureForm(event)" class="space-y-3.5">
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Your Full Name</label>
+                    <input type="text" id="leadInputName" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">WhatsApp Number or Email <span class="text-emerald-400">*</span></label>
+                    <input type="text" id="leadInputContact" required placeholder="+91 98765 43210 or yourname@gmail.com" class="w-full bg-slate-950 border border-blue-500/60 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-300 mb-1">Target Job Role</label>
+                    <input type="text" id="leadInputRole" placeholder="e.g. Data Analyst, Store In-charge, Fresher" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
+                </div>
+                
+                <div class="pt-2 space-y-2">
+                    <button type="submit" id="btnSubmitLeadCapture" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <span>💾 Save My Progress & Resume</span>
+                    </button>
+                    <div class="text-center">
+                        <button type="button" onclick="closeLeadCaptureModal()" class="text-[11px] text-slate-400 hover:text-slate-200 underline cursor-pointer">Skip & continue directly</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
 <script>
 // =========================================================================
 // 4-STEP CONVERSION FUNNEL & SECURITY-HARDENED LEAD ARCHITECTURE
@@ -1782,13 +1821,19 @@ function closeLeadCaptureModal() {
     if (modal) modal.classList.add('hidden');
 }
 
-function submitLeadCaptureForm(e) {
+async function submitLeadCaptureForm(e) {
     if (e && e.preventDefault) e.preventDefault();
     const contact = (document.getElementById('leadInputContact')?.value || '').trim();
     if (!contact) return;
     const name = (document.getElementById('leadInputName')?.value || '').trim() || (engineState && engineState.personal ? engineState.personal.name : '') || 'Anonymous';
     const role = (document.getElementById('leadInputRole')?.value || '').trim() || (engineState && engineState.personal ? engineState.personal.title : '') || 'Job Seeker';
     const score = document.getElementById('atsPercentageLabel')?.innerText || '92%';
+    const btn = document.getElementById('btnSubmitLeadCapture');
+
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span>⏳ Saving & Securing Progress...</span>';
+    }
 
     let leads = [];
     try {
@@ -1805,6 +1850,35 @@ function submitLeadCaptureForm(e) {
 
     localStorage.setItem('dpd_leads', JSON.stringify(leads));
     localStorage.setItem('dpd_lead_captured', 'true');
+
+    // Transmit lead securely to owner via Web3Forms inbox
+    try {
+        await fetch('https://api.web3forms.com/submit', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({
+                access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc",
+                subject: `🔥 New ATS Resume Lead: ${name} (${role})`,
+                from_name: "DPD Resume Leads",
+                Candidate_Name: name,
+                WhatsApp_or_Email: contact,
+                Target_Role: role,
+                ATS_Score: score,
+                Submitted_At: new Date().toLocaleString()
+            })
+        });
+    } catch(err) {
+        console.warn('Lead transmission notice:', err);
+    } finally {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<span>💾 Save My Progress & Resume</span>';
+        }
+    }
+
     closeLeadCaptureModal();
 
     const banner = document.getElementById('successBanner');
@@ -1814,6 +1888,14 @@ function submitLeadCaptureForm(e) {
         banner.classList.remove('hidden');
         setTimeout(() => banner.classList.add('hidden'), 5000);
     }
+}
+
+// Owner VIP Check Helper
+function isOwnerVIP() {
+    let plan = '';
+    try { plan = localStorage.getItem('dpd_pass_plan') || ''; } catch(e) {}
+    if (!plan) plan = getCookieVal('dpd_pass_plan') || '';
+    return plan === 'vip' && checkActiveSubscriptionPass();
 }
 
 // Owner VIP Leads CSV Export (for Dipangshu)
@@ -1928,15 +2010,29 @@ function getCookieVal(name) {
     return match ? decodeURIComponent(match[1]) : null;
 }
 
+function generatePassToken(expiry, plan) {
+    const seed = 'dpd_ats_res_' + expiry + '_' + plan + '_sec98';
+    let hash = 0;
+    for (let i = 0; i < seed.length; i++) {
+        hash = ((hash << 5) - hash) + seed.charCodeAt(i);
+        hash |= 0;
+    }
+    return 'dpd_tok_' + Math.abs(hash).toString(36);
+}
+
 function setPersistentPass(days, plan) {
     const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
+    const token = generatePassToken(expiry, plan);
     try { localStorage.setItem('dpd_pass_expiry', String(expiry)); } catch(e) {}
     try { localStorage.setItem('dpd_pass_plan', String(plan)); } catch(e) {}
+    try { localStorage.setItem('dpd_pass_token', token); } catch(e) {}
     try { sessionStorage.setItem('dpd_pass_expiry', String(expiry)); } catch(e) {}
+    try { sessionStorage.setItem('dpd_pass_token', token); } catch(e) {}
     try {
         if (typeof document !== 'undefined' && typeof document.cookie === 'string') {
             document.cookie = 'dpd_pass_expiry=' + expiry + '; max-age=' + (365 * 24 * 60 * 60) + '; path=/; SameSite=Lax';
             document.cookie = 'dpd_pass_plan=' + encodeURIComponent(String(plan)) + '; max-age=' + (365 * 24 * 60 * 60) + '; path=/; SameSite=Lax';
+            document.cookie = 'dpd_pass_token=' + encodeURIComponent(token) + '; max-age=' + (365 * 24 * 60 * 60) + '; path=/; SameSite=Lax';
         }
     } catch(e) {}
 }
@@ -1963,31 +2059,54 @@ function _getAccessDaysRemaining() {
 
 function checkActiveSubscriptionPass() {
     let passExpiry = null;
-    try { passExpiry = localStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+    let plan = '';
+    let token = '';
+    try { 
+        passExpiry = localStorage.getItem('dpd_pass_expiry');
+        plan = localStorage.getItem('dpd_pass_plan') || '';
+        token = localStorage.getItem('dpd_pass_token') || '';
+    } catch(e) {}
     
     // Self-healing from cookie or sessionStorage if localStorage was cleared
     if (!passExpiry) {
         passExpiry = getCookieVal('dpd_pass_expiry');
+        plan = getCookieVal('dpd_pass_plan') || '99';
+        token = getCookieVal('dpd_pass_token') || '';
         if (!passExpiry) {
-            try { passExpiry = sessionStorage.getItem('dpd_pass_expiry'); } catch(e) {}
+            try { 
+                passExpiry = sessionStorage.getItem('dpd_pass_expiry');
+                plan = sessionStorage.getItem('dpd_pass_plan') || plan;
+                token = sessionStorage.getItem('dpd_pass_token') || token;
+            } catch(e) {}
         }
         if (passExpiry && Date.now() < parseInt(passExpiry, 10)) {
             try {
                 localStorage.setItem('dpd_pass_expiry', passExpiry);
-                const plan = getCookieVal('dpd_pass_plan') || '99';
                 localStorage.setItem('dpd_pass_plan', plan);
+                if (token) localStorage.setItem('dpd_pass_token', token);
             } catch(e) {}
         }
     }
     
     if (passExpiry) {
-        if (Date.now() < parseInt(passExpiry, 10)) return true;
-        try { localStorage.removeItem('dpd_pass_expiry'); } catch(e) {}
-        try {
-            if (typeof document !== 'undefined' && typeof document.cookie === 'string') {
-                document.cookie = 'dpd_pass_expiry=; max-age=0; path=/;';
-            }
-        } catch(e) {}
+        const expNum = parseInt(passExpiry, 10);
+        if (isNaN(expNum) || Date.now() >= expNum) {
+            try { 
+                localStorage.removeItem('dpd_pass_expiry'); 
+                localStorage.removeItem('dpd_pass_plan'); 
+                localStorage.removeItem('dpd_pass_token'); 
+            } catch(e) {}
+            return false;
+        }
+        if (token && token !== generatePassToken(expNum, plan)) {
+            try { 
+                localStorage.removeItem('dpd_pass_expiry'); 
+                localStorage.removeItem('dpd_pass_plan'); 
+                localStorage.removeItem('dpd_pass_token'); 
+            } catch(e) {}
+            return false;
+        }
+        return true;
     }
     return false;
 }
@@ -2303,8 +2422,8 @@ function triggerContinuousAutoSave() {
     }, 350);
 }
 
-function clearAllFormInputStateData() {
-    if(!confirm("Are you sure you want to scrub all fields back to a blank template?")) return;
+function clearAllFormInputStateData(skipConfirm = false) {
+    if(!skipConfirm && !confirm("Are you sure you want to scrub all fields back to a blank template?")) return;
     engineState.personal = { name: "", title: "", email: "", mobile: "", linkedin: "", github: "", portfolio: "", address: "", languages: "" };
     engineState.summary = ""; engineState.experience = []; engineState.projects = []; engineState.education = []; engineState.certifications = []; engineState.skills = [];
     engineState.globalCachedProfileImageStream = "";
@@ -2319,10 +2438,25 @@ function clearAllFormInputStateData() {
     
     renderExperienceFormInputs(); renderProjectFormInputs(); renderEducationFormInputs(); renderCertificationFormInputs();
     executeMasterCompilationRenderPipeline();
-    if (typeof renderRedFlagAtsProblem === 'function') renderRedFlagAtsProblem(p);
+    if (typeof renderRedFlagAtsProblem === 'function') renderRedFlagAtsProblem();
     if (!localStorage.getItem('dpd_lead_captured') && typeof openLeadCaptureModal === 'function') {
         setTimeout(openLeadCaptureModal, 1500);
     }
+}
+
+function wipeAllDeviceData() {
+    if (!confirm("Are you using a shared or public computer? This will completely wipe all your saved resume drafts, uploaded files, and personal contact info from this browser.")) return;
+    try {
+        localStorage.removeItem('dpd_autosave_state');
+        localStorage.removeItem('dpd_form_backup');
+        localStorage.removeItem('dpd_leads');
+        localStorage.removeItem('dpd_lead_captured');
+        localStorage.removeItem('dpd_ai_opt_count');
+        localStorage.removeItem('dpd_custom_gemini_key');
+        sessionStorage.clear();
+    } catch(e) {}
+    clearAllFormInputStateData(true);
+    alert("🛡️ All personal drafts and contact information have been erased from this computer.");
 }
 
 
@@ -3019,13 +3153,49 @@ function parseExperience(expText) {
         const hasDate = !!dMatch;
         const dateStr = dMatch ? dMatch[0].trim() : "";
 
+        // Check for Narrative format: "[Date] Working with / Worked with [Company] ... as [Role]"
+        const narrativeWorking = line.match(/(?:Working\s+with|Worked\s+with|Working\s+at|Worked\s+at|Employed\s+at|Associated\s+with)\s+([A-Za-z0-9&.\/ ]+?\b(?:Ltd\.?|Limited|Pvt\.?\s*Ltd\.?|Private\s+Limited|Corporation|Corp\.?|Inc\.?|Company|Enterprises|Projects?\s+Ltd\.?))/i) ||
+                                 line.match(/(?:Working\s+with|Worked\s+with|Working\s+at|Worked\s+at|Employed\s+at|Associated\s+with)\s+([^,(\n]+?)(?:,|\s+under|\s+as|\s+for|\s+at|\s*\()/i);
+        
+        if (narrativeWorking) {
+            if (current && (current.company !== 'Organization' || current.role !== 'Specialist' || current.duties)) {
+                entries.push(current);
+            }
+            const comp = cleanCompanyName(narrativeWorking[1].trim());
+            let role = "Specialist";
+
+            const roleMatch = line.match(/(?:as|As)\s+([A-Za-z0-9\/\- ]+?(?:Officer|Executive|Manager|Engineer|Keeper|Supervisor|Specialist|Lead|Assistant)[A-Za-z0-9\/\- ]*)/i) ||
+                              line.match(/\b(Officer\s*-\s*Store|Store\s*Keeper|Sr\.?\s*Executive\s+Stores?|Executive\s+Stores?|Store\s+Incharge)\b/i);
+            if (roleMatch) {
+                role = cleanRoleName(roleMatch[1].replace(/^(?:as|As)\s+/i, '').replace(/[-.,\s]+$/, '').trim());
+            }
+
+            let duties = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '');
+            if (dateStr) duties = duties.replace(dateStr, '');
+            if (comp) duties = duties.replace(comp, '');
+            duties = duties.replace(/^(?:Working\s+with|Worked\s+with|Working\s+at|Worked\s+at)\s*/i, '');
+            if (role && role !== 'Specialist') {
+                duties = duties.replace(role, '');
+                duties = duties.replace(/\bas\b/i, '');
+            }
+            duties = duties.replace(/^[,.\s\-(]+/, '').replace(/[,.\s\-)]+$/, '').trim();
+
+            current = {
+                company: comp,
+                role: role,
+                dates: dateStr,
+                duties: duties ? '• ' + duties : ''
+            };
+            continue;
+        }
+
         // If line is ONLY a date, attach to current entry
         if (current && !current.dates && hasDate && line.replace(dateStr, '').replace(/[|—–\-(),\s]/g, '').length === 0) {
             current.dates = dateStr;
             continue;
         }
 
-        // Narrative sentence
+        // Narrative sentence (legacy pattern)
         const narrativeMatch = line.match(/(?:working\s+as|worked\s+as|engaged\s+as|employed\s+as|was\s+engaged\s+with)\s+([^,\n]+?)\s+(?:as|at|with|for|in)\s+(?:an?\s+)?([^,\n]+?)(?:\s*(?:from|\()?(\d{4}.*))?$/i);
         if (narrativeMatch) {
             if (current && (current.company || current.role)) entries.push(current);
@@ -3114,30 +3284,16 @@ function parseExperience(expText) {
             current = { company: comp, role: role, dates: dateStr, duties: "" };
         } else if (current) {
             let cleanDuty = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
-            if (cleanDuty && cleanDuty.length > 2) {
-                if (current.duties && isBullet) {
-                    current.duties += "\n" + cleanDuty;
-                } else if (current.duties) {
-                    current.duties += " " + cleanDuty;
-                } else {
-                    current.duties = cleanDuty;
-                }
+            if (cleanDuty && !isSectionOrFieldHeader(cleanDuty)) {
+                if (!current.duties) current.duties = "• " + cleanDuty;
+                else current.duties += "\n• " + cleanDuty;
             }
         }
     }
+
     if (current && (current.company !== 'Organization' || current.role !== 'Specialist' || current.duties)) {
         entries.push(current);
     }
-
-    // Refine generic company names if OHE / Railway Electrification is in duties
-    entries.forEach(e => {
-        if (e.company === "Organization" || !e.company) {
-            if (/OHE|Railway\s*Electrification|Tata\s*Projects/i.test(e.duties)) {
-                e.company = "Tata Projects Limited (Railway OHE Projects)";
-                if (e.role === "Specialist" || !e.role) e.role = "Store Assistant";
-            }
-        }
-    });
 
     return entries;
 }
@@ -3150,42 +3306,52 @@ function parseEducation(eduText) {
     rows.forEach(row => {
         const yrMatch = row.match(/\b(19\d\d|20\d\d)\b/);
         const yr = yrMatch ? yrMatch[1] : "";
-        const cleanRow = row.replace(/\b(19\d\d|20\d\d)\b/g, '').replace(/[|—–\-,\s]+$/g, '').trim();
+        let cleanRow = row.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
+        if (yrMatch) cleanRow = cleanRow.replace(yrMatch[0], '').trim();
+
+        // Fix glued "from" (e.g. "Managementfrom NIBM")
+        cleanRow = cleanRow.replace(/([a-zA-Z])from\b/i, '$1 from ');
+        // Strip leading punctuation and tags like -:( Post Graduate) or :( Graduate)
+        cleanRow = cleanRow.replace(/^[-–—:\s]*(?:\(\s*(?:Post\s+Graduate|Graduate|Postgraduate|Graduation|Undergraduate|UG|PG)\s*\))?[-–—:\s]*/i, '').trim();
+
         if (!cleanRow || cleanRow.length < 2) return;
 
-        const isEduLike = /degree|bachelor|master|phd|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|ba|ma|diploma|hs|higher\s+secondary|madhyamik|secondary|matric|10th|12th|cbse|icse|wbbse|wbchse|university|college|school|board|institute|academy/i.test(cleanRow);
-        if (!isEduLike && !yr) return;
-
-        let pieces = cleanRow.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
         let degree = "";
         let school = "";
 
-        if (pieces.length >= 2) {
-            const p0IsSchool = /school|college|university|board|institute|academy|iit|nit/i.test(pieces[0]);
-            const p1IsSchool = /school|college|university|board|institute|academy|iit|nit/i.test(pieces[1]);
-            const p0IsDegree = /degree|bachelor|master|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|diploma|phd|matric|secondary|higher/i.test(pieces[0]);
-            const p1IsDegree = /degree|bachelor|master|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|diploma|phd|matric|secondary|higher/i.test(pieces[1]);
+        const fromMatch = cleanRow.match(/^(.*?)\s+(?:from|at)\s+(.*)$/i);
+        if (fromMatch) {
+            degree = fromMatch[1].trim();
+            school = fromMatch[2].replace(/[.,\s]+$/, '').trim();
+        } else {
+            let pieces = cleanRow.split(/\s*[—–|]\s*|\s+-\s+/).map(p => p.trim()).filter(Boolean);
+            if (pieces.length >= 2) {
+                const p0IsSchool = /school|college|university|board|institute|academy|iit|nit/i.test(pieces[0]);
+                const p1IsSchool = /school|college|university|board|institute|academy|iit|nit/i.test(pieces[1]);
+                const p0IsDegree = /degree|bachelor|master|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|diploma|phd|matric|secondary|higher/i.test(pieces[0]);
+                const p1IsDegree = /degree|bachelor|master|b\.?tech|m\.?tech|bca|mca|bba|mba|b\.?sc|m\.?sc|b\.?com|m\.?com|diploma|phd|matric|secondary|higher/i.test(pieces[1]);
 
-            if (p0IsSchool && !p0IsDegree) {
-                school = pieces[0];
-                degree = pieces.slice(1).join(', ');
-            } else if (p1IsSchool && !p1IsDegree) {
-                degree = pieces[0];
-                school = pieces.slice(1).join(', ');
-            } else if (p1IsDegree && !p0IsDegree) {
-                school = pieces[0];
-                degree = pieces[1];
-            } else {
-                degree = pieces[0];
-                school = pieces.slice(1).join(', ');
-            }
-        } else if (pieces.length === 1) {
-            if (/school|college|university|board|institute|academy/i.test(pieces[0])) {
-                school = pieces[0];
-                degree = "Degree / Course";
-            } else {
-                degree = pieces[0];
-                school = "";
+                if (p0IsSchool && !p0IsDegree) {
+                    school = pieces[0];
+                    degree = pieces.slice(1).join(', ');
+                } else if (p1IsSchool && !p1IsDegree) {
+                    degree = pieces[0];
+                    school = pieces.slice(1).join(', ');
+                } else if (p1IsDegree && !p0IsDegree) {
+                    school = pieces[0];
+                    degree = pieces[1];
+                } else {
+                    degree = pieces[0];
+                    school = pieces.slice(1).join(', ');
+                }
+            } else if (pieces.length === 1) {
+                if (/school|college|university|board|institute|academy/i.test(pieces[0])) {
+                    school = pieces[0];
+                    degree = "Degree / Course";
+                } else {
+                    degree = pieces[0];
+                    school = "";
+                }
             }
         }
 
@@ -3330,20 +3496,44 @@ function parseProjects(projText) {
     return projects;
 }
 
-function parseSkills(skillsText) {
-    if (!skillsText) return [];
+function parseSkills(skillsText, extraText) {
     const skills = [];
-    skillsText.split('\n').forEach(row => {
-        let cleanRow = row.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
-        cleanRow = cleanRow.replace(/^(?:languages|frameworks|libraries|tools|databases|platforms|technologies|technical\s+skills|core\s+competencies|key\s+skills)\s*[:\-–—]\s*/i, '');
-        cleanRow.split(/[,|•;►▪▸]/).forEach(t => {
-            const clean = t.trim();
-            if (clean.length > 1 && clean.length < 45 && !isSectionOrFieldHeader(clean)) {
+    const add = (s) => {
+        let clean = s.trim().replace(/^[:•\-*►▪▸→✓✔\s]+/, '').replace(/[:.,\s]+$/, '');
+        if (clean.length > 2 && clean.length < 45 && !isSectionOrFieldHeader(clean)) {
+            if (!/^(?:Ltd|Management|Material|Materials|Vendor|Company|Present|Worked)$/i.test(clean)) {
                 if (!skills.includes(clean)) skills.push(clean);
             }
+        }
+    };
+
+    if (skillsText) {
+        skillsText.split('\n').forEach(row => {
+            let cleanRow = row.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
+            cleanRow = cleanRow.replace(/^(?:languages|frameworks|libraries|tools|databases|platforms|technologies|technical\s+skills|core\s+competencies|key\s+skills|it\s+exposure)\s*[:\-–—]\s*/i, '');
+            cleanRow.split(/[,|•;►▪▸]/).forEach(t => {
+                const sub = t.trim();
+                if (sub.includes('&') && sub.length < 35) {
+                    sub.split('&').forEach(p => add(p));
+                } else {
+                    add(sub);
+                }
+            });
         });
-    });
-    return skills;
+    }
+
+    if (extraText) {
+        extraText.split('\n').forEach(line => {
+            const clean = line.replace(/^[•\-*►▪▸→✓✔\s]+/, '').trim();
+            if (clean.includes('/')) {
+                clean.split('/').forEach(p => add(p));
+            } else if (clean.length > 3 && clean.length < 40 && !clean.includes('.')) {
+                add(clean);
+            }
+        });
+    }
+
+    return skills.slice(0, 25);
 }
 
 function parseCertifications(certText) {
@@ -3364,21 +3554,55 @@ function parseCertifications(certText) {
 
 function parseResume(raw) {
     let text = raw.replace(/\r\n/g, '\n').replace(/\r/g, '\n').replace(/\n{3,}/g, '\n\n');
+    // Pre-sanitize all bullet symbols (Wingdings, arrows, checkmarks, Unicode)
+    text = text.replace(/[►▪▸→✓✔★■●]/g, '• ');
 
     const sectionDefinitions = [
-        { id: "SUMMARY", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|CAREER\s+OBJECTIVE|EXECUTIVE\s+PROFILE|PERSONAL\s+STATEMENT|SUMMARY|OBJECTIVE)\s*(?::|\n|$)/i },
-        { id: "EXPERIENCE", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+EXPERIENCE|WORK\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|WORK\s+HISTORY|EXPERIENCE)\s*(?::|\n|$)/i },
-        { id: "PROJECTS", regex: /(?:^|\n)\s*(?:KEY\s+TECHNICAL\s+PROJECTS|TECHNICAL\s+PROJECTS|KEY\s+PROJECTS|NOTABLE\s+PROJECTS|ACADEMIC\s+PROJECTS|PROJECTS)\s*(?::|\n|$)/i },
-        { id: "SKILLS", regex: /(?:^|\n)\s*(?:SKILLS\s*&\s*CORE\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|KEY\s+SKILLS|CORE\s+COMPETENCIES|TECHNICAL\s+SKILLS|COMPUTER\s+LITERACY|SKILLS)\s*(?::|\n|$)/i },
-        { id: "CERTIFICATIONS", regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+CERTIFICATIONS|CERTIFICATIONS?|LICENSES?\s*&\s*CERTIFICATIONS?)\s*(?::|\n|$)/i },
-        { id: "EDUCATION", regex: /(?:^|\n)\s*(?:ACADEMIC\s+QUALIFICATIONS|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|EDUCATION)\s*(?::|\n|$)/i },
-        { id: "DECLARATION", regex: /(?:^|\n)\s*(?:DECLARATION|VERIFICATION)\s*(?::|\n|$)/i }
+        { 
+            id: "SUMMARY", 
+            regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+SUMMARY|EXECUTIVE\s+SUMMARY|PROFILE\s+SUMMARY|CAREER\s+SUMMARY|CAREER\s+OBJECTIVE|EXECUTIVE\s+PROFILE|PERSONAL\s+STATEMENT|ABOUT\s+ME|SYNOPSIS|SUMMARY|OBJECTIVE)(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+        },
+        { 
+            id: "KNOWLEDGE", 
+            regex: /(?:^|\n)\s*(?:KNOWLEDGE\s+PURVIEW|ACHIEVEMENTS\s+PURVIEW|CONTROLLING\s*&\s*COMMAND\s+PURVIEW|PROFICIENCY\s+FORTE|AREAS\s+OF\s+EXPERTISE|CORE\s+EXPERTISE|KEY\s+STRENGTHS|AREAS\s+OF\s+STRENGTH|DOMAINS?\s+OF\s+EXPERTISE)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+        },
+        { 
+            id: "EXPERIENCE", 
+            regex: /(?:^|\n)\s*(?:ORGANISATIONAL\s+DETAILS|ORGANIZATIONAL\s+DETAILS|ORGANISATIONAL\s+EXPERIENCE|ORGANIZATIONAL\s+EXPERIENCE|PROFESSIONAL\s+EXPERIENCE|WORK\s+EXPERIENCE|EMPLOYMENT\s+HISTORY|EMPLOYMENT\s+RECORD|EMPLOYMENT\s+DETAILS|CAREER\s+DETAILS|CAREER\s+HISTORY|CAREER\s+PROFILE|WORK\s+PROFILE|PROFESSIONAL\s+BACKGROUND|JOB\s+PROFILE|EXPERIENCE\s+SUMMARY|EXPERIENCE)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+        },
+        { 
+            id: "PROJECTS", 
+            regex: /(?:^|\n)\s*(?:KEY\s+TECHNICAL\s+PROJECTS|TECHNICAL\s+PROJECTS|KEY\s+PROJECTS|NOTABLE\s+PROJECTS|MAJOR\s+PROJECTS|ACADEMIC\s+PROJECTS|PROJECT\s+DETAILS|PROJECT\s+PORTFOLIO|PROJECTS)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+        },
+        { 
+            id: "SKILLS", 
+            regex: /(?:^|\n)\s*(?:IT\s+EXPOSURE|IT\s+SKILLS|TECHNICAL\s+SKILLS|TECHNICAL\s+COMPETENCIES|CORE\s+COMPETENCIES\s*&\s*KEY\s+SKILLS|CORE\s+COMPETENCIES|KEY\s+SKILLS|SKILLS\s*&\s*CORE\s+COMPETENCIES|SKILLS\s*&\s*ABILITIES|COMPUTER\s+PROFICIENCY|SOFTWARE\s+SKILLS|COMPUTER\s+LITERACY|SKILLS)(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+        },
+        { 
+            id: "EDUCATION", 
+            regex: /(?:^|\n)\s*(?:ACADEMIC\s+CREDENTIALS|EDUCATIONAL\s+CREDENTIALS|ACADEMIC\s+QUALIFICATIONS|EDUCATIONAL\s+QUALIFICATIONS|ACADEMIC\s+BACKGROUND|EDUCATIONAL\s+BACKGROUND|ACADEMIC\s+HISTORY|EDUCATION\s*&?\s*QUALIFICATIONS|QUALIFICATION\s+PROFILE|ACADEMIC\s+DETAILS|SCHOLASTIC\s+ACHIEVEMENTS|EDUCATION)(?:\s*\(.*?\))?(?::|\n|$)/i 
+        },
+        { 
+            id: "CERTIFICATIONS", 
+            regex: /(?:^|\n)\s*(?:PROFESSIONAL\s+CERTIFICATIONS|TRAININGS?\s*&\s*CERTIFICATIONS?|CERTIFICATIONS?|LICENSES?\s*&\s*CERTIFICATIONS?|CERTIFICATES?|COURSES?\s*&\s*CERTIFICATIONS?)\s*(?::|\n|$)/i 
+        },
+        { 
+            id: "PERSONAL", 
+            regex: /(?:^|\n)\s*(?:PERSONAL\s+VITAE|PERSONAL\s+DOSSIER|PERSONAL\s+DETAILS|PERSONAL\s+PROFILE|BIO\s*DATA|BIODATA|PERSONAL\s+PARTICULARS|PERSONAL\s+INFORMATION)(?:\s*\(.*?\))?(?::|\n|$)/i 
+        },
+        { 
+            id: "DECLARATION", 
+            regex: /(?:^|\n)\s*(?:DECLARATION|VERIFICATION|SELF\s+DECLARATION)\s*(?::|\n|$)/i 
+        }
     ];
 
     const markers = [];
     sectionDefinitions.forEach(sec => {
-        const m = text.match(sec.regex);
-        if (m) markers.push({ id: sec.id, idx: m.index, matchText: m[0] });
+        const re = new RegExp(sec.regex.source, 'gi');
+        let m;
+        while ((m = re.exec(text)) !== null) {
+            markers.push({ id: sec.id, idx: m.index, matchText: m[0] });
+        }
     });
     markers.sort((a, b) => a.idx - b.idx);
 
@@ -3386,7 +3610,9 @@ function parseResume(raw) {
     markers.forEach((marker, index) => {
         const contentStart = marker.idx + marker.matchText.length;
         const end = markers[index + 1] ? markers[index + 1].idx : text.length;
-        sectionsData[marker.id] = text.substring(contentStart, end).trim();
+        const chunk = text.substring(contentStart, end).trim();
+        if (!sectionsData[marker.id]) sectionsData[marker.id] = chunk;
+        else sectionsData[marker.id] += '\n\n' + chunk;
     });
 
     const headerEnd = markers.length > 0 ? markers[0].idx : text.length;
@@ -3396,13 +3622,13 @@ function parseResume(raw) {
     const contact = extractContactInfo(text);
     const { name, title } = extractNameAndTitle(text, headerLines);
     const address = extractAddress(text, headerLines, name, title);
-    const summary = (sectionsData["SUMMARY"] || "").replace(/\s+/g, ' ').trim();
+    const summary = (sectionsData["SUMMARY"] || "").replace(/^[•\-*►▪▸→✓✔\s]+/, '').replace(/\s+/g, ' ').trim();
     const experience = parseExperience(sectionsData["EXPERIENCE"] || "");
     const projects = parseProjects(sectionsData["PROJECTS"] || "");
     const education = parseEducation(sectionsData["EDUCATION"] || "");
-    const skills = parseSkills(sectionsData["SKILLS"] || "");
+    const skills = parseSkills(sectionsData["SKILLS"] || "", sectionsData["KNOWLEDGE"] || "");
     const certifications = parseCertifications(sectionsData["CERTIFICATIONS"] || "");
-    const languages = extractKnownLanguages(sectionsData["LANGUAGES"] || text);
+    const languages = extractKnownLanguages(sectionsData["LANGUAGES"] || sectionsData["PERSONAL"] || text);
 
     let finalTitle = title;
     if (!finalTitle && experience.length > 0 && experience[0].role && experience[0].role !== "Specialist") {
@@ -4457,33 +4683,24 @@ async function verifyPaymentAndActivate() {
         if (!plan) plan = 99; // Default to monthly
         let verified = false;
         let days = (plan === 99 || plan === 59) ? 30 : 7;
+        let serverErrorMsg = '';
 
-        // Try backend verification if endpoint is reachable
+        // Verify with Razorpay backend verification endpoint
         try {
             const res = await fetch('/api/verify-payment', { 
                 method: 'POST', 
                 headers: getGeminiApiHeaders(), 
                 body: JSON.stringify({ paymentId: rawId, plan }) 
             });
-            if (res.ok) {
-                const data = await res.json();
-                if (data.success) {
-                    verified = true;
-                    if (data.days) days = data.days;
-                }
-            }
-        } catch(netErr) {}
-
-        // Fallback: Validate Razorpay Payment ID or receipt format
-        if (!verified) {
-            const isRazorpayId = /^pay_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
-                                 /^plink_[a-zA-Z0-9]{10,}$/i.test(rawId) || 
-                                 /^[a-zA-Z0-9]{12,}$/i.test(rawId);
-            if (isRazorpayId) {
+            const data = await res.json();
+            if (res.ok && data.success) {
                 verified = true;
-                days = 30; // Grant 30 days full monthly access
-                try { localStorage.setItem('dpd_verified_payment_id', rawId); } catch(e) {}
+                if (data.days) days = data.days;
+            } else {
+                serverErrorMsg = data?.message || '';
             }
+        } catch(netErr) {
+            serverErrorMsg = 'Unable to reach payment verification server. Please check your internet connection.';
         }
 
         if (verified) {
@@ -4501,7 +4718,7 @@ async function verifyPaymentAndActivate() {
             btn.disabled = false;
             setTimeout(() => dpdSmartPrint(), 800);
         } else { 
-            showVerifyError('Invalid Payment ID. A Razorpay Payment ID starts with "pay_" (found in your SMS or email receipt).'); 
+            showVerifyError(serverErrorMsg || 'Invalid or unverified Payment ID. A Razorpay Payment ID starts with "pay_" (found in your SMS or email receipt).'); 
             btn.innerText = 'Activate Access ✓'; 
             btn.disabled = false; 
         }
@@ -4768,43 +4985,7 @@ function downloadCoverLetterAsWord() {
         <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word' xmlns='http://www.w3.org/TR/REC-html40'>
         <head><meta charset='utf-8'><title>Cover Letter</title>
         <style>@page { margin: 1in; } body { font-family: 'Segoe UI', Arial, sans-serif; }</style>
-        </head><body>${paragraphs}
-    <!-- STEP 4: LEAD CAPTURE MODAL ("SAVE PROGRESS & GET ATS REPORT VIA WHATSAPP/EMAIL") -->
-    <div id="dpdLeadCaptureModal" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-50 no-print">
-        <div class="bg-slate-900 border border-blue-500/50 max-w-md w-full rounded-2xl p-6 shadow-2xl relative text-slate-100">
-            <button type="button" onclick="closeLeadCaptureModal()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-lg font-bold cursor-pointer">✕</button>
-            <div class="text-center mb-4">
-                <div class="w-12 h-12 bg-blue-600/20 border border-blue-500/40 text-blue-400 rounded-full flex items-center justify-center mx-auto text-xl mb-2">💾</div>
-                <h3 class="text-base sm:text-lg font-black text-white">Save Progress & Free ATS Report</h3>
-                <p class="text-xs text-slate-400 mt-1">Enter your WhatsApp or Email so your 92% ATS resume is safely saved and accessible anytime on any device.</p>
-            </div>
-            
-            <form onsubmit="submitLeadCaptureForm(event)" class="space-y-3.5">
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Your Full Name</label>
-                    <input type="text" id="leadInputName" placeholder="e.g. Rahul Sharma" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">WhatsApp Number or Email <span class="text-emerald-400">*</span></label>
-                    <input type="text" id="leadInputContact" required placeholder="+91 98765 43210 or yourname@gmail.com" class="w-full bg-slate-950 border border-blue-500/60 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-400">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-300 mb-1">Target Job Role</label>
-                    <input type="text" id="leadInputRole" placeholder="e.g. Data Analyst, Store In-charge, Fresher" class="w-full bg-slate-950 border border-slate-700 rounded-xl px-3.5 py-2.5 text-xs text-slate-200 focus:outline-none focus:border-blue-500">
-                </div>
-                
-                <div class="pt-2 space-y-2">
-                    <button type="submit" id="btnSubmitLeadCapture" class="w-full py-3 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer">
-                        <span>💾 Save My Progress & Resume</span>
-                    </button>
-                    <div class="text-center">
-                        <button type="button" onclick="closeLeadCaptureModal()" class="text-[11px] text-slate-400 hover:text-slate-200 underline cursor-pointer">Skip & continue directly</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-</body></html>`;
+        </head><body>${paragraphs}</body></html>`;
     const blob = new Blob(['\ufeff', wHTML], { type: 'application/msword' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
@@ -5248,14 +5429,28 @@ async function submitFeedbackData() {
 window.onload = async function() {
     const params = new URLSearchParams(window.location.search);
     const paymentId = params.get('razorpay_payment_id') || params.get('payment_link_payment_id') || params.get('payment_id');
-    const paidFlag  = params.get('dpd_paid');
-    const returningFromPayment = !!(paymentId || paidFlag === '1');
+    const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
+    let returningFromPayment = false;
 
-    if (returningFromPayment) {
-        const plan = parseInt(params.get('plan') || '0', 10) || parseInt(localStorage.getItem('dpd_last_plan') || '39', 10);
-        const days = (plan === 99 || plan === 59) ? 30 : 7;
-        setPersistentPass(days, plan);
-        localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
+    if (paymentId) {
+        try {
+            const vRes = await fetch('/api/verify-payment', {
+                method: 'POST',
+                headers: getGeminiApiHeaders(),
+                body: JSON.stringify({ paymentId: paymentId.trim(), plan })
+            });
+            if (vRes.ok) {
+                const vData = await vRes.json();
+                if (vData.success) {
+                    const days = vData.days || ((plan === 99 || plan === 59) ? 30 : 7);
+                    setPersistentPass(days, plan);
+                    localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
+                    returningFromPayment = true;
+                }
+            }
+        } catch(e) {
+            console.warn('Payment return verification error:', e);
+        }
         window.history.replaceState({}, document.title, window.location.pathname);
     }
 
