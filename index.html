@@ -2495,27 +2495,50 @@ function cleanRawResumeText(raw) {
     // 1. Convert Wingdings, symbol bullets, arrows, checkmarks, Unicode bullets to standard bullet
     text = text.replace(/(?:[\uF020-\uF0FF\u25BA\u25AA\u25B8\u2192\u2713\u2714\u2605\u25A0\u25CF\u2022\u2023\u2043\u2219►▪▸→✓✔★■●]|ï\s*[¶ƒž²v]|â[–—]|â–[ºª¸]|â†’|âœ[“”]|â˜…|â–[ ■]|â—|â€¢)/g, '• ');
 
-    // 2. Normalize specific faux-bold interleaved repeats (e.g. EEXEXXECUTIVE -> Executive, SSUSUUMMARY -> Summary)
-    text = text.replace(/\bExecutive\s*Sum[\s\w]*ary\b/gi, 'Executive Summary')
-               .replace(/\bPersonal\s*V[\s]*itae\b/gi, 'Personal Vitae')
-               .replace(/\bAcademic\s*C[\s]*redentials\b/gi, 'Academic Credentials')
-               .replace(/\bOrgani[sz]ational\s*D[\s]*etails\b/gi, 'Organisational Details')
-               .replace(/\bE+[EX]*C+U+T+I+V+E+\b/gi, 'Executive')
-               .replace(/\bS+[SU]*M+A+R+Y+\b/gi, 'Summary')
-               .replace(/\bO+[RGNISZATL]+D+[ETAILS]+\b/gi, 'Organisational Details')
-               .replace(/\bA+[CDMIC]+\s*C+[RDENTALS]+\b/gi, 'Academic Credentials');
+    // 2. Normalize specific known MS Word virtual printer / faux-bold offset stutter patterns
+    text = text
+        .replace(/\b(?:K+n+|KKn)Knowledge\b/gi, 'Knowledge')
+        .replace(/\b(?:A+c+|AAc)Achievements\b/gi, 'Achievements')
+        .replace(/\b(?:C+o+|CCo)Controllingg*\b/gi, 'Controlling')
+        .replace(/\b(?:C+o+|CCo)+r*m*a*n*d*\s*(?:P+u+|PPu)*r*v*i*e*w+\b/gi, 'Command Purview')
+        .replace(/\b(?:O+r+|OOr)Organi[sz]ational\b/gi, 'Organisational')
+        .replace(/\b(?:A+c+|AAc|AAcc)Academic\b/gi, 'Academic')
+        .replace(/\b(?:P+e+|PPe)Personal\b/gi, 'Personal')
+        .replace(/\b(?:V+i+|VVi)Vitae\b/gi, 'Vitae')
+        .replace(/\bDetailss+\b/gi, 'Details')
+        .replace(/\bPurvieww+\b/gi, 'Purview')
+        .replace(/\bCredentialss+\b/gi, 'Credentials')
+        .replace(/\bffromm+\b/gi, 'from')
+        .replace(/\b(?:M+a+|MMa)*M*a*r*c*h+\b/gi, 'March')
+        .replace(/\b(?:t+o+|tto)*t*o+o*\b/gi, 'to')
+        .replace(/\bPresentt*\b/gi, 'Present')
+        .replace(/\bAdSr\.\b/gi, 'As Sr.')
+        .replace(/\b2202011010\b/gi, '2010')
+        .replace(/\b44040\b/gi, '40')
+        .replace(/\({2,}/g, '(')
+        .replace(/\){2,}/g, ')');
 
-    // 3. Collapse faux-bold repeated numbers (e.g. 222000111000 -> 2010, 444000000000 -> 4000)
+    // 3. Generic stutter collapse at the start of capital words:
+    text = text.replace(/\b([A-Z][a-z]?)[A-Z][a-z]?\1([A-Za-z]+)\b/g, '$1$2');
+
+    // 4. Force headings after punctuation or bullets onto clean new lines
+    const headingSplitter = /(?:^|[.!?•;]|Goods\))\s*([A-Za-z]*(?:Knowledge\s*Purview|Achievements\s*Purview|Controlling\s*&?\s*(?:Command\s*Purview)?|Organi[sz]ational\s*Details|Academic\s*Credentials|IT\s*Exposure|Personal\s*Vitae|Technical\s*Skills))/gi;
+    text = text.replace(headingSplitter, (match, h) => '\n\n' + h);
+
+    // 5. Separate field labels glued directly to section headings
+    text = text.replace(/\b(Personal\s*Vitae|Personal\s*Details|Personal\s*Profile|Academic\s*Credentials|IT\s*Exposure)\s*(Address|Name|Phone|DOB|Date\s*of\s*Birth|Languages|Father|Present\s*Address|Permanent\s*Address)[:\-–—]?/gi, '$1\n$2:');
+
+    // 6. Collapse faux-bold repeated numbers (e.g. 222000111000 -> 2010, 444000000000 -> 4000)
     text = text.replace(/(\d)\1{2,}/g, '$1');
 
-    // 4. Un-glue prepositions glued to capitalized words
+    // 7. Un-glue prepositions glued to capitalized words
     text = text.replace(/\b(as|with|under|from|worked|working|to)([A-Z])/g, '$1 $2');
     text = text.replace(/\b(with|to|as|in|of|for)a\b/gi, '$1 a');
 
-    // 5. Separate CamelCase words in headings
+    // 8. Separate CamelCase words in headings
     text = text.replace(/\b(Executive|Professional|Career|Academic|Educational|Personal|Knowledge|Achievements|Controlling|Command|Proficiency|Technical|Key|Work|Employment|Project|Projects|Organisational|Organizational)(Summary|Details|Credentials|Qualifications|Vitae|Purview|Forte|Skills|Experience|History|Profile|Dossier)\b/gi, '$1 $2');
 
-    // 6. Unspace single letters: "P R O F E S S I O N A L" -> "PROFESSIONAL" and collapse 3+ repeats
+    // 9. Unspace single letters: "P R O F E S S I O N A L" -> "PROFESSIONAL" and collapse 3+ repeats
     text = text.split('\n').map(line => {
         let unspaced = line.replace(/\b([A-Za-z0-9&:\(\)])(?:\s[A-Za-z0-9&:\(\)])+\b/g, m => m.replace(/\s+/g, ''));
         let collapsed = unspaced.replace(/([A-Za-z])\1{2,}/g, (match, char) => {
@@ -2526,7 +2549,33 @@ function cleanRawResumeText(raw) {
         return collapsed;
     }).join('\n');
 
-    // 7. Clean multiple spaces
+    // 10. Second pass post-unspace cleanup
+    text = text
+        .replace(/\b(?:K+n+|KKn)Knowledge\b/gi, 'Knowledge')
+        .replace(/\b(?:A+c+|AAc)Achievements\b/gi, 'Achievements')
+        .replace(/\b(?:C+o+|CCo)Controllingg*\b/gi, 'Controlling')
+        .replace(/\b(?:C+o+|CCo)+r*m*a*n*d*\s*(?:P+u+|PPu)*r*v*i*e*w+\b/gi, 'Command Purview')
+        .replace(/\b(?:O+r+|OOr)Organi[sz]ational\b/gi, 'Organisational')
+        .replace(/\b(?:A+c+|AAc|AAcc)Academic\b/gi, 'Academic')
+        .replace(/\b(?:P+e+|PPe)Personal\b/gi, 'Personal')
+        .replace(/\b(?:V+i+|VVi)Vitae\b/gi, 'Vitae')
+        .replace(/\bDetailss+\b/gi, 'Details')
+        .replace(/\bPurvieww+\b/gi, 'Purview')
+        .replace(/\bCredentialss+\b/gi, 'Credentials')
+        .replace(/\bffromm+\b/gi, 'from')
+        .replace(/\b(?:M+a+|MMa)*M*a*r*c*h+\b/gi, 'March')
+        .replace(/\b(?:t+o+|tto)*t*o+o*\b/gi, 'to')
+        .replace(/\bPresentt*\b/gi, 'Present')
+        .replace(/\bAdSr\.\b/gi, 'As Sr.')
+        .replace(/\b2202011010\b/gi, '2010')
+        .replace(/\b44040\b/gi, '40')
+        .replace(/\({2,}/g, '(')
+        .replace(/\){2,}/g, ')');
+
+    text = text.replace(/(?:^|[.!?•;]|Goods\))\s*([A-Za-z]*(?:Knowledge\s*Purview|Achievements\s*Purview|Controlling\s*&?\s*(?:Command\s*Purview)?|Organi[sz]ational\s*Details|Academic\s*Credentials|IT\s*Exposure|Personal\s*Vitae|Technical\s*Skills))/gi, (match, h) => '\n\n' + h);
+    text = text.replace(/\b(Personal\s*Vitae|Personal\s*Details|Personal\s*Profile|Academic\s*Credentials|IT\s*Exposure)\s*(Address|Name|Phone|DOB|Date\s*of\s*Birth|Languages|Father|Present\s*Address|Permanent\s*Address)[:\-–—]?/gi, '$1\n$2:');
+
+    // 11. Clean multiple spaces
     text = text.replace(/[ \t]{2,}/g, ' ');
 
     return text;
@@ -2622,7 +2671,7 @@ function extractSmartTextFromPdfPage(content) {
                 const curr = rawSorted[i];
                 if (!curr.str) continue;
                 const prev = sorted[sorted.length - 1];
-                if (prev && curr.str === prev.str && Math.abs(curr.x - prev.x) < 2.5) {
+                if (prev && prev.str && curr.str.trim() === prev.str.trim() && Math.abs(curr.x - prev.x) < 3.5) {
                     continue; // Skip faux-bold duplicate strike
                 }
                 sorted.push(curr);
@@ -3363,7 +3412,7 @@ function parseExperience(expText) {
 
 function parseEducation(eduText) {
     if (!eduText) return [];
-    const lines = eduText.split('\n').map(r => r.trim()).filter(Boolean);
+    const lines = eduText.split(/(?:\n+|\s*[•*►▪▸→✓✔]\s*)/).map(r => r.trim()).filter(Boolean);
     const education = [];
 
     let i = 0;
@@ -3656,27 +3705,27 @@ function parseResume(raw) {
     const sectionDefinitions = [
         { 
             id: "SUMMARY", 
-            regex: /(?:^|\n)\s*(?:P+R+O+F+E+S+S+I+O+N+A+L+\s*S+U+M+M+A+R+Y+|E+X+E+C+U+T+I+V+E+\s*S+U+M+M+A+R+Y+|P+R+O+F+I+L+E+\s*S+U+M+M+A+R+Y+|C+A+R+E+E+R+\s*S+U+M+M+A+R+Y+|C+A+R+E+E+R+\s*O+B+J+E+C+T+I+V+E+|E+X+E+C+U+T+I+V+E+\s*P+R+O+F+I+L+E+|P+E+R+S+O+N+A+L+\s*S+T+A+T+E+M+E+N+T+|A+B+O+U+T+\s*M+E+|S+Y+N+O+P+S+I+S+|S+U+M+M+A+R+Y+|O+B+J+E+C+T+I+V+E+)(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*P+R+O+F+E+S+S+I+O+N+A+L+[A-Za-z]*\s*S+U+M+M+A+R+Y+|[A-Za-z]*E+X+E+C+U+T+I+V+E+[A-Za-z]*\s*S+U+M+M+A+R+Y+|[A-Za-z]*P+R+O+F+I+L+E+[A-Za-z]*\s*S+U+M+M+A+R+Y+|[A-Za-z]*C+A+R+E+E+R+[A-Za-z]*\s*S+U+M+M+A+R+Y+|[A-Za-z]*C+A+R+E+E+R+[A-Za-z]*\s*O+B+J+E+C+T+I+V+E+|[A-Za-z]*E+X+E+C+U+T+I+V+E+[A-Za-z]*\s*P+R+O+F+I+L+E+|[A-Za-z]*P+E+R+S+O+N+A+L+[A-Za-z]*\s*S+T+A+T+E+M+E+N+T+|A+B+O+U+T+\s*M+E+|S+Y+N+O+P+S+I+S+|S+U+M+M+A+R+Y+|O+B+J+E+C+T+I+V+E+)(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "KNOWLEDGE", 
-            regex: /(?:^|\n)\s*(?:K+N+O+W+L+E+D+G+E+\s*P+U+R+V+I+E+W+|A+C+H+I+E+V+E+M+E+N+T+S+\s*P+U+R+V+I+E+W+|C+O+N+T+R+O+L+L+I+N+G+\s*&?\s*C+O+M+M+A+N+D+\s*P+U+R+V+I+E+W+|P+R+O+F+I+C+I+E+N+C+Y+\s*F+O+R+T+E+|A+R+E+A+S+\s*O+F+\s*E+X+P+E+R+T+I+S+E+|C+O+R+E+\s*E+X+P+E+R+T+I+S+E+|K+E+Y+\s*S+T+R+E+N+G+T+H+S+|A+R+E+A+S+\s*O+F+\s*S+T+R+E+N+G+T+H+|D+O+M+A+I+N+S*\s*O+F+\s*E+X+P+E+R+T+I+S+E+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*K+N+O+W+L+E+D+G+E+[A-Za-z]*\s*P+U+R+V+I+E+W+|[A-Za-z]*A+C+H+I+E+V+E+M+E+N+T+S+[A-Za-z]*\s*P+U+R+V+I+E+W+|[A-Za-z]*C+O+N+T+R+O+L+L+I+N+G+[A-Za-z]*(?:\s*&?\s*C+O+M+M+A+N+D+\s*P+U+R+V+I+E+W+)?|P+R+O+F+I+C+I+E+N+C+Y+\s*F+O+R+T+E+|A+R+E+A+S+\s*O+F+\s*E+X+P+E+R+T+I+S+E+|C+O+R+E+\s*E+X+P+E+R+T+I+S+E+|K+E+Y+\s*S+T+R+E+N+G+T+H+S+|A+R+E+A+S+\s*O+F+\s*S+T+R+E+N+G+T+H+|D+O+M+A+I+N+S*\s*O+F+\s*E+X+P+E+R+T+I+S+E+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "EXPERIENCE", 
-            regex: /(?:^|\n)\s*(?:O+R+G+A+N+I+[SZ]+A+T+I+O+N+A+L+\s*D+E+T+A+I+L+S+|O+R+G+A+N+I+[SZ]+A+T+I+O+N+A+L+\s*E+X+P+E+R+I+E+N+C+E+|P+R+O+F+E+S+S+I+O+N+A+L+\s*E+X+P+E+R+I+E+N+C+E+|W+O+R+K+\s*E+X+P+E+R+I+E+N+C+E+|E+M+P+L+O+Y+M+E+N+T+\s*H+I+S+T+O+R+Y+|E+M+P+L+O+Y+M+E+N+T+\s*R+E+C+O+R+D+|E+M+P+L+O+Y+M+E+N+T+\s*D+E+T+A+I+L+S+|C+A+R+E+E+R+\s*D+E+T+A+I+L+S+|C+A+R+E+E+R+\s*H+I+S+T+O+R+Y+|C+A+R+E+E+R+\s*P+R+O+F+I+L+E+|W+O+R+K+\s*P+R+O+F+I+L+E+|P+R+O+F+E+S+S+I+O+N+A+L+\s*B+A+C+K+G+R+O+U+N+D+|J+O+B+\s*P+R+O+F+I+L+E+|E+X+P+E+R+I+E+N+C+E+\s*S+U+M+M+A+R+Y+|E+X+P+E+R+I+E+N+C+E+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*O+R+G+A+N+I+[SZ]+A+T+I+O+N+A+L+[A-Za-z]*\s*D+E+T+A+I+L+S+|[A-Za-z]*O+R+G+A+N+I+[SZ]+A+T+I+O+N+A+L+[A-Za-z]*\s*E+X+P+E+R+I+E+N+C+E+|[A-Za-z]*P+R+O+F+E+S+S+I+O+N+A+L+[A-Za-z]*\s*E+X+P+E+R+I+E+N+C+E+|[A-Za-z]*W+O+R+K+[A-Za-z]*\s*E+X+P+E+R+I+E+N+C+E+|E+M+P+L+O+Y+M+E+N+T+\s*H+I+S+T+O+R+Y+|E+M+P+L+O+Y+M+E+N+T+\s*R+E+C+O+R+D+|E+M+P+L+O+Y+M+E+N+T+\s*D+E+T+A+I+L+S+|C+A+R+E+E+R+\s*D+E+T+A+I+L+S+|C+A+R+E+E+R+\s*H+I+S+T+O+R+Y+|C+A+R+E+E+R+\s*P+R+O+F+I+L+E+|W+O+R+K+\s*P+R+O+F+I+L+E+|P+R+O+F+E+S+S+I+O+N+A+L+\s*B+A+C+K+G+R+O+U+N+D+|J+O+B+\s*P+R+O+F+I+L+E+|E+X+P+E+R+I+E+N+C+E+\s*S+U+M+M+A+R+Y+|E+X+P+E+R+I+E+N+C+E+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "PROJECTS", 
-            regex: /(?:^|\n)\s*(?:K+E+Y+\s*T+E+C+H+N+I+C+A+L+\s*P+R+O+J+E+C+T+S+|T+E+C+H+N+I+C+A+L+\s*P+R+O+J+E+C+T+S+|K+E+Y+\s*P+R+O+J+E+C+T+S+|N+O+T+A+B+L+E+\s*P+R+O+J+E+C+T+S+|M+A+J+O+R+\s*P+R+O+J+E+C+T+S+|A+C+A+D+E+M+I+C+\s*P+R+O+J+E+C+T+S+|P+R+O+J+E+C+T+\s*D+E+T+A+I+L+S+|P+R+O+J+E+C+T+\s*P+O+R+T+F+O+L+I+O+|P+R+O+J+E+C+T+S+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:K+E+Y+\s*T+E+C+H+N+I+C+A+L+\s*P+R+O+J+E+C+T+S+|T+E+C+H+N+I+C+A+L+\s*P+R+O+J+E+C+T+S+|K+E+Y+\s*P+R+O+J+E+C+T+S+|N+O+T+A+B+L+E+\s*P+R+O+J+E+C+T+S+|M+A+J+O+R+\s*P+R+O+J+E+C+T+S+|A+C+A+D+E+M+I+C+\s*P+R+O+J+E+C+T+S+|P+R+O+J+E+C+T+\s*D+E+T+A+I+L+S+|P+R+O+J+E+C+T+\s*P+O+R+T+F+O+L+I+O+|P+R+O+J+E+C+T+S+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "SKILLS", 
-            regex: /(?:^|\n)\s*(?:I+T+\s*E+X+P+O+S+U+R+E+|I+T+\s*S+K+I+L+L+S+|T+E+C+H+N+I+C+A+L+\s*S+K+I+L+L+S+|T+E+C+H+N+I+C+A+L+\s*C+O+M+P+E+T+E+N+C+I+E+S+|C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+\s*&?\s*K+E+Y+\s*S+K+I+L+L+S+|C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+|K+E+Y+\s*S+K+I+L+L+S+|S+K+I+L+L+S+\s*&?\s*C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+|S+K+I+L+L+S+\s*&?\s*A+B+I+L+I+T+I+E+S+|C+O+M+P+U+T+E+R+\s*P+R+O+F+I+C+I+E+N+C+Y+|S+O+F+T+W+A+R+E+\s*S+K+I+L+L+S+|C+O+M+P+U+T+E+R+\s*L+I+T+E+R+A+C+Y+|S+K+I+L+L+S+)(?:\s*[:\-–—][^\n]*)?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*I+T+\s*E+X+P+O+S+U+R+E+|I+T+\s*S+K+I+L+L+S+|T+E+C+H+N+I+C+A+L+\s*S+K+I+L+L+S+|T+E+C+H+N+I+C+A+L+\s*C+O+M+P+E+T+E+N+C+I+E+S+|C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+\s*&?\s*K+E+Y+\s*S+K+I+L+L+S+|C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+|K+E+Y+\s*S+K+I+L+L+S+|S+K+I+L+L+S+\s*&?\s*C+O+R+E+\s*C+O+M+P+E+T+E+N+C+I+E+S+|S+K+I+L+L+S+\s*&?\s*A+B+I+L+I+T+I+E+S+|C+O+M+P+U+T+E+R+\s*P+R+O+F+I+C+I+E+N+C+Y+|S+O+F+T+W+A+R+E+\s*S+K+I+L+L+S+|C+O+M+P+U+T+E+R+\s*L+I+T+E+R+A+C+Y+|S+K+I+L+L+S+)(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "EDUCATION", 
-            regex: /(?:^|\n)\s*(?:A+C+A+D+E+M+I+C+\s*C+R+E+D+E+N+T+I+A+L+S+|E+D+U+C+A+T+I+O+N+A+L+\s*C+R+E+D+E+N+T+I+A+L+S+|A+C+A+D+E+M+I+C+\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|E+D+U+C+A+T+I+O+N+A+L+\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|A+C+A+D+E+M+I+C+\s*B+A+C+K+G+R+O+U+N+D+|E+D+U+C+A+T+I+O+N+A+L+\s*B+A+C+K+G+R+O+U+N+D+|A+C+A+D+E+M+I+C+\s*H+I+S+T+O+R+Y+|E+D+U+C+A+T+I+O+N+\s*&?\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|Q+U+A+L+I+F+I+C+A+T+I+O+N+\s*P+R+O+F+I+L+E+|A+C+A+D+E+M+I+C+\s*D+E+T+A+I+L+S+|S+C+H+O+L+A+S+T+I+C+\s*A+C+H+I+E+V+E+M+E+N+T+S+|E+D+U+C+A+T+I+O+N+)(?:\s*\(.*?\))?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*A+C+A+D+E+M+I+C+[A-Za-z]*\s*C+R+E+D+E+N+T+I+A+L+S+|[A-Za-z]*E+D+U+C+A+T+I+O+N+A+L+[A-Za-z]*\s*C+R+E+D+E+N+T+I+A+L+S+|[A-Za-z]*A+C+A+D+E+M+I+C+[A-Za-z]*\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|[A-Za-z]*E+D+U+C+A+T+I+O+N+A+L+[A-Za-z]*\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|[A-Za-z]*A+C+A+D+E+M+I+C+[A-Za-z]*\s*B+A+C+K+G+R+O+U+N+D+|[A-Za-z]*E+D+U+C+A+T+I+O+N+A+L+[A-Za-z]*\s*B+A+C+K+G+R+O+U+N+D+|A+C+A+D+E+M+I+C+\s*H+I+S+T+O+R+Y+|E+D+U+C+A+T+I+O+N+\s*&?\s*Q+U+A+L+I+F+I+C+A+T+I+O+N+S+|Q+U+A+L+I+F+I+C+A+T+I+O+N+\s*P+R+O+F+I+L+E+|A+C+A+D+E+M+I+C+\s*D+E+T+A+I+L+S+|S+C+H+O+L+A+S+T+I+C+\s*A+C+H+I+E+V+E+M+E+N+T+S+|E+D+U+C+A+T+I+O+N+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "CERTIFICATIONS", 
@@ -3684,7 +3733,7 @@ function parseResume(raw) {
         },
         { 
             id: "PERSONAL", 
-            regex: /(?:^|\n)\s*(?:P+E+R+S+O+N+A+L+\s*V+I+T+A+E+|P+E+R+S+O+N+A+L+\s*D+O+S+S+I+E+R+|P+E+R+S+O+N+A+L+\s*D+E+T+A+I+L+S+|P+E+R+S+O+N+A+L+\s*P+R+O+F+I+L+E+|B+I+O+\s*D+A+T+A+|B+I+O+D+A+T+A+|P+E+R+S+O+N+A+L+\s*P+A+R+T+I+C+U+L+A+R+S+|P+E+R+S+O+N+A+L+\s*I+N+F+O+R+M+A+T+I+O+N+)(?:\s*\(.*?\))?(?::|\n|$)/i 
+            regex: /(?:^|\n)\s*(?:[A-Za-z]*P+E+R+S+O+N+A+L+[A-Za-z]*\s*V+I+T+A+E+|[A-Za-z]*P+E+R+S+O+N+A+L+[A-Za-z]*\s*D+O+S+S+I+E+R+|[A-Za-z]*P+E+R+S+O+N+A+L+[A-Za-z]*\s*D+E+T+A+I+L+S+|[A-Za-z]*P+E+R+S+O+N+A+L+[A-Za-z]*\s*P+R+O+F+I+L+E+|B+I+O+\s*D+A+T+A+|B+I+O+D+A+T+A+|P+E+R+S+O+N+A+L+\s*P+A+R+T+I+C+U+L+A+R+S+|P+E+R+S+O+N+A+L+\s*I+N+F+O+R+M+A+T+I+O+N+)(?:\s*\(.*?\))?(?:\s*[:\-–—][^\n]*)?(?:\s*[:\n•\-*►▪▸→✓✔]|$)/i 
         },
         { 
             id: "DECLARATION", 
@@ -3710,6 +3759,26 @@ function parseResume(raw) {
         if (!sectionsData[marker.id]) sectionsData[marker.id] = chunk;
         else sectionsData[marker.id] += '\n\n' + chunk;
     });
+
+    // Safety boundary guard: ensure summary never captures experience/knowledge
+    if (sectionsData["SUMMARY"] && sectionsData["SUMMARY"].length > 800) {
+        let sum = sectionsData["SUMMARY"];
+        if (!sectionsData["EXPERIENCE"]) {
+            const expMatch = sum.search(/(?:Organi[sz]ational\s*Details|Worked\s*with|Working\s*with|\b(?:June|October|April|March)\s*(?:19|20)\d{2})/i);
+            if (expMatch !== -1) {
+                sectionsData["EXPERIENCE"] = sum.substring(expMatch).trim();
+                sum = sum.substring(0, expMatch).trim();
+            }
+        }
+        if (!sectionsData["KNOWLEDGE"]) {
+            const kMatch = sum.search(/(?:Knowledge\s*Purview|Achievements\s*Purview|Controlling)/i);
+            if (kMatch !== -1) {
+                sectionsData["KNOWLEDGE"] = sum.substring(kMatch).trim();
+                sum = sum.substring(0, kMatch).trim();
+            }
+        }
+        sectionsData["SUMMARY"] = sum;
+    }
 
     const headerEnd = markers.length > 0 ? markers[0].idx : text.length;
     const headerText = text.substring(0, headerEnd).trim();
@@ -3746,12 +3815,16 @@ function parseResume(raw) {
     if ((!finalTitle || /summary|executive|objective|assignments/i.test(finalTitle)) && experience.length > 0 && experience[0].role && experience[0].role !== "Specialist") {
         finalTitle = experience[0].role;
     }
+    if (!finalTitle && sectionsData["SUMMARY"]) {
+        const titleMatch = sectionsData["SUMMARY"].match(/(?:working\s+with\s+[^,•\n]+?\s+as|as)\s+([A-Za-z0-9\/\- ]+?(?:Officer|Executive|Manager|Engineer|Supervisor|Specialist|Lead|Incharge|Store\s*Keeper)[A-Za-z0-9\/\- ]*)/i);
+        if (titleMatch) finalTitle = cleanRoleName(titleMatch[1]);
+    }
 
     return {
         name: name || "",
         title: finalTitle || "",
         email: contact.email,
-        mobile: contact.mobile,
+        mobile: contact.mobile || contact.phone,
         linkedin: contact.linkedin,
         github: contact.github,
         portfolio: contact.portfolio,
