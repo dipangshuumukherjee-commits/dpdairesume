@@ -51,6 +51,10 @@
 
     <!-- Google Search Console Site Verification -->
     <meta name="google-site-verification" content="GSC_VERIFICATION_CODE_HERE" />
+    <!-- Official Legal Protection & Copyright Metadata -->
+    <meta name="copyright" content="© 2026 DPD AI Resume Builder by Dipangshu Mukherjee. All Rights Reserved." />
+    <meta name="author" content="Dipangshu Mukherjee" />
+    <meta name="robots" content="index, follow" />
 
     <!-- MODAL 5: GEMINI AI API KEY CONFIGURATION -->
     <div id="geminiApiKeyModalGate" class="hidden fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center p-4 z-[90] no-print">
@@ -283,8 +287,201 @@
             50% { opacity: 0.5; transform: scale(1.2); }
         }
     </style>
+    <!-- START: DPD HARDENED PROPRIETARY SECURITY & ANTI-STEALER SHIELD -->
+    <script id="dpdSecurityShield">
+    (function() {
+        "use strict";
+
+        // Toast Notification Trigger
+        function showSecurityToast(msg) {
+            try {
+                const toast = document.getElementById('dpdSecurityToast');
+                const text = document.getElementById('dpdSecurityToastText');
+                if (!toast) return;
+                if (text && msg) text.innerText = msg;
+                toast.style.display = 'block';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateX(-50%) translateY(0)';
+                clearTimeout(window._secToastTimeout);
+                window._secToastTimeout = setTimeout(function() {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(-50%) translateY(8px)';
+                    setTimeout(function() { toast.style.display = 'none'; }, 260);
+                }, 2200);
+            } catch(e) {}
+        }
+        window.showSecurityToast = showSecurityToast;
+
+        // 1. KEYBOARD SHORTCUT HARDENING (F12, Ctrl+Shift+I/J/C, Ctrl+U, Ctrl+S, Ctrl+P)
+        window.addEventListener('keydown', function(e) {
+            // Block F12 Developer Tools
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                e.stopPropagation();
+                showSecurityToast('🔒 Developer Tools (F12) are disabled to protect proprietary algorithms.');
+                return false;
+            }
+
+            const isCtrlOrMeta = e.ctrlKey || e.metaKey;
+
+            // Block Ctrl+Shift+I (Inspector), Ctrl+Shift+J (Console), Ctrl+Shift+C (Element picker)
+            if (isCtrlOrMeta && e.shiftKey) {
+                const k = (e.key || '').toUpperCase();
+                if (k === 'I' || k === 'J' || k === 'C' || e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    showSecurityToast('🔒 Element Inspection is prohibited.');
+                    return false;
+                }
+            }
+
+            // Block Ctrl+U (View Page Source)
+            if (isCtrlOrMeta && (e.key === 'u' || e.key === 'U' || e.keyCode === 85)) {
+                e.preventDefault();
+                e.stopPropagation();
+                showSecurityToast('🔒 Source Code viewing is disabled.');
+                return false;
+            }
+
+            // Block Ctrl+S (Save Page HTML)
+            if (isCtrlOrMeta && (e.key === 's' || e.key === 'S' || e.keyCode === 83)) {
+                e.preventDefault();
+                e.stopPropagation();
+                showSecurityToast('💾 Please use "Save Progress" or official Export in the app.');
+                return false;
+            }
+
+            // Intercept Ctrl+P (Prevent unauthorized print bypass)
+            if (isCtrlOrMeta && (e.key === 'p' || e.key === 'P' || e.keyCode === 80)) {
+                e.preventDefault();
+                e.stopPropagation();
+                if (typeof window.checkActiveSubscriptionPass === 'function' && window.checkActiveSubscriptionPass()) {
+                    if (typeof window.dpdSmartPrint === 'function') window.dpdSmartPrint();
+                } else {
+                    if (typeof window.downloadFreeWatermarkedPreview === 'function') {
+                        window.downloadFreeWatermarkedPreview();
+                    } else if (typeof window.displaySubscriptionGateway === 'function') {
+                        window.displaySubscriptionGateway('pdf');
+                    }
+                }
+                return false;
+            }
+        }, true);
+
+        // 2. CONTEXT MENU GUARD (Protects site code while allowing paste/copy in form inputs)
+        window.addEventListener('contextmenu', function(e) {
+            const target = e.target;
+            const tag = target && target.tagName ? target.tagName.toLowerCase() : '';
+            // Allow legitimate users to right-click inside inputs and textareas to paste or copy their resume data
+            if (tag === 'input' || tag === 'textarea' || (target && target.isContentEditable)) {
+                return true;
+            }
+            e.preventDefault();
+            e.stopPropagation();
+            showSecurityToast('🔒 Proprietary Layout: Right-click inspection is disabled.');
+            return false;
+        }, true);
+
+        // 3. DEVTOOLS ACTIVE CONSOLE TRAP & COPYRIGHT WARNING
+        (function() {
+            let warned = false;
+            function logCopyrightBanner() {
+                if (warned) return;
+                warned = true;
+                try {
+                    console.clear();
+                    console.log(
+                        '%c⚡ DPD AI RESUME PLATFORM • COPYRIGHT PROTECTED\n' +
+                        '%c© 2026 DPD AI Resume Builder by Dipangshu Mukherjee. All Rights Reserved.\n' +
+                        'Unauthorized reverse engineering, scraping, or copying of this application is strictly prohibited under international copyright law & DMCA.',
+                        'color:#DFB76C; font-size:16px; font-weight:900; background:#070D09; padding:8px 12px; border-radius:8px;',
+                        'color:#8FA897; font-size:11px; line-height:1.5;'
+                    );
+                } catch(e) {}
+            }
+
+            window.addEventListener('resize', function() {
+                const threshold = 160;
+                if ((window.outerWidth - window.innerWidth > threshold) || (window.outerHeight - window.innerHeight > threshold)) {
+                    logCopyrightBanner();
+                }
+            });
+
+            // Lightweight debugger pause if DevTools is opened via browser top menu
+            setInterval(function() {
+                const t0 = performance.now();
+                /* debugger breakpoint */
+                debugger;
+                if (performance.now() - t0 > 120) {
+                    logCopyrightBanner();
+                }
+            }, 2000);
+        })();
+
+        // 4. WATERMARK MUTATION OBSERVER (Prevents deleting watermark via inspector)
+        function initWatermarkTamperGuard() {
+            const sandbox = document.getElementById('printTargetSandbox');
+            if (!sandbox) return;
+            const observer = new MutationObserver(function() {
+                if (typeof window.checkActiveSubscriptionPass === 'function' && !window.checkActiveSubscriptionPass()) {
+                    let wm = document.getElementById('dpdDiagonalWatermark');
+                    if (!wm) {
+                        wm = document.createElement('div');
+                        wm.id = 'dpdDiagonalWatermark';
+                        wm.style.cssText = 'display:flex; position:absolute; inset:0; pointer-events:none; z-index:90; align-items:center; justify-content:center; overflow:hidden;';
+                        wm.innerHTML = '<div style="transform: rotate(-32deg); font-size: 24px; font-weight: 900; color: rgba(180, 83, 9, 0.22); text-transform: uppercase; letter-spacing: 3px; text-align: center; border: 3px dashed rgba(180, 83, 9, 0.35); padding: 18px 24px; border-radius: 10px; background: rgba(254, 243, 199, 0.08);">SAMPLE PREVIEW • DPD AI RESUME<br><span style="font-size:13px; font-weight:700; letter-spacing:1.5px; color:rgba(180,83,9,0.30);">UPGRADE TO UNLOCK OFFICIAL ATS RESUME</span></div>';
+                        sandbox.appendChild(wm);
+                    }
+                }
+            });
+            observer.observe(sandbox, { childList: true, subtree: true });
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initWatermarkTamperGuard);
+        } else {
+            initWatermarkTamperGuard();
+        }
+
+        // 5. UNAUTHORIZED CLONE / MIRROR NEUTRALIZER
+        (function() {
+            const host = (window.location.hostname || '').toLowerCase();
+            const authorized = [
+                'dpdai-resume.vercel.app',
+                'localhost',
+                '127.0.0.1',
+                '0.0.0.0'
+            ];
+            const isAuthorized = authorized.includes(host) || host.endsWith('.vercel.app') || host === '';
+            if (!isAuthorized) {
+                window.addEventListener('DOMContentLoaded', function() {
+                    document.body.innerHTML = 
+                        '<div style="min-height:100vh;background:#050B08;color:#EDE8DE;display:flex;align-items:center;justify-content:center;padding:24px;font-family:system-ui,sans-serif;text-align:center;">' +
+                            '<div style="max-width:560px;background:#0A140E;border:2px solid #ef4444;border-radius:24px;padding:36px;box-shadow:0 25px 70px rgba(0,0,0,0.9);">' +
+                                '<div style="font-size:52px;margin-bottom:12px;">🚨</div>' +
+                                '<h1 style="color:#ef4444;font-size:22px;font-weight:900;margin-bottom:12px;">UNAUTHORIZED MIRROR DETECTED</h1>' +
+                                '<p style="color:#C2D1C7;font-size:13px;line-height:1.6;margin-bottom:24px;">' +
+                                    'This website is an unauthorized, illegal clone of <b>DPD AI Resume Builder</b> hosted on <code>' + host + '</code>. ' +
+                                    'All operational features have been suspended to prevent intellectual property theft and consumer fraud.' +
+                                '</p>' +
+                                '<a href="https://dpdai-resume.vercel.app" style="display:inline-block;background:linear-gradient(135deg,#DFB76C,#C5A059);color:#070D09;font-weight:900;padding:12px 28px;border-radius:14px;text-decoration:none;font-size:14px;">' +
+                                    'Go to Official Verified Site ➔' +
+                                '</a>' +
+                            '</div>' +
+                        '</div>';
+                });
+            }
+        })();
+    })();
+    </script>
+    <!-- END: DPD HARDENED PROPRIETARY SECURITY & ANTI-STEALER SHIELD -->
 </head>
 <body class="p-3 md:p-6">
+
+    <!-- FLOATING SECURITY NOTIFICATION TOAST -->
+    <div id="dpdSecurityToast" style="display:none; position:fixed; bottom:24px; left:50%; transform:translateX(-50%); z-index:99999; background:rgba(10,20,14,0.96); border:1px solid #DFB76C; color:#DFB76C; padding:10px 20px; border-radius:14px; font-size:12px; font-weight:700; box-shadow:0 12px 36px rgba(0,0,0,0.85); pointer-events:none; transition:opacity 0.25s ease, transform 0.25s ease; font-family:system-ui,-apple-system,sans-serif; backdrop-filter:blur(8px);">
+        <span style="margin-right:6px;">🔒</span><span id="dpdSecurityToastText">Proprietary ATS Platform: Source code inspection is disabled.</span>
+    </div>
 
     <!-- START: GLOBAL TOP RIGHT LOGO -->
     <div class="no-print" style="position:fixed; top:16px; right:16px; z-index:70;">
@@ -1890,23 +2087,19 @@ async function submitLeadCaptureForm(e) {
     localStorage.setItem('dpd_leads', JSON.stringify(leads));
     localStorage.setItem('dpd_lead_captured', 'true');
 
-    // Transmit lead securely to owner via Web3Forms inbox
+    // Transmit lead securely to owner via secure backend API (hides Web3Forms access key)
     try {
-        await fetch('https://api.web3forms.com/submit', {
+        await fetch('/api/lead-capture', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc",
-                subject: `🔥 New ATS Resume Lead: ${name} (${role})`,
-                from_name: "DPD Resume Leads",
-                Candidate_Name: name,
-                WhatsApp_or_Email: contact,
-                Target_Role: role,
-                ATS_Score: score,
-                Submitted_At: new Date().toLocaleString()
+                name: name,
+                contact: contact,
+                role: role,
+                score: score
             })
         });
     } catch(err) {
@@ -2059,9 +2252,9 @@ function generatePassToken(expiry, plan) {
     return 'dpd_tok_' + Math.abs(hash).toString(36);
 }
 
-function setPersistentPass(days, plan) {
-    const expiry = Date.now() + days * 24 * 60 * 60 * 1000;
-    const token = generatePassToken(expiry, plan);
+function setPersistentPass(days, plan, serverToken, customExpiry) {
+    const expiry = customExpiry ? parseInt(customExpiry, 10) : (Date.now() + days * 24 * 60 * 60 * 1000);
+    const token = serverToken || generatePassToken(expiry, plan);
     try { localStorage.setItem('dpd_pass_expiry', String(expiry)); } catch(e) {}
     try { localStorage.setItem('dpd_pass_plan', String(plan)); } catch(e) {}
     try { localStorage.setItem('dpd_pass_token', token); } catch(e) {}
@@ -2137,15 +2330,25 @@ function checkActiveSubscriptionPass() {
             } catch(e) {}
             return false;
         }
-        if (token && token !== generatePassToken(expNum, plan)) {
-            try { 
-                localStorage.removeItem('dpd_pass_expiry'); 
-                localStorage.removeItem('dpd_pass_plan'); 
-                localStorage.removeItem('dpd_pass_token'); 
-            } catch(e) {}
-            return false;
+        if (!token) return false;
+        // Verify server-signed HMAC token structure (id.expiry.plan.sig)
+        if (token.includes('.')) {
+            const parts = token.split('.');
+            if (parts.length !== 4) return false;
+            const tokenExp = parseInt(parts[1], 10);
+            if (isNaN(tokenExp) || tokenExp !== expNum || Date.now() >= tokenExp) return false;
+            return true;
         }
-        return true;
+        // Fallback for previous legacy session tokens
+        if (token && token === generatePassToken(expNum, plan)) {
+            return true;
+        }
+        try { 
+            localStorage.removeItem('dpd_pass_expiry'); 
+            localStorage.removeItem('dpd_pass_plan'); 
+            localStorage.removeItem('dpd_pass_token'); 
+        } catch(e) {}
+        return false;
     }
     return false;
 }
@@ -5022,74 +5225,41 @@ async function verifyPaymentAndActivate() {
     if (!rawId) { showVerifyError('Please paste your Payment ID or Owner Key.'); return; }
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
 
-    // 1. HARDENED CRYPTOGRAPHIC OWNER VIP PASS (Single High-Entropy Key for Dipangshu Mukherjee)
-    // Verified via one-way SHA-256 hash so the plain text key is NEVER exposed in client-side code!
-    const MASTER_VIP_HASH = 'c3134e0f0e6fffbb3b772bc4c09f8b5441b39bb5bf963594a5f23fd9125250bf';
-    const inputHash = await sha256Hex(rawId);
-
-    if (inputHash === MASTER_VIP_HASH) {
-        setPersistentPass(365, 'vip');
-        closeSubscriptionGateway(); 
-        renderSubscriptionStatusIndicator();
-        document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
-        const banner = document.getElementById('successBanner');
-        if (banner) { 
-            banner.innerText = '👑 Welcome, Dipangshu! Owner VIP Pass Activated (365 Days Unlimited Access).'; 
-            banner.classList.remove('hidden'); 
-            setTimeout(() => banner.classList.add('hidden'), 8000); 
-        }
-        btn.innerText = 'Activate Access ✓'; 
-        btn.disabled = false;
-        setTimeout(() => dpdSmartPrint(), 800);
-        return;
-    }
-
     try {
         let plan = parseInt(localStorage.getItem('dpd_last_plan') || '0', 10);
         if (!plan) plan = 99; // Default to monthly
-        let verified = false;
-        let days = (plan === 99 || plan === 59) ? 30 : 7;
-        let serverErrorMsg = '';
 
-        // Verify with Razorpay backend verification endpoint
-        try {
-            const res = await fetch('/api/verify-payment', { 
-                method: 'POST', 
-                headers: getGeminiApiHeaders(), 
-                body: JSON.stringify({ paymentId: rawId, plan }) 
-            });
-            const data = await res.json();
-            if (res.ok && data.success) {
-                verified = true;
-                if (data.days) days = data.days;
-            } else {
-                serverErrorMsg = data?.message || '';
-            }
-        } catch(netErr) {
-            serverErrorMsg = 'Unable to reach payment verification server. Please check your internet connection.';
-        }
+        // Call secure serverless verification endpoint
+        const res = await fetch('/api/verify-payment', { 
+            method: 'POST', 
+            headers: { 'Content-Type': 'application/json' }, 
+            body: JSON.stringify({ paymentId: rawId, plan: plan }) 
+        });
+        const data = await res.json();
 
-        if (verified) {
-            setPersistentPass(days, plan);
+        if (res.ok && data.success) {
+            setPersistentPass(data.days, data.plan, data.token, data.expiry);
             closeSubscriptionGateway(); 
             renderSubscriptionStatusIndicator();
             document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
             const banner = document.getElementById('successBanner');
             if (banner) { 
-                banner.innerText = '🎉 Payment ID Verified! Premium access active for ' + days + ' days!'; 
+                banner.innerText = data.isVip 
+                    ? '👑 Welcome, Dipangshu! Owner VIP Pass Activated (365 Days Unlimited Access).'
+                    : '🎉 Payment Verified! Premium access active for ' + data.days + ' days!'; 
                 banner.classList.remove('hidden'); 
                 setTimeout(() => banner.classList.add('hidden'), 7000); 
             }
             btn.innerText = 'Activate Access ✓'; 
             btn.disabled = false;
             setTimeout(() => dpdSmartPrint(), 800);
-        } else { 
-            showVerifyError(serverErrorMsg || 'Invalid or unverified Payment ID. A Razorpay Payment ID starts with "pay_" (found in your SMS or email receipt).'); 
+        } else {
+            showVerifyError(data?.message || 'Invalid or unverified Payment ID. A Razorpay Payment ID starts with "pay_" (found in your SMS or email receipt).');
             btn.innerText = 'Activate Access ✓'; 
             btn.disabled = false; 
         }
-    } catch(e) { 
-        showVerifyError('Verification check failed. Please check your Payment ID and try again.'); 
+    } catch(e) {
+        showVerifyError('Verification server connection error. Please check your internet connection.'); 
         btn.innerText = 'Activate Access ✓'; 
         btn.disabled = false; 
     }
@@ -5749,27 +5919,24 @@ async function submitFeedbackData() {
     btn.disabled = true;
 
     try {
-        const response = await fetch('https://api.web3forms.com/submit', {
+        const response = await fetch('/api/feedback', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             },
             body: JSON.stringify({
-                access_key: "293a967d-bde3-4236-92e5-c083ad0bd8dc", 
-                subject: "New Feedback for DPD AI Resume Builder",
-                from_name: "DPD Resume Bot",
-                User_Name: userName,
-                User_Email: userEmail,
-                Rating: rating + " Stars",
-                Source: source,
-                Feedback: text
+                rating: rating,
+                source: source,
+                text: text,
+                userName: userName,
+                userEmail: userEmail
             })
         });
 
         const result = await response.json();
 
-        if (response.status === 200) {
+        if (response.ok && result.success) {
             btn.innerText = 'Thank you! 🎉';
             btn.classList.replace('bg-blue-600', 'bg-emerald-600');
             btn.classList.replace('hover:bg-blue-500', 'hover:bg-emerald-500');
@@ -5809,7 +5976,7 @@ window.onload = async function() {
                 const vData = await vRes.json();
                 if (vData.success) {
                     const days = vData.days || ((plan === 99 || plan === 59) ? 30 : 7);
-                    setPersistentPass(days, plan);
+                    setPersistentPass(days, vData.plan || plan, vData.token, vData.expiry);
                     localStorage.setItem('dpd_app_ver', 'dpd_v7_global_multi');
                     returningFromPayment = true;
                 }
