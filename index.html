@@ -5222,8 +5222,44 @@ async function sha256Hex(str) {
 
 async function verifyPaymentAndActivate() {
     const rawId = (document.getElementById('paymentIdInput').value || '').trim();
-    if (!rawId) { showVerifyError('Please paste your Payment ID or Owner Key.'); return; }
+    if (!rawId) { showVerifyError('Please paste your Payment ID or Passcode.'); return; }
     const btn = document.getElementById('verifyBtn'); btn.innerText = 'Verifying...'; btn.disabled = true;
+
+    // 1. OBFUSCATED DYNAMIC OWNER VIP VALIDATOR (Instant fail-safe, passkey never disclosed in plain text)
+    try {
+        const d = new Date();
+        const opt = { timeZone: 'Asia/Kolkata', year: 'numeric', month: '2-digit' };
+        const parts = new Intl.DateTimeFormat('en-CA', opt).formatToParts(d);
+        const y = parts.find(p => p.type === 'year')?.value || d.getFullYear().toString();
+        const m = parts.find(p => p.type === 'month')?.value || String(d.getMonth() + 1).padStart(2, '0');
+        const pfx = String.fromCharCode(68, 80, 68, 95, 68, 105, 112, 97, 110, 103, 115, 104, 117, 95); 
+        const sfx = String.fromCharCode(35, 86, 73, 80); 
+        const curKey = pfx + y + m + sfx;
+
+        // Grace period for previous month transition
+        const prevD = new Date(d.getFullYear(), d.getMonth() - 1, 15);
+        const prevParts = new Intl.DateTimeFormat('en-CA', opt).formatToParts(prevD);
+        const py = prevParts.find(p => p.type === 'year')?.value;
+        const pm = prevParts.find(p => p.type === 'month')?.value;
+        const prevKey = pfx + py + pm + sfx;
+
+        if (rawId === curKey || rawId === prevKey) {
+            setPersistentPass(365, 'vip');
+            closeSubscriptionGateway(); 
+            renderSubscriptionStatusIndicator();
+            document.getElementById('dpdCoverPage')?.classList.add('dpd-hide');
+            const banner = document.getElementById('successBanner');
+            if (banner) { 
+                banner.innerText = '👑 Welcome, Dipangshu! Owner VIP Pass Activated (365 Days Unlimited Access).'; 
+                banner.classList.remove('hidden'); 
+                setTimeout(() => banner.classList.add('hidden'), 8000); 
+            }
+            btn.innerText = 'Activate Access ✓'; 
+            btn.disabled = false;
+            setTimeout(() => dpdSmartPrint(), 800);
+            return;
+        }
+    } catch(e) {}
 
     try {
         let plan = parseInt(localStorage.getItem('dpd_last_plan') || '0', 10);
